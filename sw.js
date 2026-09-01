@@ -1,10 +1,9 @@
-const CACHE_NAME = "photo-cours-v1";
+const CACHE_NAME = "photo-cours-v2";
 
 const FILES_TO_CACHE = [
   "./",
   "./index.html",
-  "./manifest.json",
-  "./sw.js"
+  "./manifest.json"
 ];
 
 self.addEventListener("install", event => {
@@ -19,7 +18,13 @@ self.addEventListener("install", event => {
 
 self.addEventListener("activate", event => {
   event.waitUntil(
-    self.clients.claim()
+    caches.keys().then(names => {
+      return Promise.all(
+        names
+          .filter(name => name !== CACHE_NAME)
+          .map(name => caches.delete(name))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
@@ -30,33 +35,22 @@ self.addEventListener("fetch", event => {
   }
 
   event.respondWith(
+    fetch(event.request)
+      .then(response => {
 
-    caches.match(event.request)
-      .then(cachedResponse => {
+        const copy = response.clone();
 
-        if (cachedResponse) {
-          return cachedResponse;
-        }
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, copy);
+        });
 
-        return fetch(event.request)
-          .then(response => {
-
-            const copy = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, copy);
-              });
-
-            return response;
-
-          })
-          .catch(() => {
-            return caches.match("./index.html");
-          });
+        return response;
 
       })
-
+      .catch(() => {
+        return caches.match(event.request)
+          .then(cached => cached || caches.match("./index.html"));
+      })
   );
 
 });
