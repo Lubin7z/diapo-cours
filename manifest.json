@@ -1,0 +1,11 @@
+{
+  "name": "Photo → Cours",
+  "short_name": "PhotoCours",
+  "description": "Transformer une photo de document en cours.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#111827",
+  "lang": "fr",
+  "icons": []
+}
