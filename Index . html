@@ -1,28 +1,30 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#111827">
   <link rel="manifest" href="manifest.json">
   <title>Photo → Cours</title>
+  <!-- Moteur OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
     }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Arial, sans-serif;
       background: #f3f4f6;
       color: #111827;
     }
     .container {
       max-width: 900px;
       margin: auto;
-      padding: 24px;
+      padding: 20px;
     }
     h1 {
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
     .subtitle {
       color: #6b7280;
@@ -33,21 +35,25 @@
       padding: 20px;
       margin-bottom: 18px;
       border-radius: 18px;
-      box-shadow: 0 4px 20px rgba(0,0,0,.08);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
     }
     button,
     .file-button {
       display: inline-block;
       border: none;
       border-radius: 12px;
-      padding: 12px 18px;
+      padding: 13px 18px;
+      margin: 5px;
       background: #111827;
       color: white;
-      font-weight: 700;
+      font-weight: bold;
       cursor: pointer;
-      margin: 5px;
     }
-    button.secondary {
+    button:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+    .secondary {
       background: #e5e7eb;
       color: #111827;
     }
@@ -60,22 +66,37 @@
       max-height: 400px;
       object-fit: contain;
       margin-top: 15px;
-      border-radius: 12px;
+      border-radius: 14px;
     }
     textarea {
       width: 100%;
-      min-height: 220px;
-      padding: 14px;
+      min-height: 230px;
+      padding: 15px;
       border: 1px solid #d1d5db;
       border-radius: 12px;
-      font: inherit;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
       resize: vertical;
     }
     .status {
       background: #f3f4f6;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 13px;
       margin: 12px 0;
+      border-radius: 10px;
+    }
+    .progress {
+      width: 100%;
+      height: 12px;
+      background: #e5e7eb;
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    .progress-bar {
+      width: 0%;
+      height: 100%;
+      background: #111827;
+      transition: width 0.2s;
     }
     .course {
       line-height: 1.6;
@@ -83,9 +104,9 @@
     .keyword {
       display: inline-block;
       background: #e5e7eb;
-      padding: 6px 10px;
-      border-radius: 20px;
+      padding: 7px 11px;
       margin: 4px;
+      border-radius: 20px;
     }
     .hidden {
       display: none;
@@ -96,14 +117,19 @@
 <div class="container">
   <h1>📷 Photo → Cours</h1>
   <p class="subtitle">
-    Photographier ou importer un document, récupérer son texte,
-    créer un cours et l’exporter.
+    Prends une photo d'un document, reconnais le texte,
+    transforme-le en cours et exporte-le.
   </p>
-  <!-- PHOTO -->
+  <!-- =========================
+       PHOTO
+  ========================== -->
   <div class="card">
     <h2>1. Ajouter une photo</h2>
-    <label class="file-button" for="photo">
-      📷 Choisir une photo
+    <label
+      class="file-button"
+      for="photo"
+    >
+      📷 Prendre / choisir une photo
     </label>
     <input
       id="photo"
@@ -112,36 +138,63 @@
       capture="environment"
     >
     <button
-      class="secondary"
       id="exampleButton"
+      class="secondary"
     >
-      Charger un exemple
+      🧪 Exemple
     </button>
-    <img id="preview" alt="Aperçu de la photo">
+    <img
+      id="preview"
+      alt="Aperçu de la photo"
+    >
   </div>
-  <!-- OCR -->
+  <!-- =========================
+       OCR
+  ========================== -->
   <div class="card">
-    <h2>2. Reconnaissance du texte</h2>
+    <h2>2. Reconnaître le texte</h2>
+    <p>
+      Le moteur OCR français analyse directement la photo.
+    </p>
     <button id="ocrButton">
       🔎 Reconnaître le texte
     </button>
-    <div id="ocrStatus" class="status">
-      Aucune image analysée.
+    <div
+      id="ocrStatus"
+      class="status"
+    >
+      Aucune photo analysée.
+    </div>
+    <div
+      id="progressContainer"
+      class="progress hidden"
+    >
+      <div
+        id="progressBar"
+        class="progress-bar"
+      ></div>
     </div>
     <textarea
       id="text"
-      placeholder="Le texte reconnu apparaîtra ici. Tu peux aussi le corriger manuellement."
+      placeholder="Le texte reconnu apparaîtra ici. Tu peux aussi le corriger."
     ></textarea>
   </div>
-  <!-- COURS -->
+  <!-- =========================
+       COURS
+  ========================== -->
   <div class="card">
     <h2>3. Générer le cours</h2>
     <button id="courseButton">
       📚 Générer le cours
     </button>
-    <div id="course" class="course hidden"></div>
+    <div
+      id="course"
+      class="course hidden"
+    ></div>
   </div>
-  <!-- EXPORT -->
+  <!-- =========================
+       EXPORT
+  ========================== -->
   <div class="card">
     <h2>4. Exporter</h2>
     <button id="exportTxt">
@@ -158,9 +211,9 @@
 <script>
 let imageFile = null;
 let generatedCourse = null;
-/* =========================
-   PHOTO
-========================= */
+/* =====================================================
+   SELECTION PHOTO
+===================================================== */
 document
   .getElementById("photo")
   .addEventListener("change", function(event) {
@@ -168,69 +221,169 @@ document
     if (!imageFile) {
       return;
     }
-    const preview = document.getElementById("preview");
-    preview.src = URL.createObjectURL(imageFile);
-    preview.style.display = "block";
+    const preview =
+      document.getElementById("preview");
+    preview.src =
+      URL.createObjectURL(imageFile);
+    preview.style.display =
+      "block";
     document.getElementById("ocrStatus").textContent =
-      "Photo prête pour la reconnaissance.";
+      "✅ Photo prête. Clique sur « Reconnaître le texte ».";
   });
-/* =========================
+/* =====================================================
    EXEMPLE
-========================= */
+===================================================== */
 document
   .getElementById("exampleButton")
   .addEventListener("click", function() {
-    document.getElementById("text").value =
+    const example =
 `La photosynthèse est le processus par lequel les plantes utilisent l'énergie lumineuse pour transformer le dioxyde de carbone et l'eau en matière organique.
 Elle produit notamment du glucose et libère du dioxygène.
 La photosynthèse se déroule principalement dans les chloroplastes des cellules végétales.
 La chlorophylle joue un rôle essentiel dans la capture de l'énergie lumineuse.`;
+    document.getElementById("text").value =
+      example;
     document.getElementById("ocrStatus").textContent =
-      "Exemple chargé. Tu peux modifier le texte.";
+      "🧪 Exemple chargé.";
   });
-/* =========================
-   OCR
-========================= */
+/* =====================================================
+   OCR FRANÇAIS
+===================================================== */
 document
   .getElementById("ocrButton")
   .addEventListener("click", async function() {
     if (!imageFile) {
       document.getElementById("ocrStatus").textContent =
-        "Choisis d'abord une photo.";
+        "⚠️ Choisis d'abord une photo.";
       return;
     }
-    document.getElementById("ocrStatus").textContent =
-      "Reconnaissance en cours…";
-    /*
-      L'application est volontairement conçue pour fonctionner
-      même sans service OCR externe.
-      Si aucun moteur OCR n'est disponible dans le navigateur,
-      l'utilisateur peut saisir/coller le texte manuellement.
-    */
-    if (!window.Tesseract) {
-      document.getElementById("ocrStatus").textContent =
-        "Le moteur OCR n'est pas encore chargé. Tu peux saisir ou coller le texte ci-dessous.";
-      return;
-    }
+    const button =
+      document.getElementById("ocrButton");
+    const status =
+      document.getElementById("ocrStatus");
+    const textArea =
+      document.getElementById("text");
+    const progressContainer =
+      document.getElementById("progressContainer");
+    const progressBar =
+      document.getElementById("progressBar");
+    button.disabled = true;
+    progressContainer.classList.remove("hidden");
+    progressBar.style.width = "0%";
+    status.textContent =
+      "⏳ Chargement du moteur OCR français…";
+    let worker = null;
     try {
-      const result =
-        await Tesseract.recognize(
-          imageFile,
-          "fra"
+      /*
+       * Chargement du moteur Tesseract
+       * avec le modèle français "fra".
+       */
+      worker =
+        await Tesseract.createWorker(
+          "fra",
+          1,
+          {
+            logger: function(message) {
+              if (
+                message.status ===
+                "loading tesseract core"
+              ) {
+                status.textContent =
+                  "⚙️ Chargement du moteur OCR…";
+              }
+              else if (
+                message.status ===
+                "loading language traineddata"
+              ) {
+                status.textContent =
+                  "🇫🇷 Chargement du modèle français…";
+              }
+              else if (
+                message.status ===
+                "initializing api"
+              ) {
+                status.textContent =
+                  "⚙️ Initialisation…";
+              }
+              else if (
+                message.status ===
+                "recognizing text"
+              ) {
+                const progress =
+                  Math.round(
+                    (message.progress || 0) * 100
+                  );
+                progressBar.style.width =
+                  progress + "%";
+                status.textContent =
+                  "🔎 Reconnaissance du texte : " +
+                  progress +
+                  "%";
+              }
+            }
+          }
         );
-      document.getElementById("text").value =
-        result.data.text;
-      document.getElementById("ocrStatus").textContent =
-        "Reconnaissance terminée.";
+      /*
+       * Amélioration de la reconnaissance
+       * pour du texte imprimé.
+       */
+      await worker.setParameters({
+        tessedit_pageseg_mode:
+          Tesseract.PSM.AUTO,
+        preserve_interword_spaces:
+          "1"
+      });
+      /*
+       * Reconnaissance réelle de la photo.
+       */
+      const result =
+        await worker.recognize(
+          imageFile
+        );
+      const recognizedText =
+        result.data.text.trim();
+      if (!recognizedText) {
+        status.textContent =
+          "⚠️ Aucun texte détecté. Essaie une photo plus nette, mieux éclairée et bien cadrée.";
+        return;
+      }
+      /*
+       * Affichage du résultat.
+       */
+      textArea.value =
+        recognizedText;
+      progressBar.style.width =
+        "100%";
+      status.textContent =
+        "✅ Texte français reconnu avec succès.";
     }
     catch (error) {
-      document.getElementById("ocrStatus").textContent =
-        "Impossible de reconnaître automatiquement le texte. Tu peux le saisir manuellement.";
+      console.error(
+        "Erreur OCR :",
+        error
+      );
+      status.textContent =
+        "❌ Erreur OCR. Vérifie ta connexion Internet puis réessaie.";
+    }
+    finally {
+      if (worker) {
+        try {
+          await worker.terminate();
+        }
+        catch (error) {
+          console.log(
+            "Fermeture OCR :",
+            error
+          );
+        }
+      }
+      button.disabled =
+        false;
     }
   });
-/* =========================
+/* =====================================================
    GENERATION DU COURS
-========================= */
+===================================================== */
 document
   .getElementById("courseButton")
   .addEventListener("click", function() {
@@ -240,91 +393,166 @@ document
         .value
         .trim();
     if (!raw) {
-      alert("Ajoute d'abord du texte.");
+      alert(
+        "Ajoute d'abord du texte."
+      );
       return;
     }
-    const sentences =
+    /*
+     * Nettoyage du texte OCR.
+     */
+    const clean =
       raw
         .replace(/\s+/g, " ")
+        .trim();
+    /*
+     * Découpage en phrases.
+     */
+    const sentences =
+      clean
         .split(/(?<=[.!?])\s+/)
         .filter(Boolean);
-    const title =
-      sentences[0]
-        ? sentences[0]
-            .replace(/[.!?]$/, "")
-            .slice(0, 100)
-        : "Cours";
+    /*
+     * Titre.
+     */
+    let title =
+      sentences[0] ||
+      "Cours";
+    title =
+      title
+        .replace(/[.!?]$/, "")
+        .slice(0, 100);
+    /*
+     * Résumé.
+     */
+    const summary =
+      sentences
+        .slice(0, 2)
+        .join(" ");
+    /*
+     * Points essentiels.
+     */
     const points =
-      sentences.slice(0, 8);
-    const words =
-      raw
-        .toLowerCase()
-        .match(/[a-zàâçéèêëîïôûùüÿñæœ]{6,}/gi) || [];
-    const keywords =
-      [...new Set(words)]
+      sentences
         .slice(0, 10);
+    /*
+     * Extraction de mots-clés.
+     */
+    const words =
+      clean
+        .toLowerCase()
+        .match(
+          /[a-zàâçéèêëîïôûùüÿñæœ]{6,}/gi
+        ) || [];
+    const stopWords = [
+      "principalement",
+      "processus",
+      "utilisent",
+      "permettent",
+      "également",
+      "certaines",
+      "ensuite",
+      "pendant",
+      "comme",
+      "cette",
+      "entre",
+      "leurs",
+      "notamment"
+    ];
+    const keywords =
+      [
+        ...new Set(words)
+      ]
+      .filter(
+        word =>
+          !stopWords.includes(
+            word
+          )
+      )
+      .slice(0, 12);
     generatedCourse = {
       title,
-      summary: sentences.slice(0, 2).join(" "),
+      summary,
       points,
       keywords
     };
-    afficherCours();
+    displayCourse();
   });
-/* =========================
-   AFFICHAGE
-========================= */
-function afficherCours() {
+/* =====================================================
+   AFFICHAGE COURS
+===================================================== */
+function displayCourse() {
   const course =
     document.getElementById("course");
-  course.classList.remove("hidden");
+  course.classList.remove(
+    "hidden"
+  );
   course.innerHTML = `
-    <h3>${escapeHTML(generatedCourse.title)}</h3>
-    <h4>À retenir</h4>
+    <h3>
+      ${escapeHTML(
+        generatedCourse.title
+      )}
+    </h3>
+    <h4>
+      📝 À retenir
+    </h4>
     <p>
-      ${escapeHTML(generatedCourse.summary)}
+      ${escapeHTML(
+        generatedCourse.summary
+      )}
     </p>
-    <h4>Points essentiels</h4>
+    <h4>
+      📌 Points essentiels
+    </h4>
     <ul>
       ${generatedCourse.points
-        .map(point =>
-          `<li>${escapeHTML(point)}</li>`
+        .map(
+          point =>
+            `<li>
+              ${escapeHTML(point)}
+            </li>`
         )
         .join("")}
     </ul>
-    <h4>Mots-clés</h4>
+    <h4>
+      🔑 Mots-clés
+    </h4>
     <div>
       ${generatedCourse.keywords
-        .map(keyword =>
-          `<span class="keyword">
-            ${escapeHTML(keyword)}
-          </span>`
+        .map(
+          keyword =>
+            `<span class="keyword">
+              ${escapeHTML(keyword)}
+            </span>`
         )
         .join("")}
     </div>
   `;
 }
-/* =========================
-   SECURITE HTML
-========================= */
+/* =====================================================
+   PROTECTION HTML
+===================================================== */
 function escapeHTML(text) {
-  return text.replace(
-    /[&<>"']/g,
-    function(character) {
-      const entities = {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      };
-      return entities[character];
-    }
-  );
+  return String(text)
+    .replace(
+      /[&<>"']/g,
+      function(character) {
+        const entities = {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#039;"
+        };
+        return entities[
+          character
+        ];
+      }
+    );
 }
-/* =========================
-   EXPORT
-========================= */
+/* =====================================================
+   TELECHARGEMENT
+===================================================== */
 function downloadFile(
   filename,
   content,
@@ -333,26 +561,46 @@ function downloadFile(
   const blob =
     new Blob(
       [content],
-      { type }
+      {
+        type: type
+      }
     );
   const url =
-    URL.createObjectURL(blob);
+    URL.createObjectURL(
+      blob
+    );
   const link =
-    document.createElement("a");
-  link.href = url;
-  link.download = filename;
+    document.createElement(
+      "a"
+    );
+  link.href =
+    url;
+  link.download =
+    filename;
+  document.body.appendChild(
+    link
+  );
   link.click();
+  link.remove();
   setTimeout(
-    () => URL.revokeObjectURL(url),
+    function() {
+      URL.revokeObjectURL(
+        url
+      );
+    },
     1000
   );
 }
-/* EXPORT TXT */
+/* =====================================================
+   EXPORT TXT
+===================================================== */
 document
   .getElementById("exportTxt")
   .addEventListener("click", function() {
     if (!generatedCourse) {
-      alert("Génère d'abord le cours.");
+      alert(
+        "Génère d'abord le cours."
+      );
       return;
     }
     const content =
@@ -361,7 +609,10 @@ document
 ${generatedCourse.summary}
 POINTS ESSENTIELS
 ${generatedCourse.points
-  .map(point => "• " + point)
+  .map(
+    point =>
+      "• " + point
+  )
   .join("\n")}
 MOTS-CLÉS
 ${generatedCourse.keywords.join(", ")}
@@ -372,40 +623,53 @@ ${generatedCourse.keywords.join(", ")}
       "text/plain;charset=utf-8"
     );
   });
-/* EXPORT HTML */
+/* =====================================================
+   EXPORT HTML
+===================================================== */
 document
   .getElementById("exportHtml")
   .addEventListener("click", function() {
     if (!generatedCourse) {
-      alert("Génère d'abord le cours.");
+      alert(
+        "Génère d'abord le cours."
+      );
       return;
     }
     const html = `
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <title>
-${escapeHTML(generatedCourse.title)}
+${escapeHTML(
+  generatedCourse.title
+)}
 </title>
 </head>
 <body>
 <h1>
-${escapeHTML(generatedCourse.title)}
+${escapeHTML(
+  generatedCourse.title
+)}
 </h1>
 <h2>
 À retenir
 </h2>
 <p>
-${escapeHTML(generatedCourse.summary)}
+${escapeHTML(
+  generatedCourse.summary
+)}
 </p>
 <h2>
 Points essentiels
 </h2>
 <ul>
 ${generatedCourse.points
-  .map(point =>
-    `<li>${escapeHTML(point)}</li>`
+  .map(
+    point =>
+      `<li>
+        ${escapeHTML(point)}
+      </li>`
   )
   .join("")}
 </ul>
@@ -414,7 +678,10 @@ Mots-clés
 </h2>
 <p>
 ${generatedCourse.keywords
-  .map(escapeHTML)
+  .map(
+    keyword =>
+      escapeHTML(keyword)
+  )
   .join(" • ")}
 </p>
 </body>
@@ -426,21 +693,33 @@ ${generatedCourse.keywords
       "text/html;charset=utf-8"
     );
   });
-/* =========================
+/* =====================================================
    SERVICE WORKER
-========================= */
-if ("serviceWorker" in navigator) {
+===================================================== */
+if (
+  "serviceWorker" in navigator
+) {
   window.addEventListener(
     "load",
     function() {
       navigator.serviceWorker
-        .register("sw.js")
+        .register(
+          "sw.js"
+        )
+        .then(
+          function() {
+            console.log(
+              "Service Worker actif."
+            );
+          }
+        )
         .catch(
-          error =>
+          function(error) {
             console.log(
               "Service Worker :",
               error
-            )
+            );
+          }
         );
     }
   );
