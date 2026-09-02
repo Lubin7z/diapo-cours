@@ -1,1476 +1,2054 @@
 <!DOCTYPE html>
-
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
+<title>Photo → Cours IA</title>
 
->
+<style>
+:root{
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#18202a;
+  --muted:#687386;
+  --primary:#4f46e5;
+  --primary-dark:#3730a3;
+  --border:#dfe4ec;
+  --success:#138a52;
+  --danger:#c0392b;
+  --shadow:0 10px 30px rgba(20,30,50,.08);
+}
 
-<meta
-name="theme-color"
-content="#111827"
+*{
+  box-sizing:border-box;
+}
 
->
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
 
-  <title>Photo → Cours IA</title>
+header{
+  background:linear-gradient(135deg,#4f46e5,#7c3aed);
+  color:white;
+  padding:34px 20px;
+  text-align:center;
+}
 
-  <style>
+header h1{
+  margin:0 0 8px;
+  font-size:32px;
+}
 
-    * {
-      box-sizing: border-box;
-    }
+header p{
+  margin:0;
+  opacity:.9;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      color: #111827;
-    }
+.container{
+  width:min(1150px,calc(100% - 30px));
+  margin:25px auto 60px;
+}
 
-    .container {
-      max-width: 950px;
-      margin: auto;
-      padding: 18px;
-    }
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
 
-    h1 {
-      margin-bottom: 6px;
-    }
+.card h2{
+  margin-top:0;
+  font-size:21px;
+}
 
-    h2 {
-      margin-top: 0;
-    }
+.small{
+  color:var(--muted);
+  font-size:14px;
+}
 
-    .subtitle {
-      color: #6b7280;
-      line-height: 1.5;
-    }
+.warning{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  color:#9a3412;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
 
-    .card {
-      background: white;
-      margin-bottom: 18px;
-      padding: 20px;
-      border-radius: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    }
+.info{
+  background:#eef2ff;
+  border:1px solid #c7d2fe;
+  color:#3730a3;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
 
-    button,
-    .file-button {
-      display: inline-block;
-      border: none;
-      border-radius: 12px;
-      padding: 13px 17px;
-      margin: 5px 3px;
-      background: #111827;
-      color: white;
-      font-size: 15px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.success{
+  background:#ecfdf5;
+  border:1px solid #a7f3d0;
+  color:#065f46;
+  padding:14px;
+  border-radius:12px;
+  margin-top:12px;
+}
 
-    button:hover,
-    .file-button:hover {
-      opacity: .9;
-    }
+input[type="password"],
+textarea{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px;
+  font:inherit;
+  background:white;
+}
 
-    button:disabled {
-      opacity: .55;
-      cursor: wait;
-    }
+textarea{
+  min-height:300px;
+  resize:vertical;
+}
 
-    .secondary {
-      background: #e5e7eb;
-      color: #111827;
-    }
+button{
+  border:0;
+  border-radius:11px;
+  padding:12px 17px;
+  font-weight:700;
+  cursor:pointer;
+  font:inherit;
+}
 
-    .danger {
-      background: #b91c1c;
-    }
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
 
-    input[type="file"] {
-      display: none;
-    }
+.btn-primary{
+  background:var(--primary);
+  color:white;
+}
 
-    input[type="password"],
-    textarea {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 12px;
-      font-size: 16px;
-      font-family: Arial, sans-serif;
-    }
+.btn-primary:hover{
+  background:var(--primary-dark);
+}
 
-    textarea {
-      min-height: 260px;
-      resize: vertical;
-    }
+.btn-secondary{
+  background:#eef0f5;
+  color:#242936;
+}
 
-    #preview {
-      display: none;
-      width: 100%;
-      max-height: 600px;
-      object-fit: contain;
-      margin-top: 15px;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      background: #f9fafb;
-    }
+.btn-danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
 
-    .status {
-      margin-top: 12px;
-      padding: 13px;
-      background: #f3f4f6;
-      border-radius: 10px;
-      line-height: 1.5;
-      white-space: pre-line;
-    }
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:15px;
+}
 
-    .hidden {
-      display: none !important;
-    }
+.file-zone{
+  border:2px dashed #c7ceda;
+  border-radius:16px;
+  padding:28px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
 
-    .note {
-      color: #4b5563;
-      font-size: .92rem;
-      line-height: 1.5;
-    }
+.file-zone:hover{
+  border-color:var(--primary);
+  background:#fafaff;
+}
 
-    .course {
-      line-height: 1.7;
-    }
+.file-zone input{
+  display:none;
+}
 
-    .course h1,
-    .course h2,
-    .course h3 {
-      color: #111827;
-    }
+.photos{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:14px;
+  margin-top:20px;
+}
 
-    .course-section {
-      background: #f9fafb;
-      border-left: 5px solid #111827;
-      padding: 16px;
-      margin: 16px 0;
-      border-radius: 12px;
-    }
+.photo-card{
+  border:1px solid var(--border);
+  border-radius:14px;
+  overflow:hidden;
+  background:#fafafa;
+}
 
-    .important {
-      background: #fff7ed;
-      padding: 15px;
-      border-radius: 12px;
-      margin: 15px 0;
-      border: 1px solid #fed7aa;
-    }
+.photo-card img{
+  display:block;
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  background:#eee;
+}
 
-    .keyword {
-      display: inline-block;
-      padding: 7px 11px;
-      margin: 4px;
-      border-radius: 20px;
-      background: #e5e7eb;
-      font-weight: bold;
-    }
+.photo-info{
+  padding:10px;
+  font-size:13px;
+}
 
-    .original-image {
-      width: 100%;
-      max-height: 700px;
-      object-fit: contain;
-      border-radius: 14px;
-      border: 1px solid #e5e7eb;
-      margin-top: 12px;
-    }
+.photo-info strong{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
 
-  </style>
+.remove-photo{
+  margin-top:8px;
+  width:100%;
+  padding:8px;
+  font-size:12px;
+}
 
+.progress{
+  height:10px;
+  background:#e8ebf1;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:12px;
+}
+
+.progress-bar{
+  height:100%;
+  width:0%;
+  background:var(--primary);
+  transition:width .25s;
+}
+
+.status{
+  margin-top:12px;
+  font-size:14px;
+  color:var(--muted);
+}
+
+.course{
+  background:white;
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:28px;
+  line-height:1.7;
+}
+
+.course h1{
+  font-size:30px;
+  margin-top:0;
+  border-bottom:2px solid #e5e7eb;
+  padding-bottom:12px;
+}
+
+.course h2{
+  margin-top:30px;
+  color:#3730a3;
+}
+
+.course h3{
+  margin-top:22px;
+}
+
+.course ul,
+.course ol{
+  padding-left:25px;
+}
+
+.course blockquote{
+  border-left:4px solid var(--primary);
+  margin:20px 0;
+  padding:10px 18px;
+  background:#f8f7ff;
+  border-radius:0 10px 10px 0;
+}
+
+.course table{
+  width:100%;
+  border-collapse:collapse;
+  margin:20px 0;
+}
+
+.course th,
+.course td{
+  border:1px solid #dfe4ec;
+  padding:9px;
+  text-align:left;
+}
+
+.course th{
+  background:#f1f3f8;
+}
+
+.originals{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:18px;
+}
+
+.originals img{
+  width:100%;
+  border-radius:12px;
+  border:1px solid var(--border);
+}
+
+.original-card{
+  background:#fafafa;
+  padding:12px;
+  border-radius:14px;
+}
+
+.original-card strong{
+  display:block;
+  margin-bottom:8px;
+}
+
+pre{
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+
+.hidden{
+  display:none !important;
+}
+
+#slideshow{
+  position:fixed;
+  inset:0;
+  background:#111827;
+  z-index:9999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+  padding:20px;
+}
+
+#slideshow.active{
+  display:flex;
+}
+
+#slideImage{
+  max-width:94vw;
+  max-height:80vh;
+  object-fit:contain;
+  border-radius:12px;
+}
+
+.slide-controls{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+}
+
+.slide-title{
+  color:white;
+  margin-top:12px;
+}
+
+.api-row{
+  display:flex;
+  gap:10px;
+}
+
+.api-row input{
+  flex:1;
+}
+
+@media(max-width:700px){
+  header h1{
+    font-size:25px;
+  }
+
+  .container{
+    width:min(100% - 18px,1150px);
+  }
+
+  .card{
+    padding:16px;
+  }
+
+  .api-row{
+    flex-direction:column;
+  }
+
+  .course{
+    padding:18px;
+  }
+}
+
+@media print{
+  body{
+    background:white;
+  }
+
+  header,
+  .no-print,
+  .card:not(#courseCard){
+    display:none !important;
+  }
+
+  .container{
+    width:100%;
+    margin:0;
+  }
+
+  #courseCard{
+    display:block !important;
+    border:0;
+    box-shadow:none;
+    padding:0;
+  }
+
+  .course{
+    border:0;
+    box-shadow:none;
+  }
+
+  .originals img{
+    max-height:500px;
+    object-fit:contain;
+  }
+}
+</style>
 </head>
 
 <body>
 
+<header>
+  <h1>📸 Photo → Cours IA</h1>
+  <p>Transforme tes photos de cours en fiches propres et structurées</p>
+</header>
+
 <div class="container">
 
-  <h1>📷 Photo → Cours IA</h1>
+  <!-- API -->
+  <section class="card no-print">
+    <h2>🔑 1. Connexion à Gemini</h2>
 
-  <p class="subtitle">
-    Transforme une photo de cours en une fiche propre grâce à l'IA.
-  </p>
+    <p class="small">
+      Colle ici ta clé API Google AI Studio.
+      Elle reste enregistrée uniquement dans ton navigateur.
+    </p>
 
-  <!-- ============================= -->
+    <div class="api-row">
+      <input
+        id="apiKey"
+        type="password"
+        placeholder="Colle ta clé API Gemini ici"
+        autocomplete="off"
+      >
 
-  <!-- CLE API -->
+      <button id="saveKey" class="btn-primary">
+        Enregistrer
+      </button>
 
-  <!-- ============================= -->
+      <button id="deleteKey" class="btn-danger">
+        Supprimer
+      </button>
+    </div>
 
-  <div class="card">
+    <div class="warning">
+      ⚠️ Ne partage jamais ta clé API avec quelqu'un et ne la publie pas dans un dépôt GitHub.
+      Pour cette version locale, elle est stockée dans le navigateur.
+    </div>
 
-```
-<h2>🔑 1. Clé API Gemini</h2>
-
-<p class="note">
-  Colle ta clé API ici. Elle est enregistrée uniquement
-  dans le navigateur de cet appareil.
-  Ne partage jamais cette clé.
-</p>
-
-<input
-  id="apiKey"
-  type="password"
-  placeholder="Colle ta clé API Gemini ici"
->
-
-<button id="saveKeyButton">
-  💾 Enregistrer la clé
-</button>
-
-<button
-  id="deleteKeyButton"
-  class="secondary"
->
-  🗑️ Supprimer
-</button>
-
-<div
-  id="keyStatus"
-  class="status"
->
-  Vérification de la clé...
-</div>
-```
-
-  </div>
-
-  <!-- ============================= -->
-
-  <!-- PHOTO -->
-
-  <!-- ============================= -->
-
-  <div class="card">
-
-```
-<h2>📷 2. Ajouter une photo</h2>
-
-<label
-  for="photoInput"
-  class="file-button"
->
-  📷 Choisir une photo
-</label>
-
-<input
-  id="photoInput"
-  type="file"
-  accept="image/*"
->
-
-<button
-  id="removePhotoButton"
-  class="secondary"
->
-  🗑️ Retirer la photo
-</button>
-
-<img
-  id="preview"
-  alt="Aperçu du document"
->
-
-<div
-  id="photoStatus"
-  class="status"
->
-  Aucune photo sélectionnée.
-</div>
-```
-
-  </div>
-
-  <!-- ============================= -->
-
-  <!-- ANALYSE IA -->
-
-  <!-- ============================= -->
-
-  <div class="card">
-
-```
-<h2>🤖 3. Lire la photo avec l'IA</h2>
-
-<p class="note">
-
-  L'IA analyse directement l'image.
-  Elle essaie de reconnaître le texte,
-  les titres, les listes, les tableaux,
-  les flèches et les légendes.
-
-</p>
-
-<button id="analyzeButton">
-
-  🔎 Analyser avec Gemini
-
-</button>
-
-<div
-  id="analysisStatus"
-  class="status"
->
-
-  Prêt à analyser.
-
-</div>
+    <div id="keyStatus" class="status"></div>
+  </section>
 
 
-<textarea
-  id="recognizedText"
-  placeholder="La transcription de l'IA apparaîtra ici..."
-></textarea>
-```
+  <!-- PHOTOS -->
+  <section class="card no-print">
+    <h2>📷 2. Ajouter les photos</h2>
 
-  </div>
+    <label class="file-zone" for="photoInput">
+      <strong>📁 Clique ici pour choisir tes photos</strong>
+      <br>
+      <span class="small">
+        Tu peux sélectionner plusieurs photos à la fois
+      </span>
 
-  <!-- ============================= -->
+      <input
+        id="photoInput"
+        type="file"
+        accept="image/*"
+        multiple
+      >
+    </label>
+
+    <div id="photos" class="photos"></div>
+
+    <div class="actions">
+      <button
+        id="clearPhotos"
+        class="btn-secondary"
+      >
+        🗑️ Tout supprimer
+      </button>
+
+      <button
+        id="analyzeBtn"
+        class="btn-primary"
+        disabled
+      >
+        🤖 Analyser avec Gemini
+      </button>
+    </div>
+
+    <div class="progress">
+      <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <div id="status" class="status">
+      Aucune photo sélectionnée.
+    </div>
+  </section>
+
+
+  <!-- OCR -->
+  <section class="card no-print">
+    <h2>📝 3. Transcription intelligente</h2>
+
+    <p class="small">
+      Gemini analyse le texte mais aussi la disposition, les titres,
+      listes, tableaux, formules et schémas.
+    </p>
+
+    <textarea
+      id="transcription"
+      placeholder="La transcription apparaîtra ici..."
+    ></textarea>
+
+    <div class="actions">
+      <button
+        id="generateCourseBtn"
+        class="btn-primary"
+        disabled
+      >
+        ✨ Générer le cours
+      </button>
+    </div>
+  </section>
+
 
   <!-- COURS -->
+  <section id="courseCard" class="card">
+    <h2 class="no-print">📚 4. Cours généré</h2>
 
-  <!-- ============================= -->
+    <div id="course" class="course">
+      <p class="small">
+        Ton cours apparaîtra ici après la génération.
+      </p>
+    </div>
 
-  <div class="card">
+    <div class="actions no-print">
+      <button id="exportHTML" class="btn-primary" disabled>
+        🌐 Export HTML
+      </button>
 
-```
-<h2>📚 4. Générer la fiche de cours</h2>
+      <button id="exportTXT" class="btn-secondary" disabled>
+        📄 Export TXT
+      </button>
 
-<button id="generateCourseButton">
+      <button id="printPDF" class="btn-secondary" disabled>
+        🖨️ Imprimer / PDF
+      </button>
 
-  ✨ Générer ma fiche
+      <button id="slideshowBtn" class="btn-secondary" disabled>
+        🎞️ Diaporama
+      </button>
+    </div>
+  </section>
 
-</button>
+</div>
 
 
-<div
-  id="courseStatus"
-  class="status"
->
+<!-- SLIDESHOW -->
+<div id="slideshow">
 
-  La fiche apparaîtra ici.
+  <img id="slideImage" src="" alt="Photo du cours">
+
+  <div id="slideTitle" class="slide-title"></div>
+
+  <div class="slide-controls">
+    <button id="prevSlide" class="btn-secondary">
+      ◀
+    </button>
+
+    <button id="closeSlide" class="btn-secondary">
+      ✕ Fermer
+    </button>
+
+    <button id="nextSlide" class="btn-secondary">
+      ▶
+    </button>
+  </div>
 
 </div>
 
-
-<div
-  id="course"
-  class="course hidden"
-></div>
-```
-
-  </div>
-
-  <!-- ============================= -->
-
-  <!-- PHOTO ORIGINALE -->
-
-  <!-- ============================= -->
-
-  <div class="card">
-
-```
-<h2>🖼️ Document original</h2>
-
-<p class="note">
-
-  La photo originale est conservée afin
-  de garder les schémas, dessins,
-  couleurs et annotations.
-
-</p>
-
-<img
-  id="originalImage"
-  class="original-image hidden"
-  alt="Document original"
->
-```
-
-  </div>
-
-  <!-- ============================= -->
-
-  <!-- EXPORT -->
-
-  <!-- ============================= -->
-
-  <div class="card">
-
-```
-<h2>📤 5. Exporter</h2>
-
-<button id="exportTextButton">
-
-  📄 Export TXT
-
-</button>
-
-<button
-  id="exportHtmlButton"
-  class="secondary"
->
-
-  🌐 Export HTML
-
-</button>
-```
-
-  </div>
-
-</div>
 
 <script>
 
+/* =========================================================
+   CONFIGURATION
+========================================================= */
 
-/* =====================================================
-   VARIABLES
-===================================================== */
+const GEMINI_MODEL = "gemini-3.6-flash";
 
-
-let imageFile = null;
-
-let imageDataURL = null;
-
-let generatedCourseHTML = "";
+const GEMINI_URL =
+  "https://generativelanguage.googleapis.com/v1beta/interactions";
 
 
-/* =====================================================
+/* =========================================================
+   ETAT
+========================================================= */
+
+const state = {
+  photos: [],
+  transcription: "",
+  courseMarkdown: "",
+  courseHTML: "",
+  slideIndex: 0,
+  busy: false
+};
+
+
+/* =========================================================
    ELEMENTS
-===================================================== */
+========================================================= */
+
+const apiKeyInput = document.getElementById("apiKey");
+const saveKeyBtn = document.getElementById("saveKey");
+const deleteKeyBtn = document.getElementById("deleteKey");
+const keyStatus = document.getElementById("keyStatus");
+
+const photoInput = document.getElementById("photoInput");
+const photosContainer = document.getElementById("photos");
+const clearPhotosBtn = document.getElementById("clearPhotos");
+
+const analyzeBtn = document.getElementById("analyzeBtn");
+const generateCourseBtn = document.getElementById("generateCourseBtn");
+
+const transcriptionEl = document.getElementById("transcription");
+const courseEl = document.getElementById("course");
+
+const statusEl = document.getElementById("status");
+const progressBar = document.getElementById("progressBar");
+
+const exportHTMLBtn = document.getElementById("exportHTML");
+const exportTXTBtn = document.getElementById("exportTXT");
+const printPDFBtn = document.getElementById("printPDF");
+const slideshowBtn = document.getElementById("slideshowBtn");
+
+const slideshow = document.getElementById("slideshow");
+const slideImage = document.getElementById("slideImage");
+const slideTitle = document.getElementById("slideTitle");
+const prevSlide = document.getElementById("prevSlide");
+const nextSlide = document.getElementById("nextSlide");
+const closeSlide = document.getElementById("closeSlide");
 
 
-function get(id) {
+/* =========================================================
+   INITIALISATION
+========================================================= */
 
-  return document.getElementById(id);
+const savedKey = localStorage.getItem("gemini_api_key");
+
+if(savedKey){
+  apiKeyInput.value = savedKey;
+  keyStatus.textContent = "✅ Une clé est enregistrée dans ce navigateur.";
+}else{
+  keyStatus.textContent = "Aucune clé enregistrée.";
+}
+
+
+/* =========================================================
+   OUTILS
+========================================================= */
+
+function getApiKey(){
+
+  return apiKeyInput.value.trim();
 
 }
 
 
-/* =====================================================
-   CHARGEMENT CLE API
-===================================================== */
+function setStatus(message){
 
-
-function loadApiKey() {
-
-  const savedKey =
-    localStorage.getItem(
-      "gemini_api_key"
-    );
-
-
-  if (
-    savedKey
-  ) {
-
-    get("apiKey").value =
-      savedKey;
-
-
-    get("keyStatus").textContent =
-      "✅ Clé API enregistrée sur cet appareil.";
-
-  }
-
-  else {
-
-    get("keyStatus").textContent =
-      "⚠️ Aucune clé API enregistrée.";
-
-  }
+  statusEl.textContent = message;
 
 }
 
 
-loadApiKey();
+function setProgress(value){
 
-
-
-/* =====================================================
-   ENREGISTRER CLE
-===================================================== */
-
-
-get(
-  "saveKeyButton"
-)
-.addEventListener(
-  "click",
-  function() {
-
-    const key =
-      get(
-        "apiKey"
-      ).value.trim();
-
-
-    if (
-      key.length < 10
-    ) {
-
-      get(
-        "keyStatus"
-      ).textContent =
-        "⚠️ La clé semble incorrecte.";
-
-      return;
-
-    }
-
-
-    localStorage.setItem(
-      "gemini_api_key",
-      key
-    );
-
-
-    get(
-      "keyStatus"
-    ).textContent =
-      "✅ Clé API enregistrée.";
-
-  }
-);
-
-
-
-/* =====================================================
-   SUPPRIMER CLE
-===================================================== */
-
-
-get(
-  "deleteKeyButton"
-)
-.addEventListener(
-  "click",
-  function() {
-
-    localStorage.removeItem(
-      "gemini_api_key"
-    );
-
-
-    get(
-      "apiKey"
-    ).value =
-      "";
-
-
-    get(
-      "keyStatus"
-    ).textContent =
-      "🗑️ Clé supprimée.";
-
-  }
-);
-
-
-
-/* =====================================================
-   CONVERSION IMAGE
-===================================================== */
-
-
-function fileToDataURL(
-  file
-) {
-
-  return new Promise(
-    function(
-      resolve,
-      reject
-    ) {
-
-      const reader =
-        new FileReader();
-
-
-      reader.onload =
-        function(
-          event
-        ) {
-
-          resolve(
-            event.target.result
-          );
-
-        };
-
-
-      reader.onerror =
-        reject;
-
-
-      reader.readAsDataURL(
-        file
-      );
-
-    }
-  );
+  progressBar.style.width =
+    Math.max(0,Math.min(100,value)) + "%";
 
 }
 
 
-
-/* =====================================================
-   CHOISIR PHOTO
-===================================================== */
-
-
-get(
-  "photoInput"
-)
-.addEventListener(
-  "change",
-  async function(
-    event
-  ) {
-
-    const file =
-      event.target.files[0];
-
-
-    if (
-      !file
-    ) {
-
-      return;
-
-    }
-
-
-    if (
-      !file.type.startsWith(
-        "image/"
-      )
-    ) {
-
-      get(
-        "photoStatus"
-      ).textContent =
-        "❌ Ce fichier n'est pas une image.";
-
-      return;
-
-    }
-
-
-    imageFile =
-      file;
-
-
-    try {
-
-      imageDataURL =
-        await fileToDataURL(
-          file
-        );
-
-
-      const preview =
-        get(
-          "preview"
-        );
-
-
-      preview.src =
-        imageDataURL;
-
-
-      preview.style.display =
-        "block";
-
-
-      const originalImage =
-        get(
-          "originalImage"
-        );
-
-
-      originalImage.src =
-        imageDataURL;
-
-
-      originalImage.classList.remove(
-        "hidden"
-      );
-
-
-      get(
-        "photoStatus"
-      ).textContent =
-        "✅ Photo chargée : " +
-        file.name;
-
-
-      get(
-        "recognizedText"
-      ).value =
-        "";
-
-
-      get(
-        "course"
-      ).innerHTML =
-        "";
-
-
-      get(
-        "course"
-      ).classList.add(
-        "hidden"
-      );
-
-
-      generatedCourseHTML =
-        "";
-
-    }
-
-    catch(
-      error
-    ) {
-
-      console.error(
-        error
-      );
-
-
-      get(
-        "photoStatus"
-      ).textContent =
-        "❌ Impossible de charger la photo.";
-
-    }
-
-  }
-);
-
-
-
-/* =====================================================
-   RETIRER PHOTO
-===================================================== */
-
-
-get(
-  "removePhotoButton"
-)
-.addEventListener(
-  "click",
-  function() {
-
-    imageFile =
-      null;
-
-
-    imageDataURL =
-      null;
-
-
-    get(
-      "photoInput"
-    ).value =
-      "";
-
-
-    get(
-      "preview"
-    ).src =
-      "";
-
-
-    get(
-      "preview"
-    ).style.display =
-      "none";
-
-
-    get(
-      "originalImage"
-    ).src =
-      "";
-
-
-    get(
-      "originalImage"
-    ).classList.add(
-      "hidden"
-    );
-
-
-    get(
-      "recognizedText"
-    ).value =
-      "";
-
-
-    get(
-      "course"
-    ).innerHTML =
-      "";
-
-
-    get(
-      "course"
-    ).classList.add(
-      "hidden"
-    );
-
-
-    get(
-      "photoStatus"
-    ).textContent =
-      "Aucune photo sélectionnée.";
-
-  }
-);
-
-
-
-/* =====================================================
-   EXTRAIRE BASE64
-===================================================== */
-
-
-function getBase64FromDataURL(
-  dataURL
-) {
-
-  return dataURL.split(
-    ","
-  )[1];
+function escapeHTML(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
+function sleep(ms){
 
-/* =====================================================
-   APPEL GEMINI
-===================================================== */
+  return new Promise(resolve => setTimeout(resolve,ms));
 
-
-async function callGemini(
-  prompt,
-  imageData,
-  mimeType
-) {
-
-  const apiKey =
-    get(
-      "apiKey"
-    ).value.trim();
+}
 
 
-  if (
-    !apiKey
-  ) {
+/* =========================================================
+   API KEY
+========================================================= */
 
-    throw new Error(
-      "Ajoute d'abord ta clé API Gemini."
-    );
+saveKeyBtn.addEventListener("click",()=>{
 
+  const key = getApiKey();
+
+  if(!key){
+
+    keyStatus.textContent =
+      "❌ Aucune clé à enregistrer.";
+
+    return;
   }
 
+  localStorage.setItem("gemini_api_key",key);
+
+  keyStatus.textContent =
+    "✅ Clé enregistrée dans ce navigateur.";
+
+});
+
+
+deleteKeyBtn.addEventListener("click",()=>{
+
+  localStorage.removeItem("gemini_api_key");
+
+  apiKeyInput.value = "";
+
+  keyStatus.textContent =
+    "🗑️ Clé supprimée.";
+
+});
+
+
+/* =========================================================
+   IMPORT PHOTOS
+========================================================= */
+
+photoInput.addEventListener("change",async event=>{
+
+  const files = [...event.target.files];
+
+  if(!files.length){
+    return;
+  }
+
+  for(const file of files){
+
+    if(!file.type.startsWith("image/")){
+      continue;
+    }
+
+    const photo = {
+      id:
+        crypto.randomUUID
+          ? crypto.randomUUID()
+          : Date.now() + "-" + Math.random(),
+
+      file,
+
+      name:file.name,
+
+      mimeType:file.type || "image/jpeg",
+
+      previewURL:null,
+
+      originalDataURL:null,
+
+      aiDataURL:null,
+
+      transcription:"",
+
+      error:null
+    };
+
+    state.photos.push(photo);
+
+    /*
+      Object URL = affichage immédiat.
+      Cela évite d'attendre la conversion Base64.
+    */
+    photo.previewURL = URL.createObjectURL(file);
+
+    renderPhotos();
+
+    try{
+
+      photo.originalDataURL =
+        await fileToDataURL(file);
+
+      /*
+        On prépare une version plus légère pour Gemini.
+        L'original reste intact pour l'export.
+      */
+
+      photo.aiDataURL =
+        await prepareImageForAI(file);
+
+    }catch(error){
+
+      console.error(error);
+
+      photo.error =
+        "Impossible de préparer cette image.";
+
+    }
+
+    renderPhotos();
+  }
+
+  photoInput.value = "";
+
+  updateButtons();
+
+});
+
+
+async function fileToDataURL(file){
+
+  return new Promise((resolve,reject)=>{
+
+    const reader = new FileReader();
+
+    reader.onload = () =>
+      resolve(reader.result);
+
+    reader.onerror = () =>
+      reject(reader.error);
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+
+/* =========================================================
+   PREPARATION IMAGE IA
+========================================================= */
+
+async function prepareImageForAI(file){
 
   /*
-     MODELE
-
-     Si ce modèle n'est pas disponible
-     sur ton compte, nous pourrons
-     simplement changer cette ligne.
+    Si le navigateur ne sait pas décoder le fichier,
+    on conserve l'original.
   */
 
+  try{
 
-  const model =
-    "gemini-2.0-flash";
+    const dataURL =
+      await fileToDataURL(file);
 
+    const img =
+      await loadImage(dataURL);
 
-  const url =
-    "https://generativelanguage.googleapis.com/v1beta/models/" +
-    model +
-    ":generateContent?key=" +
-    encodeURIComponent(
-      apiKey
+    const maxSize = 2400;
+
+    let width = img.naturalWidth;
+    let height = img.naturalHeight;
+
+    if(width > maxSize || height > maxSize){
+
+      const ratio =
+        Math.min(
+          maxSize / width,
+          maxSize / height
+        );
+
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+    }
+
+    const canvas =
+      document.createElement("canvas");
+
+    canvas.width = width;
+    canvas.height = height;
+
+    const ctx =
+      canvas.getContext("2d");
+
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      width,
+      height
     );
 
+    /*
+      JPEG = généralement beaucoup plus léger
+      que l'original téléphone.
+    */
 
-  const parts = [
+    return canvas.toDataURL(
+      "image/jpeg",
+      0.88
+    );
 
-    {
+  }catch(error){
 
-      text:
-        prompt
+    console.warn(
+      "Compression impossible, utilisation de l'original.",
+      error
+    );
+
+    return await fileToDataURL(file);
+
+  }
+
+}
+
+
+function loadImage(src){
+
+  return new Promise((resolve,reject)=>{
+
+    const img = new Image();
+
+    img.onload = () => resolve(img);
+
+    img.onerror = () =>
+      reject(new Error(
+        "Le navigateur ne peut pas afficher cette image."
+      ));
+
+    img.src = src;
+
+  });
+
+}
+
+
+/* =========================================================
+   AFFICHAGE PHOTOS
+========================================================= */
+
+function renderPhotos(){
+
+  photosContainer.innerHTML = "";
+
+  if(!state.photos.length){
+
+    photosContainer.innerHTML = `
+      <p class="small">
+        Aucune photo pour le moment.
+      </p>
+    `;
+
+    return;
+  }
+
+  state.photos.forEach((photo,index)=>{
+
+    const card =
+      document.createElement("div");
+
+    card.className = "photo-card";
+
+    const image =
+      document.createElement("img");
+
+    image.src =
+      photo.previewURL || photo.originalDataURL || "";
+
+    image.alt =
+      photo.name;
+
+    card.appendChild(image);
+
+    const info =
+      document.createElement("div");
+
+    info.className = "photo-info";
+
+    info.innerHTML = `
+      <strong>${escapeHTML(photo.name)}</strong>
+
+      <span>
+        Photo ${index + 1}
+      </span>
+
+      ${
+        photo.error
+          ? `<br><span style="color:#c0392b">
+               ⚠️ ${escapeHTML(photo.error)}
+             </span>`
+          : ""
+      }
+    `;
+
+    const remove =
+      document.createElement("button");
+
+    remove.className =
+      "btn-danger remove-photo";
+
+    remove.textContent =
+      "Supprimer";
+
+    remove.addEventListener("click",()=>{
+
+      if(photo.previewURL){
+
+        URL.revokeObjectURL(
+          photo.previewURL
+        );
+
+      }
+
+      state.photos =
+        state.photos.filter(
+          p => p.id !== photo.id
+        );
+
+      renderPhotos();
+      updateButtons();
+
+    });
+
+    info.appendChild(remove);
+
+    card.appendChild(info);
+
+    photosContainer.appendChild(card);
+
+  });
+
+}
+
+
+/* =========================================================
+   SUPPRESSION PHOTOS
+========================================================= */
+
+clearPhotosBtn.addEventListener("click",()=>{
+
+  state.photos.forEach(photo=>{
+
+    if(photo.previewURL){
+
+      URL.revokeObjectURL(
+        photo.previewURL
+      );
 
     }
 
-  ];
+  });
+
+  state.photos = [];
+
+  state.transcription = "";
+  state.courseMarkdown = "";
+  state.courseHTML = "";
+
+  transcriptionEl.value = "";
+
+  courseEl.innerHTML = `
+    <p class="small">
+      Ton cours apparaîtra ici après la génération.
+    </p>
+  `;
+
+  renderPhotos();
+  updateButtons();
+
+  setStatus(
+    "Photos supprimées."
+  );
+
+  setProgress(0);
+
+});
 
 
-  if (
-    imageData
-  ) {
+/* =========================================================
+   BOUTONS
+========================================================= */
 
-    parts.push(
+function updateButtons(){
 
-      {
+  const hasPhotos =
+    state.photos.length > 0;
 
-        inline_data: {
+  analyzeBtn.disabled =
+    !hasPhotos || state.busy;
 
-          mime_type:
-            mimeType,
+  generateCourseBtn.disabled =
+    !state.transcription.trim() ||
+    state.busy;
 
-          data:
-            imageData
+  exportHTMLBtn.disabled =
+    !state.courseHTML;
+
+  exportTXTBtn.disabled =
+    !state.courseMarkdown;
+
+  printPDFBtn.disabled =
+    !state.courseHTML;
+
+  slideshowBtn.disabled =
+    state.photos.length === 0 ||
+    state.busy;
+
+}
+
+
+/* =========================================================
+   EXTRACTION TEXTE REPONSE GEMINI
+========================================================= */
+
+function extractInteractionText(data){
+
+  /*
+    Nouveau format Interactions API :
+    steps[]
+      -> model_output
+        -> content[]
+          -> text
+  */
+
+  if(
+    data &&
+    Array.isArray(data.steps)
+  ){
+
+    const texts = [];
+
+    for(const step of data.steps){
+
+      if(step.type !== "model_output"){
+        continue;
+      }
+
+      if(!Array.isArray(step.content)){
+        continue;
+      }
+
+      for(const block of step.content){
+
+        if(
+          block &&
+          block.type === "text" &&
+          typeof block.text === "string"
+        ){
+
+          texts.push(block.text);
 
         }
 
       }
 
+    }
+
+    if(texts.join("\n").trim()){
+      return texts.join("\n").trim();
+    }
+
+  }
+
+
+  /*
+    Petit filet de sécurité si Google
+    renvoie une propriété pratique.
+  */
+
+  if(
+    typeof data?.output_text === "string" &&
+    data.output_text.trim()
+  ){
+
+    return data.output_text.trim();
+
+  }
+
+
+  /*
+    Compatibilité avec d'anciens formats.
+  */
+
+  if(
+    Array.isArray(data?.outputs)
+  ){
+
+    const texts =
+      data.outputs
+        .filter(x => x?.type === "text")
+        .map(x => x.text || "")
+        .filter(Boolean);
+
+    if(texts.join("\n").trim()){
+      return texts.join("\n").trim();
+    }
+
+  }
+
+  return "";
+
+}
+
+
+/* =========================================================
+   APPEL GEMINI INTERACTIONS API
+========================================================= */
+
+async function callGemini(input){
+
+  const apiKey =
+    getApiKey();
+
+  if(!apiKey){
+
+    throw new Error(
+      "Aucune clé API Gemini. Colle ta clé dans la section 1."
+    );
+
+  }
+
+  const response =
+    await fetch(
+      GEMINI_URL,
+      {
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json",
+
+          "x-goog-api-key":
+            apiKey
+        },
+
+        body:JSON.stringify({
+
+          model:
+            GEMINI_MODEL,
+
+          input
+
+        })
+
+      }
+    );
+
+
+  const raw =
+    await response.text();
+
+  let data;
+
+  try{
+
+    data =
+      JSON.parse(raw);
+
+  }catch{
+
+    throw new Error(
+      "Réponse invalide de Gemini."
     );
 
   }
 
 
-  const body = {
+  if(!response.ok){
 
-    contents: [
-
-      {
-
-        parts:
-          parts
-
-      }
-
-    ],
-
-    generationConfig: {
-
-      temperature:
-        0.2,
-
-      maxOutputTokens:
-        8192
-
-    }
-
-  };
-
-
-  const response =
-    await fetch(
-      url,
-      {
-
-        method:
-          "POST",
-
-        headers: {
-
-          "Content-Type":
-            "application/json"
-
-        },
-
-        body:
-          JSON.stringify(
-            body
-          )
-
-      }
-    );
-
-
-  const data =
-    await response.json();
-
-
-  if (
-    !response.ok
-  ) {
-
-    console.error(
-      data
-    );
-
+    const apiMessage =
+      data?.error?.message ||
+      data?.message ||
+      raw;
 
     throw new Error(
-
-      data?.error?.message ||
-      "Erreur Gemini."
-
+      apiMessage
     );
 
   }
 
 
   const text =
-    data
-    ?.candidates
-    ?.[0]
-    ?.content
-    ?.parts
-    ?.[0]
-    ?.text;
+    extractInteractionText(data);
 
-
-  if (
-    !text
-  ) {
+  if(!text){
 
     console.error(
+      "Réponse Gemini sans texte :",
       data
     );
 
-
     throw new Error(
-      "L'IA n'a pas renvoyé de texte."
+      "Gemini a répondu mais aucun texte exploitable n'a été trouvé."
     );
 
   }
-
 
   return text;
 
 }
 
 
+/* =========================================================
+   PROMPT TRANSCRIPTION
+========================================================= */
 
-/* =====================================================
-   ANALYSER PHOTO
-===================================================== */
+function buildVisionPrompt(photoNumber,total){
 
+  return `
+Tu es un expert en lecture de documents scolaires photographiés.
 
-get(
-  "analyzeButton"
-)
-.addEventListener(
-  "click",
-  async function() {
+Tu analyses la photo ${photoNumber} sur ${total}.
 
-    if (
-      !imageFile ||
-      !imageDataURL
-    ) {
+OBJECTIF :
+Transformer exactement ce qui est visible sur la photo en une transcription structurée et exploitable pour fabriquer un cours.
 
-      get(
-        "analysisStatus"
-      ).textContent =
-        "⚠️ Choisis d'abord une photo.";
+RÈGLE ABSOLUE :
+NE RIEN INVENTER.
 
-      return;
+Si un mot est réellement impossible à lire, écris :
+[illisible]
 
-    }
+Si une partie est ambiguë :
+[incertain : ...]
 
 
-    const button =
-      get(
-        "analyzeButton"
-      );
+TU DOIS :
 
+1. Lire tout le texte visible.
+2. Respecter l'ordre logique de la page.
+3. Identifier les titres et sous-titres.
+4. Conserver les listes à puces et numérotées.
+5. Conserver les définitions.
+6. Conserver les dates, noms, nombres et exemples.
+7. Conserver les formules mathématiques ou scientifiques.
+8. Identifier les tableaux.
+9. Identifier les schémas.
+10. Identifier les flèches et relations entre éléments.
+11. Identifier les organigrammes.
+12. Identifier les encadrés.
+13. Identifier les mots soulignés ou mis en évidence quand cela aide à comprendre la structure.
+14. Ne pas transformer immédiatement le document en résumé.
 
-    button.disabled =
-      true;
+FORMAT OBLIGATOIRE :
 
+# PAGE ${photoNumber}
 
-    get(
-      "analysisStatus"
-    ).textContent =
-      "🤖 Gemini observe attentivement la photo...\n\n⏳ Cela peut prendre quelques secondes.";
-
-
-    try {
-
-      const base64 =
-        getBase64FromDataURL(
-          imageDataURL
-        );
-
-
-      const prompt =
-
-`Tu es un spécialiste de la lecture de documents scolaires.
-
-Analyse DIRECTEMENT l'image fournie.
-
-Ta mission est de créer une TRANSCRIPTION AUSSI COMPLETE QUE POSSIBLE.
-
-RÈGLES IMPORTANTES :
-
-1. Lis tous les mots visibles.
-2. Ne résume absolument pas le document.
-3. Respecte l'ordre du document.
-4. Conserve les titres.
-5. Conserve les listes.
-6. Conserve les définitions.
-7. Conserve les formules.
-8. Conserve les tableaux.
-9. Si un mot est difficile à lire, indique [illisible] plutôt que d'inventer.
-10. Corrige uniquement les erreurs évidentes de lecture.
-11. Décris brièvement les schémas, flèches et dessins.
-12. Indique les légendes des schémas.
-13. N'ajoute aucune information extérieure.
-
-FORMAT :
-
-TITRE :
+## TITRE
 ...
 
-TEXTE :
+## TEXTE
 ...
 
-LISTES :
+## LISTES
+- ...
+
+## DÉFINITIONS
+- Terme : définition
+
+## FORMULES
 ...
 
-TABLEAUX :
+## TABLEAUX
+Présente chaque tableau en Markdown si possible.
+
+## SCHÉMAS
+Décris précisément le schéma :
+- éléments présents
+- ordre
+- relations
+- flèches
+- légendes
+- couleurs ou formes importantes
+
+## ÉLÉMENTS INCERTAINS
 ...
 
-FORMULES :
-...
-
-SCHEMAS ET ANNOTATIONS :
-...
-
-Commence directement la transcription.`;
-
-
-      const result =
-        await callGemini(
-          prompt,
-          base64,
-          imageFile.type
-        );
-
-
-      get(
-        "recognizedText"
-      ).value =
-        result;
-
-
-      get(
-        "analysisStatus"
-      ).textContent =
-        "✅ Analyse terminée.\n\nRelis rapidement le texte si nécessaire, puis génère ta fiche.";
-
-    }
-
-    catch(
-      error
-    ) {
-
-      console.error(
-        error
-      );
-
-
-      get(
-        "analysisStatus"
-      ).textContent =
-        "❌ Erreur : " +
-        error.message;
-
-    }
-
-    finally {
-
-      button.disabled =
-        false;
-
-    }
-
-  }
-);
-
-
-
-/* =====================================================
-   ECHAPPER HTML
-===================================================== */
-
-
-function escapeHTML(
-  text
-) {
-
-  return String(
-    text
-  )
-  .replace(
-    /&/g,
-    "&amp;"
-  )
-  .replace(
-    /</g,
-    "&lt;"
-  )
-  .replace(
-    />/g,
-    "&gt;"
-  )
-  .replace(
-    /"/g,
-    "&quot;"
-  )
-  .replace(
-    /'/g,
-    "&#039;"
-  );
+IMPORTANT :
+- Ne complète jamais une phrase à partir de tes connaissances.
+- Ne corrige pas un terme simplement parce qu'il semble faux.
+- Si le professeur a écrit quelque chose d'étrange mais lisible, conserve-le.
+- Pour une formule, retranscris-la aussi fidèlement que possible.
+- Pour un schéma, explique sa structure plutôt que de simplement dire "schéma".
+`;
 
 }
 
 
+/* =========================================================
+   ANALYSE DES PHOTOS
+========================================================= */
 
-/* =====================================================
-   CONVERTIR TEXTE IA EN HTML
-===================================================== */
+analyzeBtn.addEventListener("click",analyzePhotos);
 
 
-function textToCourseHTML(
-  text
-) {
+async function analyzePhotos(){
 
-  const safeText =
-    escapeHTML(
-      text
+  if(state.busy){
+    return;
+  }
+
+  if(!state.photos.length){
+
+    setStatus(
+      "Ajoute au moins une photo."
+    );
+
+    return;
+  }
+
+  if(!getApiKey()){
+
+    setStatus(
+      "❌ Ajoute d'abord ta clé API Gemini."
+    );
+
+    apiKeyInput.focus();
+
+    return;
+  }
+
+
+  state.busy = true;
+
+  state.transcription = "";
+  transcriptionEl.value = "";
+
+  updateButtons();
+
+  const results = [];
+
+  try{
+
+    for(let i=0;i<state.photos.length;i++){
+
+      const photo =
+        state.photos[i];
+
+      setStatus(
+        `🤖 Analyse de la photo ${i+1}/${state.photos.length}…`
+      );
+
+      setProgress(
+        (i / state.photos.length) * 100
+      );
+
+
+      if(!photo.aiDataURL){
+
+        photo.aiDataURL =
+          await prepareImageForAI(
+            photo.file
+          );
+
+      }
+
+
+      /*
+        On extrait uniquement la partie Base64.
+      */
+
+      const comma =
+        photo.aiDataURL.indexOf(",");
+
+      const base64 =
+        comma >= 0
+          ? photo.aiDataURL.slice(comma + 1)
+          : photo.aiDataURL;
+
+      /*
+        Après compression, on utilise JPEG.
+      */
+
+      const input = [
+
+        {
+          type:"text",
+          text:buildVisionPrompt(
+            i + 1,
+            state.photos.length
+          )
+        },
+
+        {
+          type:"image",
+          mime_type:"image/jpeg",
+          data:base64
+        }
+
+      ];
+
+
+      try{
+
+        const result =
+          await callGemini(input);
+
+        photo.transcription =
+          result;
+
+        results.push(
+          result
+        );
+
+      }catch(error){
+
+        photo.error =
+          error.message;
+
+        results.push(
+          `# PAGE ${i+1}\n\n` +
+          `## ERREUR\n` +
+          `[Impossible d'analyser cette photo : ${error.message}]`
+        );
+
+        /*
+          On continue les autres pages.
+        */
+
+      }
+
+
+      renderPhotos();
+
+      /*
+        Petite pause pour éviter d'enchaîner
+        brutalement les requêtes.
+      */
+
+      if(i < state.photos.length - 1){
+
+        await sleep(400);
+
+      }
+
+    }
+
+
+    state.transcription =
+      results.join(
+        "\n\n====================\n\n"
+      );
+
+
+    transcriptionEl.value =
+      state.transcription;
+
+
+    setProgress(100);
+
+    setStatus(
+      `✅ Analyse terminée : ${state.photos.length} photo(s).`
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    setStatus(
+      "❌ " + friendlyGeminiError(error)
+    );
+
+  }finally{
+
+    state.busy = false;
+
+    updateButtons();
+
+  }
+
+}
+
+
+/* =========================================================
+   ERREURS GEMINI
+========================================================= */
+
+function friendlyGeminiError(error){
+
+  const message =
+    error?.message ||
+    String(error);
+
+  if(
+    message.includes("API key") ||
+    message.includes("API_KEY") ||
+    message.includes("authentication") ||
+    message.includes("401")
+  ){
+
+    return "Clé API refusée. Vérifie ta clé Google AI Studio.";
+
+  }
+
+  if(
+    message.includes("429") ||
+    message.toLowerCase().includes("quota") ||
+    message.toLowerCase().includes("rate")
+  ){
+
+    return "Quota ou limite temporaire atteinte. Attends un peu puis réessaie.";
+
+  }
+
+  if(
+    message.includes("403")
+  ){
+
+    return "Accès refusé par Google. Vérifie que l'API Gemini est bien disponible pour cette clé.";
+
+  }
+
+  if(
+    message.includes("404") ||
+    message.includes("not found")
+  ){
+
+    return "Le modèle Gemini demandé n'est pas disponible pour cette clé.";
+
+  }
+
+  return message;
+
+}
+
+
+/* =========================================================
+   MODIFICATION MANUELLE TRANSCRIPTION
+========================================================= */
+
+transcriptionEl.addEventListener("input",()=>{
+
+  state.transcription =
+    transcriptionEl.value;
+
+  updateButtons();
+
+});
+
+
+/* =========================================================
+   PROMPT GENERATION DU COURS
+========================================================= */
+
+function buildCoursePrompt(transcription){
+
+  return `
+Tu es un excellent professeur et rédacteur pédagogique.
+
+À partir de la transcription de photos de cours ci-dessous, construis un cours propre, clair et fidèle.
+
+OBJECTIF :
+Transformer des notes parfois désordonnées en un vrai cours utilisable pour réviser.
+
+RÈGLE ABSOLUE :
+Tu dois rester fidèle aux informations fournies.
+
+NE PAS INVENTER de faits absents des notes.
+
+Tu peux :
+- réorganiser l'ordre quand cela améliore clairement la compréhension ;
+- reformuler les phrases maladroites ;
+- supprimer les répétitions ;
+- regrouper les idées liées ;
+- transformer des fragments en phrases complètes ;
+- corriger uniquement les fautes évidentes de langue ;
+- rendre les définitions plus lisibles sans en changer le sens.
+
+Tu ne dois PAS :
+- ajouter des connaissances extérieures ;
+- inventer une définition ;
+- inventer une date ;
+- inventer une formule ;
+- inventer une relation dans un schéma.
+
+
+FORMAT DU COURS :
+
+# TITRE DU COURS
+
+Une courte introduction.
+
+## 🧠 Résumé express
+
+5 à 8 points maximum.
+
+## 📖 Le cours
+
+Organise le contenu avec des sous-parties :
+
+### 1. ...
+### 2. ...
+### 3. ...
+
+Utilise des paragraphes courts.
+
+## 📌 Notions importantes
+
+- notion — explication
+- notion — explication
+
+## 📚 Définitions
+
+- **Terme** : définition
+
+## 📊 Tableaux
+
+Conserve les tableaux réellement présents dans les notes.
+
+## 🧮 Formules
+
+Conserve les formules et explique leur signification uniquement si cette explication est présente ou évidente dans les notes.
+
+## 🔀 Schémas et relations
+
+Pour chaque schéma important :
+
+**Schéma : ...**
+
+- Élément A
+  → Élément B
+  → Élément C
+
+Explique clairement les flèches et relations présentes dans les notes.
+
+## ⭐ À retenir
+
+Une dizaine de points maximum.
+
+## ❓ Questions de révision
+
+Crée 5 à 10 questions dont les réponses se trouvent dans les notes.
+
+IMPORTANT :
+- Ne réponds pas aux questions.
+- Les questions doivent permettre de réviser le cours.
+- Si une information est incertaine dans la transcription, conserve le marqueur [incertain] ou [illisible] au lieu d'inventer.
+
+TRANSCRIPTION DES PHOTOS :
+
+${transcription}
+`;
+
+}
+
+
+/* =========================================================
+   GENERATION COURS
+========================================================= */
+
+generateCourseBtn.addEventListener(
+  "click",
+  generateCourse
+);
+
+
+async function generateCourse(){
+
+  if(state.busy){
+    return;
+  }
+
+  const transcription =
+    transcriptionEl.value.trim();
+
+  if(!transcription){
+
+    setStatus(
+      "Il n'y a aucune transcription."
+    );
+
+    return;
+  }
+
+  if(!getApiKey()){
+
+    setStatus(
+      "❌ Ajoute d'abord ta clé API Gemini."
+    );
+
+    return;
+  }
+
+
+  state.busy = true;
+
+  updateButtons();
+
+  setStatus(
+    "🧠 Gemini organise maintenant le cours…"
+  );
+
+  setProgress(20);
+
+
+  try{
+
+    state.courseMarkdown =
+      await callGemini([
+
+        {
+          type:"text",
+          text:buildCoursePrompt(
+            transcription
+          )
+        }
+
+      ]);
+
+
+    setProgress(70);
+
+    /*
+      On transforme le Markdown en HTML.
+    */
+
+    state.courseHTML =
+      markdownToHTML(
+        state.courseMarkdown
+      );
+
+
+    /*
+      On ajoute automatiquement les photos originales.
+    */
+
+    state.courseHTML +=
+      buildOriginalPhotosHTML();
+
+
+    courseEl.innerHTML =
+      state.courseHTML;
+
+
+    setProgress(100);
+
+    setStatus(
+      "✅ Cours généré."
+    );
+
+  }catch(error){
+
+    console.error(error);
+
+    setStatus(
+      "❌ " + friendlyGeminiError(error)
+    );
+
+  }finally{
+
+    state.busy = false;
+
+    updateButtons();
+
+  }
+
+}
+
+
+/* =========================================================
+   MARKDOWN → HTML
+========================================================= */
+
+function markdownToHTML(markdown){
+
+  let text =
+    String(markdown || "")
+      .replace(/\r\n/g,"\n")
+      .trim();
+
+
+  /*
+    Protection basique du HTML.
+  */
+
+  text =
+    escapeHTML(text);
+
+
+  /*
+    Blocs de code.
+  */
+
+  const codeBlocks = [];
+
+  text =
+    text.replace(
+      /```([\s\S]*?)```/g,
+      (_,code)=>{
+
+        const index =
+          codeBlocks.length;
+
+        codeBlocks.push(
+          `<pre>${code.trim()}</pre>`
+        );
+
+        return `@@CODE${index}@@`;
+
+      }
     );
 
 
-  const lines =
-    safeText.split(
-      "\n"
+  /*
+    Tableaux Markdown.
+  */
+
+  text =
+    convertMarkdownTables(text);
+
+
+  /*
+    Titres.
+  */
+
+  text =
+    text.replace(
+      /^### (.+)$/gm,
+      "<h3>$1</h3>"
     );
+
+  text =
+    text.replace(
+      /^## (.+)$/gm,
+      "<h2>$1</h2>"
+    );
+
+  text =
+    text.replace(
+      /^# (.+)$/gm,
+      "<h1>$1</h1>"
+    );
+
+
+  /*
+    Gras / italique.
+  */
+
+  text =
+    text.replace(
+      /\*\*(.+?)\*\*/g,
+      "<strong>$1</strong>"
+    );
+
+  text =
+    text.replace(
+      /\*(.+?)\*/g,
+      "<em>$1</em>"
+    );
+
+
+  /*
+    Citations.
+  */
+
+  text =
+    text.replace(
+      /^> (.+)$/gm,
+      "<blockquote>$1</blockquote>"
+    );
+
+
+  /*
+    Listes.
+  */
+
+  text =
+    convertLists(text);
+
+
+  /*
+    Séparateurs.
+  */
+
+  text =
+    text.replace(
+      /^---$/gm,
+      "<hr>"
+    );
+
+
+  /*
+    Paragraphes.
+  */
+
+  const blocks =
+    text
+      .split(/\n{2,}/)
+      .map(block=>{
+
+        block = block.trim();
+
+        if(!block){
+          return "";
+        }
+
+        if(
+          /^<(h1|h2|h3|ul|ol|table|blockquote|pre|hr)/.test(block)
+        ){
+          return block;
+        }
+
+        if(
+          block.includes("</ul>") ||
+          block.includes("</ol>") ||
+          block.includes("</table>")
+        ){
+          return block;
+        }
+
+        return `<p>${block.replace(/\n/g,"<br>")}</p>`;
+
+      })
+      .join("\n");
 
 
   let html =
-    "";
+    blocks;
 
 
-  let inList =
-    false;
+  /*
+    Restaurer code.
+  */
 
+  codeBlocks.forEach(
+    (block,index)=>{
 
-  for (
-    let rawLine of lines
-  ) {
-
-    const line =
-      rawLine.trim();
-
-
-    if (
-      !line
-    ) {
-
-      if (
-        inList
-      ) {
-
-        html +=
-          "</ul>";
-
-
-        inList =
-          false;
-
-      }
-
-
-      continue;
+      html =
+        html.replace(
+          `@@CODE${index}@@`,
+          block
+        );
 
     }
-
-
-    if (
-      line.startsWith(
-        "# "
-      )
-    ) {
-
-      if (
-        inList
-      ) {
-
-        html +=
-          "</ul>";
-
-        inList =
-          false;
-
-      }
-
-
-      html +=
-        "<h1>" +
-        line.substring(2) +
-        "</h1>";
-
-
-      continue;
-
-    }
-
-
-    if (
-      line.startsWith(
-        "## "
-      )
-    ) {
-
-      if (
-        inList
-      ) {
-
-        html +=
-          "</ul>";
-
-        inList =
-          false;
-
-      }
-
-
-      html +=
-        "<div class='course-section'>" +
-        "<h2>" +
-        line.substring(3) +
-        "</h2>";
-
-
-      html +=
-        "</div>";
-
-
-      continue;
-
-    }
-
-
-    if (
-      line.startsWith(
-        "### "
-      )
-    ) {
-
-      if (
-        inList
-      ) {
-
-        html +=
-          "</ul>";
-
-        inList =
-          false;
-
-      }
-
-
-      html +=
-        "<h3>" +
-        line.substring(4) +
-        "</h3>";
-
-
-      continue;
-
-    }
-
-
-    if (
-      line.startsWith(
-        "- "
-      ) ||
-      line.startsWith(
-        "• "
-      )
-    ) {
-
-      if (
-        !inList
-      ) {
-
-        html +=
-          "<ul>";
-
-        inList =
-          true;
-
-      }
-
-
-      html +=
-        "<li>" +
-        line.substring(2) +
-        "</li>";
-
-
-      continue;
-
-    }
-
-
-    if (
-      inList
-    ) {
-
-      html +=
-        "</ul>";
-
-      inList =
-        false;
-
-    }
-
-
-    if (
-      line.toLowerCase().includes(
-        "à retenir"
-      ) ||
-      line.toLowerCase().includes(
-        "important"
-      )
-    ) {
-
-      html +=
-        "<div class='important'>" +
-        "<strong>" +
-        line +
-        "</strong>" +
-        "</div>";
-
-    }
-
-    else {
-
-      html +=
-        "<p>" +
-        line +
-        "</p>";
-
-    }
-
-  }
-
-
-  if (
-    inList
-  ) {
-
-    html +=
-      "</ul>";
-
-  }
+  );
 
 
   return html;
@@ -1478,431 +2056,781 @@ function textToCourseHTML(
 }
 
 
+/* =========================================================
+   TABLEAUX MARKDOWN
+========================================================= */
 
-/* =====================================================
-   GENERER COURS
-===================================================== */
+function convertMarkdownTables(text){
 
+  const lines =
+    text.split("\n");
 
-get(
-  "generateCourseButton"
-)
-.addEventListener(
-  "click",
-  async function() {
+  let output = [];
 
-    const text =
-      get(
-        "recognizedText"
-      ).value.trim();
+  let i = 0;
 
+  while(i < lines.length){
 
-    if (
-      text.length < 10
-    ) {
+    const line =
+      lines[i];
 
-      get(
-        "courseStatus"
-      ).textContent =
-        "⚠️ Analyse d'abord la photo ou ajoute du texte.";
+    const next =
+      lines[i+1] || "";
 
-      return;
+    if(
+      line.includes("|") &&
+      /^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$/.test(next)
+    ){
+
+      const headerCells =
+        splitTableRow(line);
+
+      i += 2;
+
+      const rows = [];
+
+      while(
+        i < lines.length &&
+        lines[i].includes("|") &&
+        lines[i].trim()
+      ){
+
+        rows.push(
+          splitTableRow(
+            lines[i]
+          )
+        );
+
+        i++;
+
+      }
+
+      let table =
+        "<table><thead><tr>";
+
+      headerCells.forEach(cell=>{
+
+        table +=
+          `<th>${cell}</th>`;
+
+      });
+
+      table +=
+        "</tr></thead><tbody>";
+
+      rows.forEach(row=>{
+
+        table += "<tr>";
+
+        row.forEach(cell=>{
+
+          table +=
+            `<td>${cell}</td>`;
+
+        });
+
+        table += "</tr>";
+
+      });
+
+      table +=
+        "</tbody></table>";
+
+      output.push(table);
+
+      continue;
 
     }
 
+    output.push(line);
 
-    const button =
-      get(
-        "generateCourseButton"
+    i++;
+
+  }
+
+  return output.join("\n");
+
+}
+
+
+function splitTableRow(row){
+
+  return row
+    .trim()
+    .replace(/^\|/,"")
+    .replace(/\|$/,"")
+    .split("|")
+    .map(cell=>cell.trim());
+
+}
+
+
+/* =========================================================
+   LISTES
+========================================================= */
+
+function convertLists(text){
+
+  const lines =
+    text.split("\n");
+
+  let output = [];
+
+  let currentList = null;
+
+  function closeList(){
+
+    if(currentList){
+
+      output.push(
+        currentList === "ol"
+          ? "</ol>"
+          : "</ul>"
       );
 
-
-    button.disabled =
-      true;
-
-
-    get(
-      "courseStatus"
-    ).textContent =
-      "🧠 Création d'une vraie fiche de cours...\n\n⏳ L'IA organise les informations.";
-
-
-    try {
-
-      const prompt =
-
-`Tu es un excellent professeur et créateur de fiches de révision.
-
-Transforme la transcription suivante en une fiche de cours CLAIRE, COMPLETE et PEDAGOGIQUE.
-
-IMPORTANT :
-
-- Utilise UNIQUEMENT les informations présentes dans la transcription.
-- N'invente pas de faits.
-- Ne supprime pas les notions importantes.
-- Corrige les fautes évidentes.
-- Explique clairement les notions.
-- Garde les formules et définitions.
-- Organise le résultat pour faciliter la révision.
-
-UTILISE EXACTEMENT CE STYLE MARKDOWN :
-
-# TITRE DU COURS
-
-## 🧠 Résumé express
-
-Quelques phrases simples.
-
-## 📖 Le cours
-
-Explication structurée.
-
-## 📌 Notions importantes
-
-- notion
-- notion
-
-## 📚 Définitions
-
-- **Mot :** définition
-
-## ⭐ À retenir
-
-Les éléments essentiels.
-
-## ❓ Questions de révision
-
-- Question ?
-- Question ?
-
-Voici la transcription :
-
-${text}`;
-
-
-      const result =
-        await callGemini(
-          prompt,
-          null,
-          null
-        );
-
-
-      generatedCourseHTML =
-        textToCourseHTML(
-          result
-        );
-
-
-      const course =
-        get(
-          "course"
-        );
-
-
-      course.innerHTML =
-        generatedCourseHTML;
-
-
-      course.classList.remove(
-        "hidden"
-      );
-
-
-      get(
-        "courseStatus"
-      ).textContent =
-        "✅ Fiche générée avec succès.";
-
-    }
-
-    catch(
-      error
-    ) {
-
-      console.error(
-        error
-      );
-
-
-      get(
-        "courseStatus"
-      ).textContent =
-        "❌ Erreur : " +
-        error.message;
-
-    }
-
-    finally {
-
-      button.disabled =
-        false;
+      currentList = null;
 
     }
 
   }
-);
 
+  for(const line of lines){
 
+    const bullet =
+      line.match(
+        /^\s*[-•]\s+(.+)$/
+      );
 
-/* =====================================================
-   EXPORT TXT
-===================================================== */
-
-
-get(
-  "exportTextButton"
-)
-.addEventListener(
-  "click",
-  function() {
-
-    const course =
-      get(
-        "course"
+    const ordered =
+      line.match(
+        /^\s*\d+[.)]\s+(.+)$/
       );
 
 
-    if (
-      !course.textContent.trim()
-    ) {
+    if(bullet){
 
-      alert(
-        "Génère d'abord une fiche."
+      if(currentList !== "ul"){
+
+        closeList();
+
+        output.push(
+          "<ul>"
+        );
+
+        currentList = "ul";
+
+      }
+
+      output.push(
+        `<li>${bullet[1]}</li>`
       );
 
-      return;
+      continue;
 
     }
 
 
-    const blob =
-      new Blob(
+    if(ordered){
 
-        [
+      if(currentList !== "ol"){
 
-          course.innerText
+        closeList();
 
-        ],
+        output.push(
+          "<ol>"
+        );
 
-        {
+        currentList = "ol";
 
-          type:
-            "text/plain"
+      }
 
-        }
-
+      output.push(
+        `<li>${ordered[1]}</li>`
       );
 
+      continue;
 
-    const url =
-      URL.createObjectURL(
-        blob
-      );
+    }
 
 
-    const link =
-      document.createElement(
-        "a"
-      );
+    closeList();
 
-
-    link.href =
-      url;
-
-
-    link.download =
-      "ma-fiche-de-cours.txt";
-
-
-    link.click();
-
-
-    URL.revokeObjectURL(
-      url
-    );
+    output.push(line);
 
   }
-);
+
+  closeList();
+
+  return output.join("\n");
+
+}
 
 
+/* =========================================================
+   PHOTOS ORIGINALES DANS LE COURS
+========================================================= */
 
-/* =====================================================
+function buildOriginalPhotosHTML(){
+
+  if(!state.photos.length){
+    return "";
+  }
+
+  let html = `
+    <hr>
+    <h2>🖼️ Photos originales</h2>
+
+    <div class="originals">
+  `;
+
+  state.photos.forEach((photo,index)=>{
+
+    const src =
+      photo.originalDataURL ||
+      photo.previewURL ||
+      "";
+
+    if(!src){
+      return;
+    }
+
+    html += `
+      <div class="original-card">
+        <strong>
+          Photo ${index + 1} — ${escapeHTML(photo.name)}
+        </strong>
+
+        <img
+          src="${src}"
+          alt="${escapeHTML(photo.name)}"
+        >
+      </div>
+    `;
+
+  });
+
+  html += `
+    </div>
+  `;
+
+  return html;
+
+}
+
+
+/* =========================================================
    EXPORT HTML
-===================================================== */
+========================================================= */
 
-
-get(
-  "exportHtmlButton"
-)
-.addEventListener(
+exportHTMLBtn.addEventListener(
   "click",
-  function() {
-
-    if (
-      !generatedCourseHTML
-    ) {
-
-      alert(
-        "Génère d'abord une fiche."
-      );
-
-      return;
-
-    }
+  exportHTML
+);
 
 
-    const html =
+function exportHTML(){
 
-`<!DOCTYPE html>
+  const title =
+    extractCourseTitle();
 
+  const originalSection =
+    buildOriginalPhotosHTML();
+
+
+  const html = `
+<!DOCTYPE html>
 <html lang="fr">
-
 <head>
-
 <meta charset="UTF-8">
 
-<meta
-name="viewport"
-content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
 
-<title>Ma fiche de cours</title>
+<title>${escapeHTML(title)}</title>
 
 <style>
 
-body {
-
-font-family: Arial, sans-serif;
-
-max-width: 900px;
-
-margin: auto;
-
-padding: 20px;
-
-background: #f3f4f6;
-
-color: #111827;
-
+body{
+  font-family:Arial,sans-serif;
+  max-width:900px;
+  margin:40px auto;
+  padding:20px;
+  color:#18202a;
+  line-height:1.7;
 }
 
-section {
-
-background: white;
-
-padding: 20px;
-
-border-radius: 15px;
-
-margin-bottom: 20px;
-
+h1{
+  border-bottom:2px solid #ddd;
+  padding-bottom:12px;
 }
 
-h1 {
-
-font-size: 32px;
-
+h2{
+  margin-top:35px;
+  color:#3730a3;
 }
 
-h2 {
-
-border-bottom: 2px solid #ddd;
-
-padding-bottom: 8px;
-
+h3{
+  margin-top:25px;
 }
 
-img {
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin:20px 0;
+}
 
-width: 100%;
+th,td{
+  border:1px solid #ddd;
+  padding:8px;
+  text-align:left;
+}
 
-max-height: 700px;
+th{
+  background:#f3f4f6;
+}
 
-object-fit: contain;
+blockquote{
+  border-left:4px solid #4f46e5;
+  padding:10px 15px;
+  background:#f8f7ff;
+}
 
-border-radius: 14px;
+img{
+  max-width:100%;
+  border-radius:10px;
+}
 
+.originals{
+  display:grid;
+  gap:20px;
+}
+
+.original-card{
+  padding:12px;
+  background:#fafafa;
+}
+
+pre{
+  white-space:pre-wrap;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<section>
-
-${generatedCourseHTML}
-
-</section>
-
-<section>
-
-<h2>🖼️ Document original</h2>
-
-${
-imageDataURL
-? `<img src="${imageDataURL}">`
-: ""
-}
-
-</section>
+${state.courseHTML}
 
 </body>
+</html>
+`;
 
-</html>`;
 
-```
-const blob =
-  new Blob(
+  downloadBlob(
+    html,
+    slugify(title) + ".html",
+    "text/html;charset=utf-8"
+  );
 
-    [
+}
 
-      html
 
-    ],
+/* =========================================================
+   EXPORT TXT
+========================================================= */
 
-    {
+exportTXTBtn.addEventListener(
+  "click",
+  exportTXT
+);
 
-      type:
-        "text/html"
+
+function exportTXT(){
+
+  const title =
+    extractCourseTitle();
+
+  const photosText =
+    state.photos
+      .map(
+        (photo,index)=>
+          `\n\n====================\nPHOTO ${index+1} : ${photo.name}\n====================`
+      )
+      .join("");
+
+
+  const text =
+    state.courseMarkdown +
+    photosText;
+
+
+  downloadBlob(
+    text,
+    slugify(title) + ".txt",
+    "text/plain;charset=utf-8"
+  );
+
+}
+
+
+/* =========================================================
+   EXTRACTION TITRE
+========================================================= */
+
+function extractCourseTitle(){
+
+  const match =
+    state.courseMarkdown.match(
+      /^#\s+(.+)$/m
+    );
+
+  if(match){
+    return match[1].trim();
+  }
+
+  return "Cours généré par IA";
+
+}
+
+
+/* =========================================================
+   TELECHARGEMENT
+========================================================= */
+
+function downloadBlob(
+  content,
+  filename,
+  type
+){
+
+  const blob =
+    new Blob(
+      [content],
+      {type}
+    );
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
+
+  a.href = url;
+
+  a.download =
+    filename;
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(url),
+    1000
+  );
+
+}
+
+
+function slugify(text){
+
+  return String(text)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^a-zA-Z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"")
+    .toLowerCase()
+    .slice(0,80) || "cours";
+
+}
+
+
+/* =========================================================
+   PDF
+========================================================= */
+
+printPDFBtn.addEventListener(
+  "click",
+  ()=>{
+
+    window.print();
+
+  }
+);
+
+
+/* =========================================================
+   DIAPORAMA
+========================================================= */
+
+slideshowBtn.addEventListener(
+  "click",
+  openSlideshow
+);
+
+
+function openSlideshow(){
+
+  if(!state.photos.length){
+    return;
+  }
+
+  state.slideIndex = 0;
+
+  updateSlide();
+
+  slideshow.classList.add(
+    "active"
+  );
+
+}
+
+
+function updateSlide(){
+
+  const photo =
+    state.photos[
+      state.slideIndex
+    ];
+
+  if(!photo){
+    return;
+  }
+
+  slideImage.src =
+    photo.originalDataURL ||
+    photo.previewURL ||
+    "";
+
+  slideTitle.textContent =
+    `${state.slideIndex + 1} / ${state.photos.length} — ${photo.name}`;
+
+}
+
+
+prevSlide.addEventListener(
+  "click",
+  ()=>{
+
+    state.slideIndex--;
+
+    if(state.slideIndex < 0){
+
+      state.slideIndex =
+        state.photos.length - 1;
 
     }
 
-  );
+    updateSlide();
 
-
-const url =
-  URL.createObjectURL(
-    blob
-  );
-
-
-const link =
-  document.createElement(
-    "a"
-  );
-
-
-link.href =
-  url;
-
-
-link.download =
-  "ma-fiche-de-cours.html";
-
-
-link.click();
-
-
-URL.revokeObjectURL(
-  url
+  }
 );
-```
+
+
+nextSlide.addEventListener(
+  "click",
+  ()=>{
+
+    state.slideIndex++;
+
+    if(
+      state.slideIndex >=
+      state.photos.length
+    ){
+
+      state.slideIndex = 0;
+
+    }
+
+    updateSlide();
+
+  }
+);
+
+
+closeSlide.addEventListener(
+  "click",
+  closeSlideshow
+);
+
+
+function closeSlideshow(){
+
+  slideshow.classList.remove(
+    "active"
+  );
 
 }
+
+
+document.addEventListener(
+  "keydown",
+  event=>{
+
+    if(
+      !slideshow.classList.contains(
+        "active"
+      )
+    ){
+      return;
+    }
+
+    if(event.key === "Escape"){
+
+      closeSlideshow();
+
+    }
+
+    if(event.key === "ArrowLeft"){
+
+      prevSlide.click();
+
+    }
+
+    if(event.key === "ArrowRight"){
+
+      nextSlide.click();
+
+    }
+
+  }
 );
+
+
+/* =========================================================
+   DRAG & DROP
+========================================================= */
+
+const fileZone =
+  document.querySelector(".file-zone");
+
+
+["dragenter","dragover"].forEach(eventName=>{
+
+  fileZone.addEventListener(
+    eventName,
+    event=>{
+
+      event.preventDefault();
+
+      fileZone.style.borderColor =
+        "#4f46e5";
+
+      fileZone.style.background =
+        "#fafaff";
+
+    }
+  );
+
+});
+
+
+["dragleave","drop"].forEach(eventName=>{
+
+  fileZone.addEventListener(
+    eventName,
+    event=>{
+
+      event.preventDefault();
+
+      fileZone.style.borderColor =
+        "";
+
+      fileZone.style.background =
+        "";
+
+    }
+  );
+
+});
+
+
+fileZone.addEventListener(
+  "drop",
+  async event=>{
+
+    const files =
+      [...event.dataTransfer.files]
+        .filter(
+          file =>
+            file.type.startsWith("image/")
+        );
+
+    if(!files.length){
+      return;
+    }
+
+    /*
+      On réutilise le même traitement
+      que l'import classique.
+    */
+
+    for(const file of files){
+
+      const photo = {
+
+        id:
+          crypto.randomUUID
+            ? crypto.randomUUID()
+            : Date.now() + "-" + Math.random(),
+
+        file,
+
+        name:file.name,
+
+        mimeType:
+          file.type || "image/jpeg",
+
+        previewURL:
+          URL.createObjectURL(file),
+
+        originalDataURL:null,
+
+        aiDataURL:null,
+
+        transcription:"",
+
+        error:null
+
+      };
+
+      state.photos.push(photo);
+
+      renderPhotos();
+
+      try{
+
+        photo.originalDataURL =
+          await fileToDataURL(file);
+
+        photo.aiDataURL =
+          await prepareImageForAI(file);
+
+      }catch(error){
+
+        photo.error =
+          error.message;
+
+      }
+
+      renderPhotos();
+
+    }
+
+    updateButtons();
+
+  }
+);
+
+
+/* =========================================================
+   INITIALISATION FINALE
+========================================================= */
+
+renderPhotos();
+updateButtons();
 
 </script>
 
