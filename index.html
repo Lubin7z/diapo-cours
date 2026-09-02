@@ -43,7 +43,7 @@
       padding: 20px;
       margin-bottom: 18px;
       border-radius: 18px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
     }
 
     button,
@@ -123,6 +123,14 @@
       line-height: 1.6;
     }
 
+    .course h2 {
+      margin-top: 0;
+    }
+
+    .course h3 {
+      margin-top: 25px;
+    }
+
     .keyword {
       display: inline-block;
       background: #e5e7eb;
@@ -154,7 +162,9 @@
   </p>
 
 
-  <!-- PHOTO -->
+  <!-- =====================================================
+       PHOTO
+  ====================================================== -->
 
   <div class="card">
 
@@ -176,6 +186,7 @@
     <button
       id="exampleButton"
       class="secondary"
+      type="button"
     >
       🧪 Charger un exemple
     </button>
@@ -188,7 +199,9 @@
   </div>
 
 
-  <!-- OCR -->
+  <!-- =====================================================
+       OCR
+  ====================================================== -->
 
   <div class="card">
 
@@ -199,7 +212,10 @@
       la reconnaissance du texte.
     </p>
 
-    <button id="ocrButton">
+    <button
+      id="ocrButton"
+      type="button"
+    >
       🔎 Reconnaître le texte
     </button>
 
@@ -228,13 +244,18 @@
   </div>
 
 
-  <!-- COURS -->
+  <!-- =====================================================
+       COURS
+  ====================================================== -->
 
   <div class="card">
 
     <h2>3. Générer le cours</h2>
 
-    <button id="courseButton">
+    <button
+      id="courseButton"
+      type="button"
+    >
       📚 Générer le cours
     </button>
 
@@ -269,19 +290,25 @@
   </div>
 
 
-  <!-- EXPORT -->
+  <!-- =====================================================
+       EXPORT
+  ====================================================== -->
 
   <div class="card">
 
     <h2>4. Exporter</h2>
 
-    <button id="exportTxt">
+    <button
+      id="exportTxt"
+      type="button"
+    >
       📄 Export TXT
     </button>
 
     <button
       id="exportHtml"
       class="secondary"
+      type="button"
     >
       🌐 Export HTML avec photo
     </button>
@@ -293,7 +320,6 @@
 
 <script>
 
-
 /* =====================================================
    VARIABLES
 ===================================================== */
@@ -303,10 +329,12 @@ let originalImageDataURL = null;
 let generatedCourse = null;
 
 
+/* =====================================================
+   OUTIL : RÉCUPÉRER UN ÉLÉMENT
+===================================================== */
+
 function getElement(id) {
-
   return document.getElementById(id);
-
 }
 
 
@@ -321,25 +349,21 @@ function escapeHTML(text) {
     function(character) {
 
       const entities = {
-
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
         '"': "&quot;",
         "'": "&#039;"
-
       };
 
       return entities[character];
-
     }
   );
-
 }
 
 
 /* =====================================================
-   CONVERSION PHOTO EN DATA URL
+   FICHIER → DATA URL
 ===================================================== */
 
 function fileToDataURL(file) {
@@ -355,24 +379,22 @@ function fileToDataURL(file) {
           resolve(
             event.target.result
           );
-
         };
 
       reader.onerror =
-        reject;
+        function(error) {
 
-      reader.readAsDataURL(
-        file
-      );
+          reject(error);
+        };
 
+      reader.readAsDataURL(file);
     }
   );
-
 }
 
 
 /* =====================================================
-   SELECTION PHOTO
+   SÉLECTION DE LA PHOTO
 ===================================================== */
 
 getElement("photo")
@@ -385,28 +407,24 @@ getElement("photo")
         event.target.files[0];
 
       if (!file) {
-
         return;
-
       }
 
+      console.log(
+        "Photo sélectionnée :",
+        file.name
+      );
 
-      imageFile =
-        file;
-
+      imageFile = file;
 
       try {
 
         originalImageDataURL =
-          await fileToDataURL(
-            imageFile
-          );
+          await fileToDataURL(file);
 
 
         const preview =
-          getElement(
-            "preview"
-          );
+          getElement("preview");
 
 
         preview.src =
@@ -417,42 +435,49 @@ getElement("photo")
           "block";
 
 
-        getElement(
-          "ocrStatus"
-        ).textContent =
+        preview.onload =
+          function() {
+
+            console.log(
+              "Photo affichée correctement."
+            );
+
+          };
+
+
+        preview.onerror =
+          function() {
+
+            console.error(
+              "Impossible d'afficher la photo."
+            );
+
+          };
+
+
+        getElement("ocrStatus").textContent =
           "✅ Photo prête. Clique sur « Reconnaître le texte ».";
 
 
-        getElement(
-          "course"
-        ).classList.add(
-          "hidden"
-        );
+        getElement("course")
+          .classList
+          .add("hidden");
 
 
-        getElement(
-          "originalImageBox"
-        ).classList.add(
-          "hidden"
-        );
+        getElement("originalImageBox")
+          .classList
+          .add("hidden");
 
 
-        generatedCourse =
-          null;
-
+        generatedCourse = null;
 
       }
 
       catch(error) {
 
-        console.error(
-          error
-        );
+        console.error(error);
 
-
-        getElement(
-          "ocrStatus"
-        ).textContent =
+        getElement("ocrStatus").textContent =
           "❌ Impossible de charger cette photo.";
 
       }
@@ -462,44 +487,36 @@ getElement("photo")
 
 
 /* =====================================================
-   EXEMPLE
+   CHARGER UN EXEMPLE
 ===================================================== */
 
-getElement(
-  "exampleButton"
-)
-.addEventListener(
-  "click",
-  function() {
+getElement("exampleButton")
+  .addEventListener(
+    "click",
+    function() {
 
-    getElement(
-      "text"
-    ).value =
+      getElement("text").value =
 `La photosynthèse est le processus par lequel les plantes utilisent l'énergie lumineuse pour transformer le dioxyde de carbone et l'eau en matière organique.
 Elle produit notamment du glucose et libère du dioxygène.
 La photosynthèse se déroule principalement dans les chloroplastes des cellules végétales.
 La chlorophylle joue un rôle essentiel dans la capture de l'énergie lumineuse.`;
 
 
-    getElement(
-      "ocrStatus"
-    ).textContent =
-      "🧪 Exemple chargé.";
+      getElement("ocrStatus").textContent =
+        "🧪 Exemple chargé.";
 
-  }
-);
+    }
+  );
 
 
 /* =====================================================
-   AMELIORATION IMAGE
+   AMÉLIORATION DE L'IMAGE
 ===================================================== */
 
 async function improveImage(file) {
 
   const dataURL =
-    await fileToDataURL(
-      file
-    );
+    await fileToDataURL(file);
 
 
   return new Promise(
@@ -524,9 +541,7 @@ async function improveImage(file) {
             image.naturalHeight;
 
 
-          if (
-            width > maxWidth
-          ) {
+          if (width > maxWidth) {
 
             height =
               Math.round(
@@ -622,9 +637,7 @@ async function improveImage(file) {
 
               if (blob) {
 
-                resolve(
-                  blob
-                );
+                resolve(blob);
 
               }
 
@@ -646,7 +659,11 @@ async function improveImage(file) {
 
 
       image.onerror =
-        reject;
+        function(error) {
+
+          reject(error);
+
+        };
 
 
       image.src =
@@ -662,262 +679,1010 @@ async function improveImage(file) {
    OCR
 ===================================================== */
 
-getElement(
-  "ocrButton"
-)
-.addEventListener(
-  "click",
-  async function() {
+getElement("ocrButton")
+  .addEventListener(
+    "click",
+    async function() {
 
-    if (!imageFile) {
+      if (!imageFile) {
 
-      getElement(
-        "ocrStatus"
-      ).textContent =
-        "⚠️ Choisis d'abord une photo.";
+        getElement("ocrStatus").textContent =
+          "⚠️ Choisis d'abord une photo.";
 
-      return;
+        return;
 
-    }
+      }
 
 
-    const button =
-      getElement(
-        "ocrButton"
-      );
+      const button =
+        getElement("ocrButton");
 
 
-    const status =
-      getElement(
-        "ocrStatus"
-      );
+      const status =
+        getElement("ocrStatus");
 
 
-    const textArea =
-      getElement(
-        "text"
-      );
+      const textArea =
+        getElement("text");
 
 
-    const progressContainer =
-      getElement(
-        "progressContainer"
-      );
+      const progressContainer =
+        getElement("progressContainer");
 
 
-    const progressBar =
-      getElement(
-        "progressBar"
-      );
+      const progressBar =
+        getElement("progressBar");
 
 
-    button.disabled =
-      true;
+      button.disabled =
+        true;
 
 
-    progressContainer
-      .classList
-      .remove(
-        "hidden"
-      );
+      progressContainer
+        .classList
+        .remove("hidden");
 
 
-    progressBar.style.width =
-      "0%";
+      progressBar.style.width =
+        "0%";
 
 
-    let worker =
-      null;
+      let worker = null;
 
 
-    try {
+      try {
 
-      status.textContent =
-        "⏳ Chargement du moteur OCR français…";
+        status.textContent =
+          "⏳ Chargement du moteur OCR français…";
 
 
-      worker =
-        await Tesseract.createWorker(
-          "fra",
-          1,
+        worker =
+          await Tesseract.createWorker(
+            "fra",
+            1,
+            {
+
+              logger:
+                function(message) {
+
+                  if (
+                    message.status ===
+                    "recognizing text"
+                  ) {
+
+                    const progress =
+                      Math.round(
+                        (
+                          message.progress ||
+                          0
+                        ) * 100
+                      );
+
+
+                    progressBar.style.width =
+                      progress + "%";
+
+
+                    status.textContent =
+                      "🔎 Reconnaissance du texte : " +
+                      progress +
+                      "%";
+
+                  }
+
+
+                  else if (
+                    message.status ===
+                    "loading language traineddata"
+                  ) {
+
+                    status.textContent =
+                      "🇫🇷 Chargement du modèle français…";
+
+                  }
+
+
+                  else if (
+                    message.status ===
+                    "initializing api"
+                  ) {
+
+                    status.textContent =
+                      "⚙️ Initialisation de l'OCR…";
+
+                  }
+
+                }
+
+            }
+          );
+
+
+        await worker.setParameters(
           {
 
-            logger:
-              function(message) {
+            tessedit_pageseg_mode:
+              Tesseract.PSM.AUTO,
 
-                if (
-                  message.status ===
-                  "recognizing text"
-                ) {
-
-                  const progress =
-                    Math.round(
-                      (
-                        message.progress ||
-                        0
-                      ) * 100
-                    );
-
-
-                  progressBar.style.width =
-                    progress +
-                    "%";
-
-
-                  status.textContent =
-                    "🔎 Reconnaissance du texte : " +
-                    progress +
-                    "%";
-
-                }
-
-                else if (
-                  message.status ===
-                  "loading language traineddata"
-                ) {
-
-                  status.textContent =
-                    "🇫🇷 Chargement du modèle français…";
-
-                }
-
-                else if (
-                  message.status ===
-                  "initializing api"
-                ) {
-
-                  status.textContent =
-                    "⚙️ Initialisation de l'OCR…";
-
-                }
-
-              }
+            preserve_interword_spaces:
+              "1"
 
           }
         );
 
 
-      await worker.setParameters(
-        {
+        status.textContent =
+          "✨ Amélioration automatique de l'image…";
 
-          tessedit_pageseg_mode:
-            Tesseract.PSM.AUTO,
 
-          preserve_interword_spaces:
-            "1"
+        const processedImage =
+          await improveImage(
+            imageFile
+          );
 
+
+        status.textContent =
+          "🔎 Analyse du document…";
+
+
+        const result =
+          await worker.recognize(
+            processedImage
+          );
+
+
+        const recognizedText =
+          (
+            result.data.text ||
+            ""
+          ).trim();
+
+
+        progressBar.style.width =
+          "100%";
+
+
+        if (
+          recognizedText.length < 3
+        ) {
+
+          textArea.value =
+            "";
+
+
+          status.textContent =
+            "⚠️ Très peu de texte détecté. Le document peut contenir surtout un schéma ou une écriture difficile à lire. La photo originale sera conservée.";
+
+        }
+
+        else {
+
+          textArea.value =
+            recognizedText;
+
+
+          status.textContent =
+            "✅ Texte reconnu. Tu peux le corriger avant de générer le cours.";
+
+        }
+
+      }
+
+      catch(error) {
+
+        console.error(error);
+
+
+        status.textContent =
+          "❌ Erreur pendant l'OCR. Vérifie ta connexion Internet puis réessaie.";
+
+      }
+
+      finally {
+
+        if (worker) {
+
+          try {
+
+            await worker.terminate();
+
+          }
+
+          catch(error) {
+
+            console.log(error);
+
+          }
+
+        }
+
+
+        button.disabled =
+          false;
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   GÉNÉRATION DU COURS
+===================================================== */
+
+getElement("courseButton")
+  .addEventListener(
+    "click",
+    function() {
+
+      const text =
+        getElement("text")
+          .value
+          .trim();
+
+
+      const courseBox =
+        getElement("course");
+
+
+      const originalImageBox =
+        getElement("originalImageBox");
+
+
+      const originalImage =
+        getElement("originalImage");
+
+
+      if (!text) {
+
+        courseBox.classList.remove(
+          "hidden"
+        );
+
+
+        courseBox.innerHTML =
+          "<p>⚠️ Aucun texte disponible. Reconnais d'abord le texte de la photo ou écris-le manuellement.</p>";
+
+
+        return;
+
+      }
+
+
+      generatedCourse =
+        createCourse(text);
+
+
+      courseBox.innerHTML =
+        generatedCourse.html;
+
+
+      courseBox.classList.remove(
+        "hidden"
+      );
+
+
+      if (originalImageDataURL) {
+
+        originalImage.src =
+          originalImageDataURL;
+
+
+        originalImage.style.display =
+          "block";
+
+
+        originalImageBox.classList.remove(
+          "hidden"
+        );
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   CRÉATION DU COURS
+===================================================== */
+
+function createCourse(text) {
+
+  const cleanText =
+    text
+      .replace(/\r/g, "")
+      .replace(/[ \t]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim();
+
+
+  const sentences =
+    cleanText
+      .split(/(?<=[.!?])\s+/)
+      .map(
+        function(sentence) {
+          return sentence.trim();
+        }
+      )
+      .filter(
+        function(sentence) {
+          return sentence.length > 0;
         }
       );
 
 
-      status.textContent =
-        "✨ Amélioration automatique de l'image…";
+  const title =
+    detectTitle(cleanText);
 
 
-      const processedImage =
-        await improveImage(
-          imageFile
-        );
+  const paragraphs =
+    createParagraphs(sentences);
 
 
-      status.textContent =
-        "🔎 Analyse du document…";
+  const keywords =
+    extractKeywords(cleanText);
 
 
-      const result =
-        await worker.recognize(
-          processedImage
-        );
+  let html = "";
 
 
-      const recognizedText =
-        (
-          result.data.text ||
-          ""
-        ).trim();
+  html +=
+    "<h2>" +
+    escapeHTML(title) +
+    "</h2>";
 
 
-      progressBar.style.width =
-        "100%";
+  if (paragraphs.length > 0) {
 
+    html +=
+      "<h3>📖 L'essentiel du cours</h3>";
+
+
+    paragraphs.forEach(
+      function(paragraph) {
+
+        html +=
+          "<p>" +
+          escapeHTML(paragraph) +
+          "</p>";
+
+      }
+    );
+
+  }
+
+
+  if (keywords.length > 0) {
+
+    html +=
+      "<h3>🔑 Mots-clés</h3>";
+
+
+    html +=
+      "<div>";
+
+
+    keywords.forEach(
+      function(keyword) {
+
+        html +=
+          '<span class="keyword">' +
+          escapeHTML(keyword) +
+          "</span>";
+
+      }
+    );
+
+
+    html +=
+      "</div>";
+
+  }
+
+
+  html +=
+    "<h3>🧠 À retenir</h3>";
+
+
+  html +=
+    "<ul>";
+
+
+  sentences
+    .slice(
+      0,
+      Math.min(
+        6,
+        sentences.length
+      )
+    )
+    .forEach(
+      function(sentence) {
+
+        html +=
+          "<li>" +
+          escapeHTML(sentence) +
+          "</li>";
+
+      }
+    );
+
+
+  html +=
+    "</ul>";
+
+
+  return {
+
+    title: title,
+
+    html: html,
+
+    text:
+      stripHTML(html)
+
+  };
+
+}
+
+
+/* =====================================================
+   DÉTECTION DU TITRE
+===================================================== */
+
+function detectTitle(text) {
+
+  const firstLine =
+    text
+      .split("\n")
+      .map(
+        function(line) {
+          return line.trim();
+        }
+      )
+      .find(
+        function(line) {
+          return line.length > 0;
+        }
+      );
+
+
+  if (
+    firstLine &&
+    firstLine.length <= 80 &&
+    !/[.!?]$/.test(firstLine)
+  ) {
+
+    return firstLine;
+
+  }
+
+
+  const lower =
+    text.toLowerCase();
+
+
+  if (
+    lower.includes("photosynthèse")
+  ) {
+
+    return "La photosynthèse";
+
+  }
+
+
+  if (
+    lower.includes("mathématiques") ||
+    lower.includes("mathématique")
+  ) {
+
+    return "Cours de mathématiques";
+
+  }
+
+
+  if (
+    lower.includes("histoire")
+  ) {
+
+    return "Cours d'histoire";
+
+  }
+
+
+  if (
+    lower.includes("géographie")
+  ) {
+
+    return "Cours de géographie";
+
+  }
+
+
+  if (
+    lower.includes("physique")
+  ) {
+
+    return "Cours de physique";
+
+  }
+
+
+  if (
+    lower.includes("chimie")
+  ) {
+
+    return "Cours de chimie";
+
+  }
+
+
+  if (
+    lower.includes("biologie")
+  ) {
+
+    return "Cours de biologie";
+
+  }
+
+
+  return "Cours résumé";
+
+}
+
+
+/* =====================================================
+   CRÉATION DES PARAGRAPHES
+===================================================== */
+
+function createParagraphs(sentences) {
+
+  const paragraphs = [];
+
+  let current = "";
+
+
+  sentences.forEach(
+    function(sentence) {
 
       if (
-        recognizedText.length < 3
+        (
+          current.length +
+          sentence.length
+        ) > 450
       ) {
 
-        textArea.value =
-          "";
+        if (current) {
+
+          paragraphs.push(
+            current.trim()
+          );
+
+        }
 
 
-        status.textContent =
-          "⚠️ Très peu de texte détecté. Le document peut contenir surtout un schéma ou une écriture difficile à lire. La photo originale sera conservée.";
+        current =
+          sentence;
 
       }
 
       else {
 
-        textArea.value =
-          recognizedText;
-
-
-        status.textContent =
-          "✅ Texte reconnu. Tu peux le corriger avant de générer le cours.";
-
-      }
-
-    }
-
-    catch(error) {
-
-      console.error(
-        error
-      );
-
-
-      status.textContent =
-        "❌ Erreur pendant l'OCR. Vérifie ta connexion Internet puis réessaie.";
-
-    }
-
-    finally {
-
-      if (worker) {
-
-        try {
-
-          await worker.terminate();
-
-        }
-
-        catch(error) {
-
-          console.log(
-            error
-          );
-
-        }
+        current +=
+          (
+            current
+              ? " "
+              : ""
+          ) +
+          sentence;
 
       }
 
-
-      button.disabled =
-        false;
-
     }
+  );
+
+
+  if (current) {
+
+    paragraphs.push(
+      current.trim()
+    );
 
   }
-);    // fin de ton premier bloc
-  }
-);
+
+
+  return paragraphs;
+
+}
 
 
 /* =====================================================
-   GENERATION DU COURS
+   EXTRACTION DES MOTS-CLÉS
 ===================================================== */
 
-// ici commence le deuxième bloc que je t'ai donné
+function extractKeywords(text) {
 
-...
+  const stopWords =
+    new Set([
+
+      "avec",
+      "dans",
+      "pour",
+      "sont",
+      "être",
+      "cette",
+      "cela",
+      "comme",
+      "mais",
+      "plus",
+      "moins",
+      "elle",
+      "elles",
+      "ils",
+      "nous",
+      "vous",
+      "leur",
+      "leurs",
+      "qui",
+      "que",
+      "des",
+      "les",
+      "une",
+      "un",
+      "du",
+      "de",
+      "la",
+      "le",
+      "et",
+      "ou",
+      "en",
+      "au",
+      "aux",
+      "sur",
+      "par",
+      "ce",
+      "ces",
+      "est",
+      "se",
+      "son",
+      "sa",
+      "ses",
+      "d",
+      "l"
+
+    ]);
+
+
+  const words =
+    text
+      .toLowerCase()
+      .replace(
+        /[.,;:!?()[\]{}"'“”‘’]/g,
+        " "
+      )
+      .split(/\s+/);
+
+
+  const frequency = {};
+
+
+  words.forEach(
+    function(word) {
+
+      word =
+        word.trim();
+
+
+      if (
+        word.length < 4 ||
+        stopWords.has(word) ||
+        /^\d+$/.test(word)
+      ) {
+
+        return;
+
+      }
+
+
+      frequency[word] =
+        (
+          frequency[word] ||
+          0
+        ) + 1;
+
+    }
+  );
+
+
+  return Object.keys(frequency)
+    .sort(
+      function(a, b) {
+
+        return (
+          frequency[b] -
+          frequency[a]
+        );
+
+      }
+    )
+    .slice(0, 10)
+    .map(
+      function(word) {
+
+        return (
+          word.charAt(0).toUpperCase() +
+          word.slice(1)
+        );
+
+      }
+    );
+
+}
+
+
+/* =====================================================
+   SUPPRESSION DU HTML POUR L'EXPORT TXT
+===================================================== */
+
+function stripHTML(html) {
+
+  const temporary =
+    document.createElement(
+      "div"
+    );
+
+
+  temporary.innerHTML =
+    html;
+
+
+  return (
+    temporary.textContent ||
+    temporary.innerText ||
+    ""
+  );
+
+}
+
+
+/* =====================================================
+   EXPORT TXT
+===================================================== */
+
+getElement("exportTxt")
+  .addEventListener(
+    "click",
+    function() {
+
+      if (!generatedCourse) {
+
+        alert(
+          "Génère d'abord un cours."
+        );
+
+        return;
+
+      }
+
+
+      const content =
+        generatedCourse.text;
+
+
+      const blob =
+        new Blob(
+          [content],
+          {
+            type:
+              "text/plain;charset=utf-8"
+          }
+        );
+
+
+      downloadFile(
+        blob,
+        "cours.txt"
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   EXPORT HTML AVEC PHOTO
+===================================================== */
+
+getElement("exportHtml")
+  .addEventListener(
+    "click",
+    function() {
+
+      if (!generatedCourse) {
+
+        alert(
+          "Génère d'abord un cours."
+        );
+
+        return;
+
+      }
+
+
+      let imageHTML = "";
+
+
+      if (originalImageDataURL) {
+
+        imageHTML =
+`
+<h2>Document original</h2>
+
+<img
+  src="${originalImageDataURL}"
+  alt="Document original"
+  style="
+    max-width:100%;
+    border-radius:12px;
+    border:1px solid #ddd;
+  "
+>
+`;
+
+      }
+
+
+      const html =
+`<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
+<title>${escapeHTML(generatedCourse.title)}</title>
+
+<style>
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
+  color: #111827;
+  margin: 0;
+  padding: 30px;
+}
+
+main {
+  max-width: 900px;
+  margin: auto;
+  background: white;
+  padding: 30px;
+  border-radius: 18px;
+}
+
+h1,
+h2,
+h3 {
+  color: #111827;
+}
+
+p,
+li {
+  line-height: 1.7;
+}
+
+.keyword {
+  display: inline-block;
+  background: #e5e7eb;
+  padding: 7px 11px;
+  margin: 4px;
+  border-radius: 20px;
+}
+
+img {
+  max-width: 100%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<main>
+
+<h1>
+${escapeHTML(generatedCourse.title)}
+</h1>
+
+${generatedCourse.html}
+
+${imageHTML}
+
+</main>
+
+</body>
+
+</html>`;
+
+
+      const blob =
+        new Blob(
+          [html],
+          {
+            type:
+              "text/html;charset=utf-8"
+          }
+        );
+
+
+      downloadFile(
+        blob,
+        "cours-avec-photo.html"
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   TÉLÉCHARGEMENT
+===================================================== */
+
+function downloadFile(
+  blob,
+  filename
+) {
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const link =
+    document.createElement(
+      "a"
+    );
+
+
+  link.href =
+    url;
+
+
+  link.download =
+    filename;
+
+
+  document.body.appendChild(
+    link
+  );
+
+
+  link.click();
+
+
+  link.remove();
+
+
+  setTimeout(
+    function() {
+
+      URL.revokeObjectURL(
+        url
+      );
+
+    },
+    1000
+  );
+
+}
+
 
 /* =====================================================
    INITIALISATION
@@ -930,4 +1695,3 @@ getElement("ocrStatus").textContent =
 
 </body>
 </html>
-  
