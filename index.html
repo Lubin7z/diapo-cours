@@ -1486,8 +1486,6 @@ getElement("exportTxt")
 
     }
   );
-
-
 /* =====================================================
    EXPORT HTML AVEC PHOTO
 ===================================================== */
@@ -1515,17 +1513,31 @@ getElement("exportHtml")
 
         imageHTML =
 `
-<h2>Document original</h2>
+<section>
+
+<h2>🖼️ Document original</h2>
+
+<p>
+La photo originale du document est conservée
+pour ne pas perdre les schémas, dessins,
+flèches et annotations.
+</p>
 
 <img
   src="${originalImageDataURL}"
   alt="Document original"
   style="
-    max-width:100%;
-    border-radius:12px;
-    border:1px solid #ddd;
+    display:block;
+    width:100%;
+    max-width:850px;
+    height:auto;
+    margin:20px auto;
+    border-radius:14px;
+    border:1px solid #d1d5db;
   "
 >
+
+</section>
 `;
 
       }
@@ -1545,47 +1557,104 @@ getElement("exportHtml")
   content="width=device-width, initial-scale=1.0"
 >
 
-<title>${escapeHTML(generatedCourse.title)}</title>
+<title>
+${escapeHTML(generatedCourse.title)}
+</title>
 
 <style>
 
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: Arial, sans-serif;
-  background: #f3f4f6;
-  color: #111827;
+
   margin: 0;
-  padding: 30px;
+
+  padding: 20px;
+
+  font-family:
+    Arial,
+    sans-serif;
+
+  background:
+    #f3f4f6;
+
+  color:
+    #111827;
+
 }
 
 main {
+
+  width: 100%;
+
   max-width: 900px;
-  margin: auto;
+
+  margin: 0 auto;
+
   background: white;
-  padding: 30px;
+
+  padding: 25px;
+
   border-radius: 18px;
+
+  box-shadow:
+    0 4px 18px rgba(0,0,0,0.08);
+
 }
 
-h1,
-h2,
+h1 {
+
+  margin-top: 0;
+
+  font-size: 30px;
+
+}
+
+h2 {
+
+  margin-top: 25px;
+
+}
+
 h3 {
-  color: #111827;
+
+  margin-top: 25px;
+
 }
 
 p,
 li {
+
   line-height: 1.7;
+
 }
 
 .keyword {
+
   display: inline-block;
-  background: #e5e7eb;
-  padding: 7px 11px;
-  margin: 4px;
-  border-radius: 20px;
+
+  background:
+    #e5e7eb;
+
+  padding:
+    7px 11px;
+
+  margin:
+    4px;
+
+  border-radius:
+    20px;
+
 }
 
 img {
+
   max-width: 100%;
+
+  height: auto;
+
 }
 
 </style>
@@ -1597,7 +1666,7 @@ img {
 <main>
 
 <h1>
-${escapeHTML(generatedCourse.title)}
+📚 ${escapeHTML(generatedCourse.title)}
 </h1>
 
 ${generatedCourse.html}
@@ -1621,15 +1690,60 @@ ${imageHTML}
         );
 
 
-      downloadFile(
-        blob,
-        "cours-avec-photo.html"
+      const url =
+        URL.createObjectURL(
+          blob
+        );
+
+
+      const link =
+        document.createElement(
+          "a"
+        );
+
+
+      link.href =
+        url;
+
+
+      link.download =
+        "cours-avec-photo.html";
+
+
+      link.style.display =
+        "none";
+
+
+      document.body.appendChild(
+        link
+      );
+
+
+      link.click();
+
+
+      document.body.removeChild(
+        link );
+
+
+      setTimeout(
+        function() {
+
+          URL.revokeObjectURL(
+            url
+          );
+
+        },
+        2000
+      );
+
+
+      alert(
+        "✅ Le fichier HTML a été créé. Vérifie ton dossier Téléchargements."
       );
 
     }
   );
-
-
 /* =====================================================
    TÉLÉCHARGEMENT
 ===================================================== */
