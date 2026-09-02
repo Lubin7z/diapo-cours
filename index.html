@@ -1,2633 +1,1907 @@
 <!DOCTYPE html>
+
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#111827">
-
-<title>Photo → Cours V5</title>
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js"></script>
-
-<style>
-:root{
-  --bg:#f3f4f6;
-  --card:#ffffff;
-  --text:#111827;
-  --muted:#6b7280;
-  --border:#d1d5db;
-  --primary:#2563eb;
-  --primary-dark:#1d4ed8;
-  --green:#059669;
-  --red:#dc2626;
-  --orange:#d97706;
-  --shadow:0 8px 30px rgba(0,0,0,.08);
-  --radius:18px;
-}
-
-*{
-  box-sizing:border-box;
-}
-
-body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-header{
-  background:#111827;
-  color:white;
-  padding:24px 18px;
-  text-align:center;
-}
-
-header h1{
-  margin:0 0 8px;
-  font-size:28px;
-}
-
-header p{
-  margin:0;
-  color:#d1d5db;
-}
-
-.container{
-  width:min(1100px,94%);
-  margin:20px auto 60px;
-}
-
-.card{
-  background:var(--card);
-  border-radius:var(--radius);
-  padding:20px;
-  margin-bottom:18px;
-  box-shadow:var(--shadow);
-}
-
-h2{
-  margin-top:0;
-}
-
-h3{
-  margin-top:0;
-}
-
-button,
-select,
-input[type=file]{
-  font:inherit;
-}
-
-button{
-  border:0;
-  border-radius:12px;
-  padding:12px 16px;
-  cursor:pointer;
-  background:var(--primary);
-  color:white;
-  font-weight:700;
-  transition:.15s;
-}
-
-button:hover{
-  background:var(--primary-dark);
-}
-
-button:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-button.secondary{
-  background:#374151;
-}
-
-button.green{
-  background:var(--green);
-}
-
-button.orange{
-  background:var(--orange);
-}
-
-button.red{
-  background:var(--red);
-}
-
-.controls{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  align-items:center;
-}
-
-.file-label{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:12px 16px;
-  border-radius:12px;
-  background:var(--primary);
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
-
-.file-label:hover{
-  background:var(--primary-dark);
-}
-
-.file-label input{
-  display:none;
-}
-
-select{
-  padding:11px 14px;
-  border:1px solid var(--border);
-  border-radius:12px;
-  background:white;
-}
-
-.status{
-  margin-top:15px;
-  padding:12px 14px;
-  border-radius:12px;
-  background:#eff6ff;
-  color:#1e40af;
-  font-weight:600;
-}
-
-.status.success{
-  background:#ecfdf5;
-  color:#065f46;
-}
-
-.status.error{
-  background:#fef2f2;
-  color:#991b1b;
-}
-
-.status.warning{
-  background:#fffbeb;
-  color:#92400e;
-}
-
-.progress-wrap{
-  margin-top:12px;
-  height:12px;
-  border-radius:999px;
-  overflow:hidden;
-  background:#e5e7eb;
-}
-
-.progress{
-  height:100%;
-  width:0%;
-  background:var(--primary);
-  transition:width .2s;
-}
-
-.photos-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
-  gap:14px;
-}
-
-.photo-card{
-  border:1px solid var(--border);
-  border-radius:14px;
-  overflow:hidden;
-  background:white;
-}
-
-.photo-card img{
-  display:block;
-  width:100%;
-  height:180px;
-  object-fit:contain;
-  background:#e5e7eb;
-}
-
-.photo-info{
-  padding:10px;
-  font-size:13px;
-}
-
-.photo-name{
-  font-weight:700;
-  word-break:break-word;
-}
-
-.photo-error{
-  margin-top:7px;
-  color:var(--red);
-  font-weight:700;
-}
-
-.empty{
-  color:var(--muted);
-  padding:10px 0;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-  gap:10px;
-  margin-top:14px;
-}
-
-.stat{
-  background:#f9fafb;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:14px;
-}
-
-.stat strong{
-  display:block;
-  font-size:25px;
-  margin-top:4px;
-}
-
-.ocr-box{
-  background:#111827;
-  color:#e5e7eb;
-  border-radius:14px;
-  padding:15px;
-  overflow:auto;
-  max-height:500px;
-  white-space:pre-wrap;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  line-height:1.5;
-}
-
-.course{
-  background:white;
-  border-radius:14px;
-  border:1px solid var(--border);
-  padding:24px;
-}
-
-.course h1{
-  font-size:30px;
-  margin-top:0;
-}
-
-.course h2{
-  margin-top:30px;
-  padding-bottom:8px;
-  border-bottom:2px solid #e5e7eb;
-}
-
-.course h3{
-  margin-top:22px;
-}
-
-.course p{
-  line-height:1.7;
-}
-
-.course ul,
-.course ol{
-  line-height:1.7;
-}
-
-.course .definition{
-  background:#eff6ff;
-  border-left:5px solid var(--primary);
-  padding:12px 15px;
-  border-radius:8px;
-  margin:12px 0;
-}
-
-.course .important{
-  background:#ecfdf5;
-  border-left:5px solid var(--green);
-  padding:12px 15px;
-  border-radius:8px;
-  margin:12px 0;
-}
-
-.course .formula{
-  background:#f9fafb;
-  border:1px solid var(--border);
-  padding:12px;
-  border-radius:10px;
-  font-family:ui-monospace,monospace;
-  overflow:auto;
-}
-
-.original-image{
-  max-width:100%;
-  display:block;
-  margin:15px auto;
-  border-radius:12px;
-  border:1px solid var(--border);
-}
-
-.notice{
-  padding:12px 14px;
-  border-radius:12px;
-  background:#f9fafb;
-  border:1px solid var(--border);
-  margin-bottom:12px;
-}
-
-.small{
-  font-size:13px;
-  color:var(--muted);
-}
-
-#courseSection{
-  display:none;
-}
-
-#ocrSection{
-  display:none;
-}
-
-#diagnosticSection{
-  display:none;
-}
-
-.slide-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.95);
-  z-index:9999;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-  padding:20px;
-}
-
-.slide-overlay img{
-  max-width:95vw;
-  max-height:80vh;
-  object-fit:contain;
-}
-
-.slide-title{
-  color:white;
-  margin-bottom:15px;
-  text-align:center;
-}
-
-.slide-controls{
-  margin-top:15px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-@media(max-width:650px){
-  header h1{
-    font-size:23px;
-  }
-
-  .card{
-    padding:15px;
-  }
-
-  button,
-  .file-label{
-    width:100%;
-  }
-
-  .controls{
-    flex-direction:column;
-    align-items:stretch;
-  }
-
-  select{
-    width:100%;
-  }
-}
-
-@media print{
-  header,
-  .no-print,
-  #photosSection,
-  #ocrSection,
-  #diagnosticSection{
-    display:none !important;
-  }
-
-  body{
-    background:white;
-  }
-
-  .container{
-    width:100%;
-    margin:0;
-  }
-
-  .card{
-    box-shadow:none;
-    border:0;
-  }
-
-  #courseSection{
-    display:block !important;
-  }
-
-  .course{
-    border:0;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+
+>
+
+<meta
+name="theme-color"
+content="#111827"
+
+>
+
+  <title>Photo → Cours IA</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 950px;
+      margin: auto;
+      padding: 18px;
+    }
+
+    h1 {
+      margin-bottom: 6px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      line-height: 1.5;
+    }
+
+    .card {
+      background: white;
+      margin-bottom: 18px;
+      padding: 20px;
+      border-radius: 18px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    }
+
+    button,
+    .file-button {
+      display: inline-block;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 17px;
+      margin: 5px 3px;
+      background: #111827;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover,
+    .file-button:hover {
+      opacity: .9;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: wait;
+    }
+
+    .secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .danger {
+      background: #b91c1c;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    input[type="password"],
+    textarea {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+    }
+
+    textarea {
+      min-height: 260px;
+      resize: vertical;
+    }
+
+    #preview {
+      display: none;
+      width: 100%;
+      max-height: 600px;
+      object-fit: contain;
+      margin-top: 15px;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+    }
+
+    .status {
+      margin-top: 12px;
+      padding: 13px;
+      background: #f3f4f6;
+      border-radius: 10px;
+      line-height: 1.5;
+      white-space: pre-line;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .note {
+      color: #4b5563;
+      font-size: .92rem;
+      line-height: 1.5;
+    }
+
+    .course {
+      line-height: 1.7;
+    }
+
+    .course h1,
+    .course h2,
+    .course h3 {
+      color: #111827;
+    }
+
+    .course-section {
+      background: #f9fafb;
+      border-left: 5px solid #111827;
+      padding: 16px;
+      margin: 16px 0;
+      border-radius: 12px;
+    }
+
+    .important {
+      background: #fff7ed;
+      padding: 15px;
+      border-radius: 12px;
+      margin: 15px 0;
+      border: 1px solid #fed7aa;
+    }
+
+    .keyword {
+      display: inline-block;
+      padding: 7px 11px;
+      margin: 4px;
+      border-radius: 20px;
+      background: #e5e7eb;
+      font-weight: bold;
+    }
+
+    .original-image {
+      width: 100%;
+      max-height: 700px;
+      object-fit: contain;
+      border-radius: 14px;
+      border: 1px solid #e5e7eb;
+      margin-top: 12px;
+    }
+
+  </style>
+
 </head>
 
 <body>
-
-<header>
-  <h1>📸 Photo → Cours V5</h1>
-  <p>OCR local • reconstruction du cours • schémas • export</p>
-</header>
 
 <div class="container">
 
-  <!-- IMPORT -->
-  <section class="card no-print">
-    <h2>1. Ajouter les photos</h2>
+  <h1>📷 Photo → Cours IA</h1>
 
-    <div class="controls">
-      <label class="file-label">
-        📷 Ajouter une ou plusieurs photos
-        <input
-          id="fileInput"
-          type="file"
-          accept="image/*"
-          multiple
-        >
-      </label>
+  <p class="subtitle">
+    Transforme une photo de cours en une fiche propre grâce à l'IA.
+  </p>
 
-      <button id="exampleBtn" class="secondary">
-        🧪 Tester avec un exemple
-      </button>
+  <!-- ============================= -->
 
-      <button id="clearBtn" class="red">
-        🗑️ Tout effacer
-      </button>
-    </div>
+  <!-- CLE API -->
 
-    <div id="importStatus" class="status">
-      Aucune photo importée.
-    </div>
-  </section>
+  <!-- ============================= -->
 
-  <!-- PHOTOS -->
-  <section class="card no-print" id="photosSection">
-    <h2>2. Photos originales</h2>
+  <div class="card">
 
-    <div id="photosGrid" class="photos-grid">
-      <div class="empty">Aucune photo pour le moment.</div>
-    </div>
-  </section>
+```
+<h2>🔑 1. Clé API Gemini</h2>
 
-  <!-- OCR -->
-  <section class="card no-print">
-    <h2>3. OCR</h2>
+<p class="note">
+  Colle ta clé API ici. Elle est enregistrée uniquement
+  dans le navigateur de cet appareil.
+  Ne partage jamais cette clé.
+</p>
 
-    <div class="controls">
-      <select id="mode">
-        <option value="precision">🎯 Précision maximale</option>
-        <option value="fast">⚡ Rapide</option>
-      </select>
+<input
+  id="apiKey"
+  type="password"
+  placeholder="Colle ta clé API Gemini ici"
+>
 
-      <button id="ocrBtn">
-        🔎 Lire les photos
-      </button>
+<button id="saveKeyButton">
+  💾 Enregistrer la clé
+</button>
 
-      <button id="generateBtn" class="green">
-        ✨ Générer la fiche
-      </button>
-    </div>
+<button
+  id="deleteKeyButton"
+  class="secondary"
+>
+  🗑️ Supprimer
+</button>
 
-    <div id="ocrStatus" class="status">
-      L'OCR n'a pas encore été lancé.
-    </div>
+<div
+  id="keyStatus"
+  class="status"
+>
+  Vérification de la clé...
+</div>
+```
 
-    <div class="progress-wrap">
-      <div id="progressBar" class="progress"></div>
-    </div>
-  </section>
+  </div>
 
-  <!-- STATS -->
-  <section class="card no-print" id="diagnosticSection">
-    <h2>🔬 Diagnostic OCR</h2>
+  <!-- ============================= -->
 
-    <div class="stats">
-      <div class="stat">
-        Photos
-        <strong id="statPhotos">0</strong>
-      </div>
+  <!-- PHOTO -->
 
-      <div class="stat">
-        Mots
-        <strong id="statWords">0</strong>
-      </div>
+  <!-- ============================= -->
 
-      <div class="stat">
-        Lignes
-        <strong id="statLines">0</strong>
-      </div>
+  <div class="card">
 
-      <div class="stat">
-        Confiance
-        <strong id="statConfidence">0%</strong>
-      </div>
-    </div>
+```
+<h2>📷 2. Ajouter une photo</h2>
 
-    <h3 style="margin-top:25px;">Texte réellement détecté</h3>
+<label
+  for="photoInput"
+  class="file-button"
+>
+  📷 Choisir une photo
+</label>
 
-    <div class="notice">
-      <strong>Important :</strong>
-      si du texte apparaît ici, l'OCR fonctionne. La génération du cours se fera ensuite à partir de ce texte.
-    </div>
+<input
+  id="photoInput"
+  type="file"
+  accept="image/*"
+>
 
-    <div id="ocrText" class="ocr-box">
-      Aucun texte détecté.
-    </div>
-  </section>
+<button
+  id="removePhotoButton"
+  class="secondary"
+>
+  🗑️ Retirer la photo
+</button>
 
-  <!-- COURS -->
-  <section class="card" id="courseSection">
-    <div class="no-print controls" style="margin-bottom:15px;">
-      <button id="exportHtmlBtn">
-        💾 Export HTML
-      </button>
+<img
+  id="preview"
+  alt="Aperçu du document"
+>
 
-      <button id="exportTxtBtn" class="secondary">
-        📄 Export TXT
-      </button>
+<div
+  id="photoStatus"
+  class="status"
+>
+  Aucune photo sélectionnée.
+</div>
+```
 
-      <button id="printBtn" class="orange">
-        🖨️ PDF / Imprimer
-      </button>
+  </div>
 
-      <button id="slideshowBtn" class="secondary">
-        🖼️ Diaporama
-      </button>
-    </div>
+  <!-- ============================= -->
 
-    <div id="course"></div>
-  </section>
+  <!-- ANALYSE IA -->
+
+  <!-- ============================= -->
+
+  <div class="card">
+
+```
+<h2>🤖 3. Lire la photo avec l'IA</h2>
+
+<p class="note">
+
+  L'IA analyse directement l'image.
+  Elle essaie de reconnaître le texte,
+  les titres, les listes, les tableaux,
+  les flèches et les légendes.
+
+</p>
+
+<button id="analyzeButton">
+
+  🔎 Analyser avec Gemini
+
+</button>
+
+<div
+  id="analysisStatus"
+  class="status"
+>
+
+  Prêt à analyser.
 
 </div>
 
-<!-- SLIDESHOW -->
-<div id="slideOverlay" class="slide-overlay">
-  <div id="slideTitle" class="slide-title"></div>
 
-  <img id="slideImage" alt="Photo du cours">
+<textarea
+  id="recognizedText"
+  placeholder="La transcription de l'IA apparaîtra ici..."
+></textarea>
+```
 
-  <div class="slide-controls">
-    <button id="slidePrev">◀</button>
-    <button id="slideNext">▶</button>
-    <button id="slideFull">⛶ Plein écran</button>
-    <button id="slideClose" class="red">✕ Fermer</button>
   </div>
+
+  <!-- ============================= -->
+
+  <!-- COURS -->
+
+  <!-- ============================= -->
+
+  <div class="card">
+
+```
+<h2>📚 4. Générer la fiche de cours</h2>
+
+<button id="generateCourseButton">
+
+  ✨ Générer ma fiche
+
+</button>
+
+
+<div
+  id="courseStatus"
+  class="status"
+>
+
+  La fiche apparaîtra ici.
+
+</div>
+
+
+<div
+  id="course"
+  class="course hidden"
+></div>
+```
+
+  </div>
+
+  <!-- ============================= -->
+
+  <!-- PHOTO ORIGINALE -->
+
+  <!-- ============================= -->
+
+  <div class="card">
+
+```
+<h2>🖼️ Document original</h2>
+
+<p class="note">
+
+  La photo originale est conservée afin
+  de garder les schémas, dessins,
+  couleurs et annotations.
+
+</p>
+
+<img
+  id="originalImage"
+  class="original-image hidden"
+  alt="Document original"
+>
+```
+
+  </div>
+
+  <!-- ============================= -->
+
+  <!-- EXPORT -->
+
+  <!-- ============================= -->
+
+  <div class="card">
+
+```
+<h2>📤 5. Exporter</h2>
+
+<button id="exportTextButton">
+
+  📄 Export TXT
+
+</button>
+
+<button
+  id="exportHtmlButton"
+  class="secondary"
+>
+
+  🌐 Export HTML
+
+</button>
+```
+
+  </div>
+
 </div>
 
 <script>
-"use strict";
-
-/* =========================================================
-   ÉTAT
-========================================================= */
-
-const state = {
-  photos: [],
-  pages: [],
-  course: null,
-  worker: null,
-  ocrRunning: false,
-  workerReady: false,
-  slideIndex: 0
-};
-
-/* =========================================================
-   DOM
-========================================================= */
-
-const $ = id => document.getElementById(id);
-
-const fileInput = $("fileInput");
-const photosGrid = $("photosGrid");
-const importStatus = $("importStatus");
-
-const ocrBtn = $("ocrBtn");
-const generateBtn = $("generateBtn");
-const exampleBtn = $("exampleBtn");
-const clearBtn = $("clearBtn");
-
-const ocrStatus = $("ocrStatus");
-const progressBar = $("progressBar");
-
-const diagnosticSection = $("diagnosticSection");
-const ocrText = $("ocrText");
-
-const statPhotos = $("statPhotos");
-const statWords = $("statWords");
-const statLines = $("statLines");
-const statConfidence = $("statConfidence");
-
-const courseSection = $("courseSection");
-const courseElement = $("course");
-
-const slideOverlay = $("slideOverlay");
-const slideImage = $("slideImage");
-const slideTitle = $("slideTitle");
 
 
-/* =========================================================
-   UTILITAIRES
-========================================================= */
+/* =====================================================
+   VARIABLES
+===================================================== */
 
-function escapeHTML(value){
-  return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
-}
 
-function clamp(value,min,max){
-  return Math.min(max,Math.max(min,value));
-}
+let imageFile = null;
 
-function sleep(ms){
-  return new Promise(resolve => setTimeout(resolve,ms));
-}
+let imageDataURL = null;
 
-function cleanText(text){
-  return String(text || "")
-    .replace(/\r/g,"")
-    .replace(/[ \t]+\n/g,"\n")
-    .replace(/\n{3,}/g,"\n\n")
-    .trim();
-}
+let generatedCourseHTML = "";
 
-function countWords(text){
-  const words = cleanText(text).match(/\S+/g);
-  return words ? words.length : 0;
-}
 
-function countLines(text){
-  return cleanText(text)
-    .split("\n")
-    .map(x => x.trim())
-    .filter(Boolean)
-    .length;
-}
+/* =====================================================
+   ELEMENTS
+===================================================== */
 
-function averageConfidence(words){
-  const values = words
-    .map(w => Number(w.confidence))
-    .filter(v => Number.isFinite(v) && v >= 0);
 
-  if(!values.length) return 0;
+function get(id) {
 
-  return values.reduce((a,b)=>a+b,0) / values.length;
+  return document.getElementById(id);
+
 }
 
 
-/* =========================================================
-   IMAGE
-========================================================= */
+/* =====================================================
+   CHARGEMENT CLE API
+===================================================== */
 
-function loadImage(src){
-  return new Promise((resolve,reject)=>{
-    const img = new Image();
 
-    img.onload = () => resolve(img);
+function loadApiKey() {
 
-    img.onerror = () => reject(
-      new Error("Impossible de décoder cette image dans le navigateur.")
+  const savedKey =
+    localStorage.getItem(
+      "gemini_api_key"
     );
 
-    img.src = src;
-  });
+
+  if (
+    savedKey
+  ) {
+
+    get("apiKey").value =
+      savedKey;
+
+
+    get("keyStatus").textContent =
+      "✅ Clé API enregistrée sur cet appareil.";
+
+  }
+
+  else {
+
+    get("keyStatus").textContent =
+      "⚠️ Aucune clé API enregistrée.";
+
+  }
+
 }
 
-function fileToDataURL(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
 
-    reader.onload = () => resolve(reader.result);
+loadApiKey();
 
-    reader.onerror = () => reject(
-      reader.error || new Error("Lecture du fichier impossible.")
+
+
+/* =====================================================
+   ENREGISTRER CLE
+===================================================== */
+
+
+get(
+  "saveKeyButton"
+)
+.addEventListener(
+  "click",
+  function() {
+
+    const key =
+      get(
+        "apiKey"
+      ).value.trim();
+
+
+    if (
+      key.length < 10
+    ) {
+
+      get(
+        "keyStatus"
+      ).textContent =
+        "⚠️ La clé semble incorrecte.";
+
+      return;
+
+    }
+
+
+    localStorage.setItem(
+      "gemini_api_key",
+      key
     );
 
-    reader.readAsDataURL(file);
-  });
-}
 
-function isProbablyHEIC(file){
-  return (
-    /heic|heif/i.test(file.type || "") ||
-    /\.(heic|heif)$/i.test(file.name || "")
-  );
-}
-
-
-/* =========================================================
-   IMPORT ROBUSTE
-========================================================= */
-
-async function addFiles(files){
-
-  if(!files || !files.length){
-    return;
-  }
-
-  let added = 0;
-
-  for(const file of files){
-
-    if(!file.type.startsWith("image/") && !isProbablyHEIC(file)){
-      continue;
-    }
-
-    const id =
-      (crypto.randomUUID
-        ? crypto.randomUUID()
-        : Date.now() + "-" + Math.random());
-
-    /*
-      On crée immédiatement une URL locale.
-      Cela permet d'afficher la photo sans attendre le FileReader.
-    */
-    const previewURL = URL.createObjectURL(file);
-
-    const photo = {
-      id,
-      file,
-      name:file.name,
-      type:file.type,
-      previewURL,
-      dataURL:null,
-      width:0,
-      height:0,
-      error:null
-    };
-
-    state.photos.push(photo);
-
-    /*
-      AFFICHAGE IMMÉDIAT
-    */
-    renderPhotos();
-
-    try{
-
-      /*
-        Cas HEIC/HEIF :
-        certains navigateurs ne savent pas le décoder.
-      */
-      if(isProbablyHEIC(file)){
-
-        try{
-          const img = await loadImage(previewURL);
-
-          photo.width = img.naturalWidth;
-          photo.height = img.naturalHeight;
-
-          photo.dataURL = await fileToDataURL(file);
-
-        }catch(error){
-
-          photo.error =
-            "Cette photo semble être en HEIC/HEIF et ce navigateur ne sait pas la décoder. " +
-            "Utilise JPG ou PNG.";
-
-          renderPhotos();
-          continue;
-        }
-
-      }else{
-
-        const img = await loadImage(previewURL);
-
-        photo.width = img.naturalWidth;
-        photo.height = img.naturalHeight;
-
-        /*
-          On garde une DataURL pour les exports et l'OCR.
-        */
-        photo.dataURL = await fileToDataURL(file);
-      }
-
-      added++;
-
-      renderPhotos();
-
-    }catch(error){
-
-      console.error(error);
-
-      photo.error = error.message || "Erreur lors du chargement.";
-
-      renderPhotos();
-    }
-  }
-
-  if(added > 0){
-
-    importStatus.className = "status success";
-
-    importStatus.textContent =
-      added === 1
-      ? "✅ 1 photo chargée. Tu peux lancer l'OCR."
-      : `✅ ${added} photos chargées. Tu peux lancer l'OCR.`;
-
-  }else{
-
-    importStatus.className = "status error";
-
-    importStatus.textContent =
-      "❌ Aucune photo exploitable n'a pu être chargée.";
-  }
-}
-
-
-/* =========================================================
-   AFFICHAGE PHOTOS
-========================================================= */
-
-function renderPhotos(){
-
-  if(!state.photos.length){
-
-    photosGrid.innerHTML =
-      '<div class="empty">Aucune photo pour le moment.</div>';
-
-    return;
-  }
-
-  photosGrid.innerHTML = "";
-
-  for(const photo of state.photos){
-
-    const card = document.createElement("div");
-    card.className = "photo-card";
-
-    const img = document.createElement("img");
-
-    img.src = photo.previewURL || photo.dataURL;
-    img.alt = photo.name;
-
-    card.appendChild(img);
-
-    const info = document.createElement("div");
-    info.className = "photo-info";
-
-    info.innerHTML = `
-      <div class="photo-name">${escapeHTML(photo.name)}</div>
-      <div class="small">
-        ${photo.width && photo.height
-          ? `${photo.width} × ${photo.height}px`
-          : "Chargement…"}
-      </div>
-      ${
-        photo.error
-        ? `<div class="photo-error">⚠️ ${escapeHTML(photo.error)}</div>`
-        : ""
-      }
-    `;
-
-    card.appendChild(info);
-
-    photosGrid.appendChild(card);
-  }
-}
-
-
-/* =========================================================
-   PRETRAITEMENT IMAGE
-========================================================= */
-
-async function prepareImage(dataURL, mode="precision", variant="normal"){
-
-  const img = await loadImage(dataURL);
-
-  const maxSize =
-    mode === "precision"
-      ? 3000
-      : 2200;
-
-  let width = img.naturalWidth;
-  let height = img.naturalHeight;
-
-  /*
-    IMPORTANT :
-    on ne réduit pas une petite photo.
-  */
-
-  const ratio = Math.min(
-    1,
-    maxSize / Math.max(width,height)
-  );
-
-  width = Math.max(1,Math.round(width * ratio));
-  height = Math.max(1,Math.round(height * ratio));
-
-  const canvas = document.createElement("canvas");
-
-  canvas.width = width;
-  canvas.height = height;
-
-  const ctx = canvas.getContext("2d",{
-    willReadFrequently:true
-  });
-
-  /*
-    Meilleur rendu pour texte imprimé et manuscrit.
-  */
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = "high";
-
-  ctx.drawImage(img,0,0,width,height);
-
-  if(variant === "normal"){
-    return canvas.toDataURL("image/jpeg",0.94);
-  }
-
-  const imageData = ctx.getImageData(
-    0,
-    0,
-    width,
-    height
-  );
-
-  const data = imageData.data;
-
-  if(variant === "gray"){
-
-    for(let i=0;i<data.length;i+=4){
-
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
-
-      const gray =
-        0.299*r +
-        0.587*g +
-        0.114*b;
-
-      data[i] = gray;
-      data[i+1] = gray;
-      data[i+2] = gray;
-    }
+    get(
+      "keyStatus"
+    ).textContent =
+      "✅ Clé API enregistrée.";
 
   }
+);
 
-  if(variant === "contrast"){
 
-    for(let i=0;i<data.length;i+=4){
 
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
+/* =====================================================
+   SUPPRIMER CLE
+===================================================== */
 
-      let gray =
-        0.299*r +
-        0.587*g +
-        0.114*b;
 
-      /*
-        contraste modéré :
-        on évite de détruire l'écriture manuscrite.
-      */
-      gray = ((gray - 128) * 1.45) + 128;
+get(
+  "deleteKeyButton"
+)
+.addEventListener(
+  "click",
+  function() {
 
-      gray = clamp(gray,0,255);
+    localStorage.removeItem(
+      "gemini_api_key"
+    );
 
-      data[i] = gray;
-      data[i+1] = gray;
-      data[i+2] = gray;
-    }
+
+    get(
+      "apiKey"
+    ).value =
+      "";
+
+
+    get(
+      "keyStatus"
+    ).textContent =
+      "🗑️ Clé supprimée.";
+
   }
-
-  if(variant === "threshold"){
-
-    for(let i=0;i<data.length;i+=4){
-
-      const r = data[i];
-      const g = data[i+1];
-      const b = data[i+2];
-
-      const gray =
-        0.299*r +
-        0.587*g +
-        0.114*b;
-
-      const value =
-        gray < 175 ? 0 : 255;
-
-      data[i] = value;
-      data[i+1] = value;
-      data[i+2] = value;
-    }
-  }
-
-  ctx.putImageData(imageData,0,0);
-
-  return canvas.toDataURL("image/jpeg",0.94);
-}
+);
 
 
-/* =========================================================
-   TESSERACT
-========================================================= */
 
-async function createOCRWorker(){
+/* =====================================================
+   CONVERSION IMAGE
+===================================================== */
 
-  if(state.worker && state.workerReady){
-    return state.worker;
-  }
 
-  ocrStatus.className = "status";
-  ocrStatus.textContent =
-    "⏳ Chargement du moteur OCR français… première utilisation potentiellement longue.";
+function fileToDataURL(
+  file
+) {
 
-  progressBar.style.width = "3%";
+  return new Promise(
+    function(
+      resolve,
+      reject
+    ) {
 
-  /*
-    IMPORTANT :
-    on utilise uniquement le moteur français.
-  */
+      const reader =
+        new FileReader();
 
-  state.worker = await Tesseract.createWorker(
-    "fra",
-    1,
-    {
-      logger: message => {
 
-        if(!message) return;
+      reader.onload =
+        function(
+          event
+        ) {
 
-        if(
-          message.status &&
-          typeof message.progress === "number"
-        ){
+          resolve(
+            event.target.result
+          );
 
-          const percent =
-            clamp(message.progress * 100,0,100);
+        };
 
-          progressBar.style.width =
-            `${percent}%`;
 
-          ocrStatus.textContent =
-            `🔎 ${message.status} — ${Math.round(percent)}%`;
-        }
-      }
+      reader.onerror =
+        reject;
+
+
+      reader.readAsDataURL(
+        file
+      );
+
     }
   );
 
-  /*
-    Ces paramètres sont volontairement simples.
-    Le but est de laisser Tesseract faire une vraie
-    segmentation automatique.
-  */
-
-  await state.worker.setParameters({
-    language_model_ngram_on: "1",
-    preserve_interword_spaces: "1",
-    user_defined_dpi: "300"
-  });
-
-  state.workerReady = true;
-
-  return state.worker;
 }
 
 
-/* =========================================================
-   OCR D'UNE IMAGE
-========================================================= */
 
-async function recognizeImage(image, psm){
+/* =====================================================
+   CHOISIR PHOTO
+===================================================== */
 
-  const worker = await createOCRWorker();
 
-  /*
-    Le texte brut est prioritaire.
-    TSV est seulement complémentaire.
-  */
+get(
+  "photoInput"
+)
+.addEventListener(
+  "change",
+  async function(
+    event
+  ) {
 
-  await worker.setParameters({
-    tessedit_pageseg_mode: String(psm),
-    preserve_interword_spaces:"1",
-    user_defined_dpi:"300"
-  });
+    const file =
+      event.target.files[0];
 
-  const result = await worker.recognize(image);
 
-  const data = result && result.data
-    ? result.data
-    : {};
+    if (
+      !file
+    ) {
 
-  const text = cleanText(data.text || "");
+      return;
 
-  let words = [];
+    }
 
-  /*
-    Selon la version de Tesseract.js,
-    data.words peut être disponible.
-  */
 
-  if(Array.isArray(data.words)){
-    words = data.words;
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
+
+      get(
+        "photoStatus"
+      ).textContent =
+        "❌ Ce fichier n'est pas une image.";
+
+      return;
+
+    }
+
+
+    imageFile =
+      file;
+
+
+    try {
+
+      imageDataURL =
+        await fileToDataURL(
+          file
+        );
+
+
+      const preview =
+        get(
+          "preview"
+        );
+
+
+      preview.src =
+        imageDataURL;
+
+
+      preview.style.display =
+        "block";
+
+
+      const originalImage =
+        get(
+          "originalImage"
+        );
+
+
+      originalImage.src =
+        imageDataURL;
+
+
+      originalImage.classList.remove(
+        "hidden"
+      );
+
+
+      get(
+        "photoStatus"
+      ).textContent =
+        "✅ Photo chargée : " +
+        file.name;
+
+
+      get(
+        "recognizedText"
+      ).value =
+        "";
+
+
+      get(
+        "course"
+      ).innerHTML =
+        "";
+
+
+      get(
+        "course"
+      ).classList.add(
+        "hidden"
+      );
+
+
+      generatedCourseHTML =
+        "";
+
+    }
+
+    catch(
+      error
+    ) {
+
+      console.error(
+        error
+      );
+
+
+      get(
+        "photoStatus"
+      ).textContent =
+        "❌ Impossible de charger la photo.";
+
+    }
+
   }
+);
 
-  return {
-    text,
-    words,
-    confidence:
-      Number.isFinite(data.confidence)
-        ? data.confidence
-        : averageConfidence(words)
-  };
+
+
+/* =====================================================
+   RETIRER PHOTO
+===================================================== */
+
+
+get(
+  "removePhotoButton"
+)
+.addEventListener(
+  "click",
+  function() {
+
+    imageFile =
+      null;
+
+
+    imageDataURL =
+      null;
+
+
+    get(
+      "photoInput"
+    ).value =
+      "";
+
+
+    get(
+      "preview"
+    ).src =
+      "";
+
+
+    get(
+      "preview"
+    ).style.display =
+      "none";
+
+
+    get(
+      "originalImage"
+    ).src =
+      "";
+
+
+    get(
+      "originalImage"
+    ).classList.add(
+      "hidden"
+    );
+
+
+    get(
+      "recognizedText"
+    ).value =
+      "";
+
+
+    get(
+      "course"
+    ).innerHTML =
+      "";
+
+
+    get(
+      "course"
+    ).classList.add(
+      "hidden"
+    );
+
+
+    get(
+      "photoStatus"
+    ).textContent =
+      "Aucune photo sélectionnée.";
+
+  }
+);
+
+
+
+/* =====================================================
+   EXTRAIRE BASE64
+===================================================== */
+
+
+function getBase64FromDataURL(
+  dataURL
+) {
+
+  return dataURL.split(
+    ","
+  )[1];
+
 }
 
 
-/* =========================================================
-   SCORE OCR
-========================================================= */
 
-function scoreOCR(result){
-
-  if(!result || !result.text){
-    return 0;
-  }
-
-  const text = result.text;
-
-  const words = countWords(text);
-
-  const lines = countLines(text);
-
-  const confidence =
-    Number.isFinite(result.confidence)
-      ? result.confidence
-      : 0;
-
-  /*
-    On récompense :
-    - beaucoup de mots
-    - plusieurs lignes
-    - confiance correcte
-  */
-
-  let score = 0;
-
-  score += Math.min(words,250) * 2;
-  score += Math.min(lines,80) * 3;
-  score += confidence * 2;
-
-  /*
-    Pénalités simples pour les résultats
-    totalement absurdes.
-  */
-
-  const letters =
-    (text.match(/[A-Za-zÀ-ÿ]/g) || []).length;
-
-  if(letters < 3){
-    score -= 100;
-  }
-
-  return score;
-}
+/* =====================================================
+   APPEL GEMINI
+===================================================== */
 
 
-/* =========================================================
-   MULTI-PASSES OCR
-========================================================= */
+async function callGemini(
+  prompt,
+  imageData,
+  mimeType
+) {
 
-async function ocrPhoto(photo,index,total){
+  const apiKey =
+    get(
+      "apiKey"
+    ).value.trim();
 
-  if(!photo.dataURL){
+
+  if (
+    !apiKey
+  ) {
+
     throw new Error(
-      `La photo "${photo.name}" n'est pas encore disponible pour l'OCR.`
-    );
-  }
-
-  const mode = $("mode").value;
-
-  const variants =
-    mode === "fast"
-      ? ["normal","gray"]
-      : ["normal","gray","contrast"];
-
-  /*
-    PSM :
-    6 = bloc de texte uniforme
-    11 = texte dispersé
-    3 = segmentation automatique
-  */
-
-  const psmModes =
-    mode === "fast"
-      ? [3,6]
-      : [3,6,11];
-
-  const results = [];
-
-  let pass = 0;
-
-  const totalPasses =
-    variants.length * psmModes.length;
-
-  for(const variant of variants){
-
-    const processed =
-      await prepareImage(
-        photo.dataURL,
-        mode,
-        variant
-      );
-
-    for(const psm of psmModes){
-
-      pass++;
-
-      ocrStatus.textContent =
-        `🔎 Photo ${index+1}/${total} — analyse ${pass}/${totalPasses}…`;
-
-      const result =
-        await recognizeImage(
-          processed,
-          psm
-        );
-
-      results.push({
-        ...result,
-        variant,
-        psm,
-        score:scoreOCR(result)
-      });
-    }
-  }
-
-  /*
-    On choisit le résultat qui contient le plus
-    d'informations cohérentes.
-  */
-
-  results.sort((a,b)=>b.score-a.score);
-
-  const best = results[0];
-
-  /*
-    Si le meilleur résultat est vide,
-    on tente UNE dernière lecture brute.
-  */
-
-  if(!best || !best.text){
-
-    ocrStatus.textContent =
-      `⚠️ OCR faible sur ${photo.name} — dernière tentative…`;
-
-    const fallback =
-      await recognizeImage(
-        photo.dataURL,
-        3
-      );
-
-    return {
-      ...fallback,
-      photo,
-      attempts:results,
-      selected:"fallback"
-    };
-  }
-
-  return {
-    ...best,
-    photo,
-    attempts:results,
-    selected:`${best.variant} / PSM ${best.psm}`
-  };
-}
-
-
-/* =========================================================
-   NETTOYAGE OCR
-========================================================= */
-
-function normalizeOCRText(text){
-
-  let lines =
-    cleanText(text)
-      .split("\n")
-      .map(line => line.trim())
-      .filter(Boolean);
-
-  const output = [];
-
-  for(let line of lines){
-
-    /*
-      Remplace quelques artefacts fréquents.
-    */
-
-    line = line
-      .replace(/[|]{2,}/g," ")
-      .replace(/[ \t]{2,}/g," ")
-      .trim();
-
-    if(!line) continue;
-
-    /*
-      Corrige les puces cassées.
-    */
-
-    line = line
-      .replace(/^[•·▪◦●○]\s*/,"- ")
-      .replace(/^[–—]\s*/,"- ");
-
-    output.push(line);
-  }
-
-  return output.join("\n");
-}
-
-
-/* =========================================================
-   LANCER OCR GLOBAL
-========================================================= */
-
-async function runOCR(){
-
-  if(state.ocrRunning){
-    return;
-  }
-
-  if(!state.photos.length){
-
-    ocrStatus.className = "status error";
-    ocrStatus.textContent =
-      "❌ Ajoute au moins une photo.";
-
-    return;
-  }
-
-  const invalid =
-    state.photos.filter(p => p.error || !p.dataURL);
-
-  if(invalid.length){
-
-    ocrStatus.className = "status error";
-
-    ocrStatus.textContent =
-      "❌ Une ou plusieurs photos ne sont pas lisibles. " +
-      "Vérifie les erreurs affichées dans les photos.";
-
-    return;
-  }
-
-  state.ocrRunning = true;
-
-  ocrBtn.disabled = true;
-  generateBtn.disabled = true;
-
-  diagnosticSection.style.display = "block";
-
-  state.pages = [];
-
-  let totalWords = 0;
-  let totalLines = 0;
-  let confidenceValues = [];
-
-  try{
-
-    for(let i=0;i<state.photos.length;i++){
-
-      const photo = state.photos[i];
-
-      const page =
-        await ocrPhoto(
-          photo,
-          i,
-          state.photos.length
-        );
-
-      page.text =
-        normalizeOCRText(page.text);
-
-      state.pages.push(page);
-
-      totalWords += countWords(page.text);
-
-      totalLines += countLines(page.text);
-
-      if(Number.isFinite(page.confidence)){
-        confidenceValues.push(page.confidence);
-      }
-
-      /*
-        Affichage immédiat du résultat.
-      */
-
-      renderOCRDiagnostic();
-
-      const progress =
-        ((i+1) / state.photos.length) * 100;
-
-      progressBar.style.width =
-        `${progress}%`;
-    }
-
-    const average =
-      confidenceValues.length
-        ? confidenceValues.reduce((a,b)=>a+b,0) /
-          confidenceValues.length
-        : 0;
-
-    statPhotos.textContent =
-      state.photos.length;
-
-    statWords.textContent =
-      totalWords;
-
-    statLines.textContent =
-      totalLines;
-
-    statConfidence.textContent =
-      `${Math.round(average)}%`;
-
-    if(totalWords === 0){
-
-      ocrStatus.className = "status error";
-
-      ocrStatus.textContent =
-        "❌ L'OCR n'a détecté aucun mot. " +
-        "La fiche ne sera pas générée comme si tout allait bien.";
-
-    }else if(totalWords < 10){
-
-      ocrStatus.className = "status warning";
-
-      ocrStatus.textContent =
-        `⚠️ OCR très faible : ${totalWords} mots détectés. ` +
-        "Vérifie le texte ci-dessous.";
-
-    }else{
-
-      ocrStatus.className = "status success";
-
-      ocrStatus.textContent =
-        `✅ OCR terminé : ${totalWords} mots détectés.`;
-    }
-
-  }catch(error){
-
-    console.error(error);
-
-    ocrStatus.className = "status error";
-
-    ocrStatus.textContent =
-      "❌ Erreur OCR : " +
-      (error.message || error);
-
-  }finally{
-
-    state.ocrRunning = false;
-
-    ocrBtn.disabled = false;
-    generateBtn.disabled = false;
-  }
-}
-
-
-/* =========================================================
-   DIAGNOSTIC OCR
-========================================================= */
-
-function renderOCRDiagnostic(){
-
-  diagnosticSection.style.display = "block";
-
-  const combined =
-    state.pages
-      .map((page,index)=>{
-
-        return (
-          `===== PHOTO ${index+1} : ${page.photo.name} =====\n` +
-          `Méthode sélectionnée : ${page.selected || "—"}\n` +
-          `Confiance : ${Math.round(page.confidence || 0)}%\n\n` +
-          `${page.text || "[AUCUN TEXTE]"}\n`
-        );
-
-      })
-      .join("\n\n");
-
-  ocrText.textContent =
-    combined || "Aucun texte détecté.";
-
-  let words = 0;
-  let lines = 0;
-  let conf = [];
-
-  for(const page of state.pages){
-
-    words += countWords(page.text);
-
-    lines += countLines(page.text);
-
-    if(Number.isFinite(page.confidence)){
-      conf.push(page.confidence);
-    }
-  }
-
-  statPhotos.textContent =
-    state.photos.length;
-
-  statWords.textContent =
-    words;
-
-  statLines.textContent =
-    lines;
-
-  statConfidence.textContent =
-    conf.length
-      ? `${Math.round(conf.reduce((a,b)=>a+b,0)/conf.length)}%`
-      : "0%";
-}
-
-
-/* =========================================================
-   DÉCOUPAGE DU TEXTE
-========================================================= */
-
-function splitIntoLines(text){
-
-  return cleanText(text)
-    .split("\n")
-    .map(x => x.trim())
-    .filter(Boolean);
-}
-
-function isBullet(line){
-
-  return /^[-•*▪◦●○]\s+/.test(line) ||
-         /^\d+[.)]\s+/.test(line) ||
-         /^[a-zA-Z][.)]\s+/.test(line);
-}
-
-function isFormula(line){
-
-  if(line.length > 160) return false;
-
-  const math =
-    /[=+\-×÷√∑∫<>²³^%]/.test(line);
-
-  const variables =
-    /[a-zA-Z]\s*=\s*[\d(]/.test(line);
-
-  return math && (variables || line.length < 100);
-}
-
-function isDefinition(line){
-
-  return (
-    /^(définition|definition|déf\.?)\b/i.test(line) ||
-    /\b(est|désigne|correspond à|signifie|on appelle)\b/i.test(line)
-  );
-}
-
-function isHeading(line){
-
-  if(line.length < 2 || line.length > 90){
-    return false;
-  }
-
-  /*
-    Titres entièrement en majuscules.
-  */
-
-  const letters =
-    line.match(/[A-Za-zÀ-ÿ]/g) || [];
-
-  const upper =
-    line.match(/[A-ZÀ-Ý]/g) || [];
-
-  if(
-    letters.length >= 4 &&
-    upper.length / letters.length > .72
-  ){
-    return true;
-  }
-
-  /*
-    Titre numéroté.
-  */
-
-  if(
-    /^(I|II|III|IV|V|VI|VII|VIII|IX|X)[.)]\s+/i.test(line)
-  ){
-    return true;
-  }
-
-  if(
-    /^\d+(\.\d+)*[.)]?\s+[A-ZÀ-ÝÀ-ÿ]/.test(line)
-  ){
-    return true;
-  }
-
-  return false;
-}
-
-
-/* =========================================================
-   RECONSTRUCTION DU COURS
-========================================================= */
-
-function buildCourse(){
-
-  const rawText =
-    state.pages
-      .map(page => page.text)
-      .filter(Boolean)
-      .join("\n\n");
-
-  const text =
-    normalizeOCRText(rawText);
-
-  /*
-    GARDE-FOU PRINCIPAL :
-    on ne crée jamais une fiche "vide".
-  */
-
-  const words = countWords(text);
-
-  if(words < 3){
-
-    state.course = {
-      empty:true,
-      text
-    };
-
-    renderCourse();
-
-    return;
-  }
-
-  const lines =
-    splitIntoLines(text);
-
-  /*
-    Détection du titre.
-  */
-
-  let title =
-    lines.find(line =>
-      isHeading(line) &&
-      line.length <= 80
+      "Ajoute d'abord ta clé API Gemini."
     );
 
-  if(!title){
-    title = lines[0] || "Cours";
   }
+
 
   /*
-    Sections.
+     MODELE
+
+     Si ce modèle n'est pas disponible
+     sur ton compte, nous pourrons
+     simplement changer cette ligne.
   */
 
-  const sections = [];
 
-  let current = {
-    title:"Contenu du cours",
-    items:[]
-  };
+  const model =
+    "gemini-2.0-flash";
 
-  for(const line of lines){
-
-    if(line === title){
-      continue;
-    }
-
-    if(isHeading(line)){
-
-      if(current.items.length){
-        sections.push(current);
-      }
-
-      current = {
-        title:line,
-        items:[]
-      };
-
-      continue;
-    }
-
-    current.items.push(line);
-  }
-
-  if(current.items.length){
-    sections.push(current);
-  }
-
-  /*
-    Si la détection de titres est mauvaise,
-    on garde quand même tout le texte.
-  */
-
-  if(!sections.length){
-
-    sections.push({
-      title:"Cours",
-      items:lines
-    });
-  }
-
-  /*
-    Extraction des notions importantes.
-  */
-
-  const important = [];
-
-  for(const line of lines){
-
-    if(
-      isDefinition(line) ||
-      /\b(important|à retenir|essentiel|attention)\b/i.test(line)
-    ){
-      important.push(line);
-    }
-  }
-
-  /*
-    Vocabulaire rudimentaire mais utile.
-  */
-
-  const frequency = {};
-
-  const stopwords = new Set([
-    "dans","avec","pour","mais","plus","moins","être","avoir",
-    "cette","cela","comme","entre","sont","une","des","les",
-    "sur","par","qui","que","dans","aux","ces","leurs","leur",
-    "elle","elles","ils","nous","vous","elle","est","son","ses",
-    "pas","tout","tous","très","donc","ainsi","aussi","peut",
-    "peu","une","un","de","du","la","le","et","en","au","ce",
-    "se","sa","dans","ou","où","à","a"
-  ]);
-
-  for(const word of text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .match(/[a-zA-ZÀ-ÿ]{5,}/g) || []){
-
-    if(stopwords.has(word)) continue;
-
-    frequency[word] =
-      (frequency[word] || 0) + 1;
-  }
-
-  const vocabulary =
-    Object.entries(frequency)
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0,12)
-      .map(x=>x[0]);
-
-  state.course = {
-    empty:false,
-    title,
-    sections,
-    important:important.slice(0,12),
-    vocabulary,
-    rawText:text
-  };
-
-  renderCourse();
-}
-
-
-/* =========================================================
-   RENDU COURS
-========================================================= */
-
-function renderCourse(){
-
-  courseSection.style.display = "block";
-
-  if(!state.course){
-
-    courseElement.innerHTML =
-      "<p>Aucun cours généré.</p>";
-
-    return;
-  }
-
-  if(state.course.empty){
-
-    courseElement.innerHTML = `
-      <h1>⚠️ Texte insuffisant</h1>
-
-      <div class="notice">
-        <strong>L'OCR n'a pas réussi à lire suffisamment de texte.</strong>
-        <p>
-          La photo originale est conservée, mais la fiche ne sera pas
-          remplie artificiellement.
-        </p>
-      </div>
-
-      <h2>Texte OCR détecté</h2>
-
-      <pre class="ocr-box">${escapeHTML(
-        state.course.text || "[aucun texte]"
-      )}</pre>
-    `;
-
-    return;
-  }
-
-  let html = "";
-
-  html += `
-    <h1>${escapeHTML(state.course.title)}</h1>
-  `;
-
-  /*
-    Résumé.
-  */
-
-  html += `
-    <h2>🧠 À retenir</h2>
-  `;
-
-  if(state.course.important.length){
-
-    html += "<ul>";
-
-    for(const item of state.course.important){
-
-      html += `
-        <li>${escapeHTML(item)}</li>
-      `;
-    }
-
-    html += "</ul>";
-
-  }else{
-
-    /*
-      On prend quelques premières lignes utiles.
-    */
-
-    const summary =
-      state.course.sections
-        .flatMap(section => section.items)
-        .filter(x => x.length > 25)
-        .slice(0,5);
-
-    html += "<ul>";
-
-    for(const item of summary){
-
-      html += `
-        <li>${escapeHTML(item)}</li>
-      `;
-    }
-
-    html += "</ul>";
-  }
-
-  /*
-    Sections.
-  */
-
-  for(const section of state.course.sections){
-
-    html += `
-      <h2>${escapeHTML(section.title)}</h2>
-    `;
-
-    let paragraphBuffer = [];
-
-    function flushParagraph(){
-
-      if(!paragraphBuffer.length) return;
-
-      const paragraph =
-        paragraphBuffer.join(" ");
-
-      html += `
-        <p>${escapeHTML(paragraph)}</p>
-      `;
-
-      paragraphBuffer = [];
-    }
-
-    for(const line of section.items){
-
-      if(isBullet(line)){
-
-        flushParagraph();
-
-        const cleaned =
-          line
-            .replace(/^[-•*▪◦●○]\s*/,"")
-            .replace(/^\d+[.)]\s*/,"")
-            .trim();
-
-        html += `
-          <ul>
-            <li>${escapeHTML(cleaned)}</li>
-          </ul>
-        `;
-
-        continue;
-      }
-
-      if(isFormula(line)){
-
-        flushParagraph();
-
-        html += `
-          <div class="formula">
-            ${escapeHTML(line)}
-          </div>
-        `;
-
-        continue;
-      }
-
-      if(isDefinition(line)){
-
-        flushParagraph();
-
-        html += `
-          <div class="definition">
-            <strong>Définition :</strong>
-            ${escapeHTML(line)}
-          </div>
-        `;
-
-        continue;
-      }
-
-      if(
-        /\b(important|essentiel|à retenir|attention)\b/i.test(line)
-      ){
-
-        flushParagraph();
-
-        html += `
-          <div class="important">
-            ${escapeHTML(line)}
-          </div>
-        `;
-
-        continue;
-      }
-
-      paragraphBuffer.push(line);
-
-      /*
-        Évite les paragraphes énormes.
-      */
-
-      if(paragraphBuffer.length >= 4){
-        flushParagraph();
-      }
-    }
-
-    flushParagraph();
-  }
-
-  /*
-    Vocabulaire.
-  */
-
-  if(state.course.vocabulary.length){
-
-    html += `
-      <h2>📚 Notions importantes</h2>
-      <ul>
-    `;
-
-    for(const word of state.course.vocabulary){
-
-      html += `
-        <li>${escapeHTML(word)}</li>
-      `;
-    }
-
-    html += "</ul>";
-  }
-
-  /*
-    Photos originales.
-  */
-
-  html += `
-    <h2>📷 Documents originaux</h2>
-  `;
-
-  for(const photo of state.photos){
-
-    html += `
-      <h3>${escapeHTML(photo.name)}</h3>
-      <img
-        class="original-image"
-        src="${photo.dataURL || photo.previewURL}"
-        alt="${escapeHTML(photo.name)}"
-      >
-    `;
-  }
-
-  courseElement.innerHTML = html;
-}
-
-
-/* =========================================================
-   EXPORT HTML
-========================================================= */
-
-function buildStandaloneHTML(){
-
-  const title =
-    state.course?.title || "Cours";
-
-  const body =
-    courseElement.innerHTML;
-
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${escapeHTML(title)}</title>
-<style>
-body{
-  margin:0;
-  padding:30px;
-  font-family:Arial,Helvetica,sans-serif;
-  color:#111827;
-  background:#fff;
-}
-main{
-  max-width:900px;
-  margin:auto;
-}
-h1{font-size:32px}
-h2{
-  margin-top:30px;
-  border-bottom:2px solid #ddd;
-  padding-bottom:8px;
-}
-p,li{
-  line-height:1.7;
-}
-.definition{
-  background:#eff6ff;
-  border-left:5px solid #2563eb;
-  padding:12px 15px;
-  border-radius:8px;
-}
-.important{
-  background:#ecfdf5;
-  border-left:5px solid #059669;
-  padding:12px 15px;
-  border-radius:8px;
-}
-.formula{
-  background:#f9fafb;
-  border:1px solid #ddd;
-  padding:12px;
-  border-radius:8px;
-  font-family:monospace;
-}
-.original-image{
-  display:block;
-  max-width:100%;
-  margin:15px auto;
-}
-</style>
-</head>
-<body>
-<main>
-${body}
-</main>
-</body>
-</html>`;
-}
-
-function downloadBlob(content,name,type){
-
-  const blob =
-    new Blob([content],{type});
 
   const url =
-    URL.createObjectURL(blob);
+    "https://generativelanguage.googleapis.com/v1beta/models/" +
+    model +
+    ":generateContent?key=" +
+    encodeURIComponent(
+      apiKey
+    );
 
-  const a =
-    document.createElement("a");
 
-  a.href = url;
-  a.download = name;
+  const parts = [
 
-  document.body.appendChild(a);
+    {
 
-  a.click();
+      text:
+        prompt
 
-  a.remove();
+    }
 
-  setTimeout(()=>{
-    URL.revokeObjectURL(url);
-  },1000);
-}
+  ];
 
-function exportHTML(){
 
-  if(!state.course){
+  if (
+    imageData
+  ) {
 
-    alert("Génère d'abord la fiche.");
+    parts.push(
 
-    return;
+      {
+
+        inline_data: {
+
+          mime_type:
+            mimeType,
+
+          data:
+            imageData
+
+        }
+
+      }
+
+    );
+
   }
 
-  const html =
-    buildStandaloneHTML();
 
-  downloadBlob(
-    html,
-    "cours-photo.html",
-    "text/html;charset=utf-8"
-  );
+  const body = {
+
+    contents: [
+
+      {
+
+        parts:
+          parts
+
+      }
+
+    ],
+
+    generationConfig: {
+
+      temperature:
+        0.2,
+
+      maxOutputTokens:
+        8192
+
+    }
+
+  };
+
+
+  const response =
+    await fetch(
+      url,
+      {
+
+        method:
+          "POST",
+
+        headers: {
+
+          "Content-Type":
+            "application/json"
+
+        },
+
+        body:
+          JSON.stringify(
+            body
+          )
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    !response.ok
+  ) {
+
+    console.error(
+      data
+    );
+
+
+    throw new Error(
+
+      data?.error?.message ||
+      "Erreur Gemini."
+
+    );
+
+  }
+
+
+  const text =
+    data
+    ?.candidates
+    ?.[0]
+    ?.content
+    ?.parts
+    ?.[0]
+    ?.text;
+
+
+  if (
+    !text
+  ) {
+
+    console.error(
+      data
+    );
+
+
+    throw new Error(
+      "L'IA n'a pas renvoyé de texte."
+    );
+
+  }
+
+
+  return text;
+
 }
 
 
-/* =========================================================
+
+/* =====================================================
+   ANALYSER PHOTO
+===================================================== */
+
+
+get(
+  "analyzeButton"
+)
+.addEventListener(
+  "click",
+  async function() {
+
+    if (
+      !imageFile ||
+      !imageDataURL
+    ) {
+
+      get(
+        "analysisStatus"
+      ).textContent =
+        "⚠️ Choisis d'abord une photo.";
+
+      return;
+
+    }
+
+
+    const button =
+      get(
+        "analyzeButton"
+      );
+
+
+    button.disabled =
+      true;
+
+
+    get(
+      "analysisStatus"
+    ).textContent =
+      "🤖 Gemini observe attentivement la photo...\n\n⏳ Cela peut prendre quelques secondes.";
+
+
+    try {
+
+      const base64 =
+        getBase64FromDataURL(
+          imageDataURL
+        );
+
+
+      const prompt =
+
+`Tu es un spécialiste de la lecture de documents scolaires.
+
+Analyse DIRECTEMENT l'image fournie.
+
+Ta mission est de créer une TRANSCRIPTION AUSSI COMPLETE QUE POSSIBLE.
+
+RÈGLES IMPORTANTES :
+
+1. Lis tous les mots visibles.
+2. Ne résume absolument pas le document.
+3. Respecte l'ordre du document.
+4. Conserve les titres.
+5. Conserve les listes.
+6. Conserve les définitions.
+7. Conserve les formules.
+8. Conserve les tableaux.
+9. Si un mot est difficile à lire, indique [illisible] plutôt que d'inventer.
+10. Corrige uniquement les erreurs évidentes de lecture.
+11. Décris brièvement les schémas, flèches et dessins.
+12. Indique les légendes des schémas.
+13. N'ajoute aucune information extérieure.
+
+FORMAT :
+
+TITRE :
+...
+
+TEXTE :
+...
+
+LISTES :
+...
+
+TABLEAUX :
+...
+
+FORMULES :
+...
+
+SCHEMAS ET ANNOTATIONS :
+...
+
+Commence directement la transcription.`;
+
+
+      const result =
+        await callGemini(
+          prompt,
+          base64,
+          imageFile.type
+        );
+
+
+      get(
+        "recognizedText"
+      ).value =
+        result;
+
+
+      get(
+        "analysisStatus"
+      ).textContent =
+        "✅ Analyse terminée.\n\nRelis rapidement le texte si nécessaire, puis génère ta fiche.";
+
+    }
+
+    catch(
+      error
+    ) {
+
+      console.error(
+        error
+      );
+
+
+      get(
+        "analysisStatus"
+      ).textContent =
+        "❌ Erreur : " +
+        error.message;
+
+    }
+
+    finally {
+
+      button.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+
+/* =====================================================
+   ECHAPPER HTML
+===================================================== */
+
+
+function escapeHTML(
+  text
+) {
+
+  return String(
+    text
+  )
+  .replace(
+    /&/g,
+    "&amp;"
+  )
+  .replace(
+    /</g,
+    "&lt;"
+  )
+  .replace(
+    />/g,
+    "&gt;"
+  )
+  .replace(
+    /"/g,
+    "&quot;"
+  )
+  .replace(
+    /'/g,
+    "&#039;"
+  );
+
+}
+
+
+
+/* =====================================================
+   CONVERTIR TEXTE IA EN HTML
+===================================================== */
+
+
+function textToCourseHTML(
+  text
+) {
+
+  const safeText =
+    escapeHTML(
+      text
+    );
+
+
+  const lines =
+    safeText.split(
+      "\n"
+    );
+
+
+  let html =
+    "";
+
+
+  let inList =
+    false;
+
+
+  for (
+    let rawLine of lines
+  ) {
+
+    const line =
+      rawLine.trim();
+
+
+    if (
+      !line
+    ) {
+
+      if (
+        inList
+      ) {
+
+        html +=
+          "</ul>";
+
+
+        inList =
+          false;
+
+      }
+
+
+      continue;
+
+    }
+
+
+    if (
+      line.startsWith(
+        "# "
+      )
+    ) {
+
+      if (
+        inList
+      ) {
+
+        html +=
+          "</ul>";
+
+        inList =
+          false;
+
+      }
+
+
+      html +=
+        "<h1>" +
+        line.substring(2) +
+        "</h1>";
+
+
+      continue;
+
+    }
+
+
+    if (
+      line.startsWith(
+        "## "
+      )
+    ) {
+
+      if (
+        inList
+      ) {
+
+        html +=
+          "</ul>";
+
+        inList =
+          false;
+
+      }
+
+
+      html +=
+        "<div class='course-section'>" +
+        "<h2>" +
+        line.substring(3) +
+        "</h2>";
+
+
+      html +=
+        "</div>";
+
+
+      continue;
+
+    }
+
+
+    if (
+      line.startsWith(
+        "### "
+      )
+    ) {
+
+      if (
+        inList
+      ) {
+
+        html +=
+          "</ul>";
+
+        inList =
+          false;
+
+      }
+
+
+      html +=
+        "<h3>" +
+        line.substring(4) +
+        "</h3>";
+
+
+      continue;
+
+    }
+
+
+    if (
+      line.startsWith(
+        "- "
+      ) ||
+      line.startsWith(
+        "• "
+      )
+    ) {
+
+      if (
+        !inList
+      ) {
+
+        html +=
+          "<ul>";
+
+        inList =
+          true;
+
+      }
+
+
+      html +=
+        "<li>" +
+        line.substring(2) +
+        "</li>";
+
+
+      continue;
+
+    }
+
+
+    if (
+      inList
+    ) {
+
+      html +=
+        "</ul>";
+
+      inList =
+        false;
+
+    }
+
+
+    if (
+      line.toLowerCase().includes(
+        "à retenir"
+      ) ||
+      line.toLowerCase().includes(
+        "important"
+      )
+    ) {
+
+      html +=
+        "<div class='important'>" +
+        "<strong>" +
+        line +
+        "</strong>" +
+        "</div>";
+
+    }
+
+    else {
+
+      html +=
+        "<p>" +
+        line +
+        "</p>";
+
+    }
+
+  }
+
+
+  if (
+    inList
+  ) {
+
+    html +=
+      "</ul>";
+
+  }
+
+
+  return html;
+
+}
+
+
+
+/* =====================================================
+   GENERER COURS
+===================================================== */
+
+
+get(
+  "generateCourseButton"
+)
+.addEventListener(
+  "click",
+  async function() {
+
+    const text =
+      get(
+        "recognizedText"
+      ).value.trim();
+
+
+    if (
+      text.length < 10
+    ) {
+
+      get(
+        "courseStatus"
+      ).textContent =
+        "⚠️ Analyse d'abord la photo ou ajoute du texte.";
+
+      return;
+
+    }
+
+
+    const button =
+      get(
+        "generateCourseButton"
+      );
+
+
+    button.disabled =
+      true;
+
+
+    get(
+      "courseStatus"
+    ).textContent =
+      "🧠 Création d'une vraie fiche de cours...\n\n⏳ L'IA organise les informations.";
+
+
+    try {
+
+      const prompt =
+
+`Tu es un excellent professeur et créateur de fiches de révision.
+
+Transforme la transcription suivante en une fiche de cours CLAIRE, COMPLETE et PEDAGOGIQUE.
+
+IMPORTANT :
+
+- Utilise UNIQUEMENT les informations présentes dans la transcription.
+- N'invente pas de faits.
+- Ne supprime pas les notions importantes.
+- Corrige les fautes évidentes.
+- Explique clairement les notions.
+- Garde les formules et définitions.
+- Organise le résultat pour faciliter la révision.
+
+UTILISE EXACTEMENT CE STYLE MARKDOWN :
+
+# TITRE DU COURS
+
+## 🧠 Résumé express
+
+Quelques phrases simples.
+
+## 📖 Le cours
+
+Explication structurée.
+
+## 📌 Notions importantes
+
+- notion
+- notion
+
+## 📚 Définitions
+
+- **Mot :** définition
+
+## ⭐ À retenir
+
+Les éléments essentiels.
+
+## ❓ Questions de révision
+
+- Question ?
+- Question ?
+
+Voici la transcription :
+
+${text}`;
+
+
+      const result =
+        await callGemini(
+          prompt,
+          null,
+          null
+        );
+
+
+      generatedCourseHTML =
+        textToCourseHTML(
+          result
+        );
+
+
+      const course =
+        get(
+          "course"
+        );
+
+
+      course.innerHTML =
+        generatedCourseHTML;
+
+
+      course.classList.remove(
+        "hidden"
+      );
+
+
+      get(
+        "courseStatus"
+      ).textContent =
+        "✅ Fiche générée avec succès.";
+
+    }
+
+    catch(
+      error
+    ) {
+
+      console.error(
+        error
+      );
+
+
+      get(
+        "courseStatus"
+      ).textContent =
+        "❌ Erreur : " +
+        error.message;
+
+    }
+
+    finally {
+
+      button.disabled =
+        false;
+
+    }
+
+  }
+);
+
+
+
+/* =====================================================
    EXPORT TXT
-========================================================= */
+===================================================== */
 
-function exportTXT(){
 
-  if(!state.course){
-
-    alert("Génère d'abord la fiche.");
-
-    return;
-  }
-
-  let text = "";
-
-  text +=
-    `${state.course.title || "Cours"}\n`;
-
-  text +=
-    `${"=".repeat(60)}\n\n`;
-
-  text +=
-    "À RETENIR\n\n";
-
-  for(const item of state.course.important || []){
-
-    text +=
-      `• ${item}\n`;
-  }
-
-  text += "\n";
-
-  for(const section of state.course.sections || []){
-
-    text +=
-      `\n${section.title}\n`;
-
-    text +=
-      `${"-".repeat(Math.min(section.title.length,60))}\n\n`;
-
-    for(const item of section.items){
-
-      text +=
-        `${item}\n`;
-    }
-
-    text += "\n";
-  }
-
-  downloadBlob(
-    text,
-    "cours-photo.txt",
-    "text/plain;charset=utf-8"
-  );
-}
-
-
-/* =========================================================
-   EXEMPLE
-========================================================= */
-
-async function createExample(){
-
-  /*
-    Exemple directement dessiné sur canvas.
-    Cela permet de vérifier l'OCR indépendamment
-    de la caméra / galerie.
-  */
-
-  const canvas =
-    document.createElement("canvas");
-
-  canvas.width = 1800;
-  canvas.height = 1200;
-
-  const ctx =
-    canvas.getContext("2d");
-
-  ctx.fillStyle = "white";
-  ctx.fillRect(
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  ctx.fillStyle = "#111827";
-
-  ctx.font =
-    "bold 72px Arial";
-
-  ctx.fillText(
-    "LA PHOTOSYNTHESE",
-    100,
-    120
-  );
-
-  ctx.font =
-    "42px Arial";
-
-  ctx.fillText(
-    "La photosynthèse permet aux plantes",
-    100,
-    230
-  );
-
-  ctx.fillText(
-    "de fabriquer leur matière organique.",
-    100,
-    290
-  );
-
-  ctx.font =
-    "bold 48px Arial";
-
-  ctx.fillText(
-    "Équation :",
-    100,
-    410
-  );
-
-  ctx.font =
-    "46px Arial";
-
-  ctx.fillText(
-    "CO2 + H2O + lumière → glucose + O2",
-    100,
-    485
-  );
-
-  ctx.font =
-    "bold 48px Arial";
-
-  ctx.fillText(
-    "À retenir",
-    100,
-    620
-  );
-
-  ctx.font =
-    "42px Arial";
-
-  ctx.fillText(
-    "• Elle se déroule principalement dans les feuilles.",
-    100,
-    700
-  );
-
-  ctx.fillText(
-    "• La lumière fournit l'énergie nécessaire.",
-    100,
-    770
-  );
-
-  ctx.fillText(
-    "• Le dioxyde de carbone et l'eau sont utilisés.",
-    100,
-    840
-  );
-
-  const dataURL =
-    canvas.toDataURL("image/jpeg",0.95);
-
-  const blob =
-    await (await fetch(dataURL)).blob();
-
-  const file =
-    new File(
-      [blob],
-      "exemple-photosynthese.jpg",
-      {type:"image/jpeg"}
-    );
-
-  await addFiles([file]);
-}
-
-
-/* =========================================================
-   GENERATION
-========================================================= */
-
-function generateCourse(){
-
-  if(!state.pages.length){
-
-    alert(
-      "Lance d'abord « Lire les photos »."
-    );
-
-    return;
-  }
-
-  const totalWords =
-    state.pages.reduce(
-      (sum,page)=>sum + countWords(page.text),
-      0
-    );
-
-  /*
-    GROS GARDE-FOU :
-    aucune génération fictive.
-  */
-
-  if(totalWords < 3){
-
-    state.course = {
-      empty:true,
-      text:state.pages
-        .map(p=>p.text)
-        .filter(Boolean)
-        .join("\n\n")
-    };
-
-    renderCourse();
-
-    return;
-  }
-
-  buildCourse();
-
-  courseSection.scrollIntoView({
-    behavior:"smooth",
-    block:"start"
-  });
-}
-
-
-/* =========================================================
-   SLIDESHOW
-========================================================= */
-
-function updateSlide(){
-
-  if(!state.photos.length){
-    return;
-  }
-
-  state.slideIndex =
-    (state.slideIndex + state.photos.length) %
-    state.photos.length;
-
-  const photo =
-    state.photos[state.slideIndex];
-
-  slideImage.src =
-    photo.dataURL || photo.previewURL;
-
-  slideTitle.textContent =
-    `${state.slideIndex + 1} / ${state.photos.length} — ${photo.name}`;
-}
-
-function openSlideshow(){
-
-  if(!state.photos.length){
-
-    alert("Ajoute d'abord une photo.");
-
-    return;
-  }
-
-  state.slideIndex = 0;
-
-  updateSlide();
-
-  slideOverlay.style.display = "flex";
-}
-
-function closeSlideshow(){
-
-  slideOverlay.style.display = "none";
-}
-
-
-/* =========================================================
-   ÉVÉNEMENTS
-========================================================= */
-
-fileInput.addEventListener("change",async event => {
-
-  const files =
-    Array.from(event.target.files || []);
-
-  /*
-    Permet de sélectionner à nouveau
-    le même fichier plus tard.
-  */
-
-  event.target.value = "";
-
-  await addFiles(files);
-});
-
-
-exampleBtn.addEventListener(
+get(
+  "exportTextButton"
+)
+.addEventListener(
   "click",
-  createExample
-);
+  function() {
+
+    const course =
+      get(
+        "course"
+      );
 
 
-clearBtn.addEventListener(
-  "click",
-  async () => {
+    if (
+      !course.textContent.trim()
+    ) {
 
-    if(!confirm("Supprimer toutes les photos ?")){
+      alert(
+        "Génère d'abord une fiche."
+      );
+
       return;
+
     }
 
-    for(const photo of state.photos){
 
-      if(photo.previewURL){
-        URL.revokeObjectURL(photo.previewURL);
-      }
-    }
+    const blob =
+      new Blob(
 
-    state.photos = [];
-    state.pages = [];
-    state.course = null;
+        [
 
-    photosGrid.innerHTML =
-      '<div class="empty">Aucune photo pour le moment.</div>';
+          course.innerText
 
-    diagnosticSection.style.display = "none";
-    courseSection.style.display = "none";
+        ],
 
-    importStatus.className = "status";
-    importStatus.textContent =
-      "Aucune photo importée.";
+        {
 
-    ocrStatus.className = "status";
-    ocrStatus.textContent =
-      "L'OCR n'a pas encore été lancé.";
+          type:
+            "text/plain"
 
-    progressBar.style.width = "0%";
+        }
+
+      );
+
+
+    const url =
+      URL.createObjectURL(
+        blob
+      );
+
+
+    const link =
+      document.createElement(
+        "a"
+      );
+
+
+    link.href =
+      url;
+
+
+    link.download =
+      "ma-fiche-de-cours.txt";
+
+
+    link.click();
+
+
+    URL.revokeObjectURL(
+      url
+    );
+
   }
 );
 
 
-ocrBtn.addEventListener(
+
+/* =====================================================
+   EXPORT HTML
+===================================================== */
+
+
+get(
+  "exportHtmlButton"
+)
+.addEventListener(
   "click",
-  runOCR
-);
+  function() {
 
+    if (
+      !generatedCourseHTML
+    ) {
 
-generateBtn.addEventListener(
-  "click",
-  generateCourse
-);
+      alert(
+        "Génère d'abord une fiche."
+      );
 
-
-$("exportHtmlBtn").addEventListener(
-  "click",
-  exportHTML
-);
-
-
-$("exportTxtBtn").addEventListener(
-  "click",
-  exportTXT
-);
-
-
-$("printBtn").addEventListener(
-  "click",
-  () => window.print()
-);
-
-
-$("slideshowBtn").addEventListener(
-  "click",
-  openSlideshow
-);
-
-
-$("slideClose").addEventListener(
-  "click",
-  closeSlideshow
-);
-
-
-$("slidePrev").addEventListener(
-  "click",
-  () => {
-
-    state.slideIndex--;
-
-    updateSlide();
-  }
-);
-
-
-$("slideNext").addEventListener(
-  "click",
-  () => {
-
-    state.slideIndex++;
-
-    updateSlide();
-  }
-);
-
-
-$("slideFull").addEventListener(
-  "click",
-  async () => {
-
-    try{
-
-      if(!document.fullscreenElement){
-        await slideOverlay.requestFullscreen();
-      }else{
-        await document.exitFullscreen();
-      }
-
-    }catch(error){
-      console.warn(error);
-    }
-  }
-);
-
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if(
-      slideOverlay.style.display !== "flex"
-    ){
       return;
+
     }
 
-    if(event.key === "Escape"){
-      closeSlideshow();
+
+    const html =
+
+`<!DOCTYPE html>
+
+<html lang="fr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0"
+>
+
+<title>Ma fiche de cours</title>
+
+<style>
+
+body {
+
+font-family: Arial, sans-serif;
+
+max-width: 900px;
+
+margin: auto;
+
+padding: 20px;
+
+background: #f3f4f6;
+
+color: #111827;
+
+}
+
+section {
+
+background: white;
+
+padding: 20px;
+
+border-radius: 15px;
+
+margin-bottom: 20px;
+
+}
+
+h1 {
+
+font-size: 32px;
+
+}
+
+h2 {
+
+border-bottom: 2px solid #ddd;
+
+padding-bottom: 8px;
+
+}
+
+img {
+
+width: 100%;
+
+max-height: 700px;
+
+object-fit: contain;
+
+border-radius: 14px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<section>
+
+${generatedCourseHTML}
+
+</section>
+
+<section>
+
+<h2>🖼️ Document original</h2>
+
+${
+imageDataURL
+? `<img src="${imageDataURL}">`
+: ""
+}
+
+</section>
+
+</body>
+
+</html>`;
+
+```
+const blob =
+  new Blob(
+
+    [
+
+      html
+
+    ],
+
+    {
+
+      type:
+        "text/html"
+
     }
 
-    if(event.key === "ArrowLeft"){
-      state.slideIndex--;
-      updateSlide();
-    }
+  );
 
-    if(event.key === "ArrowRight"){
-      state.slideIndex++;
-      updateSlide();
-    }
-  }
+
+const url =
+  URL.createObjectURL(
+    blob
+  );
+
+
+const link =
+  document.createElement(
+    "a"
+  );
+
+
+link.href =
+  url;
+
+
+link.download =
+  "ma-fiche-de-cours.html";
+
+
+link.click();
+
+
+URL.revokeObjectURL(
+  url
 );
+```
 
-
-/* =========================================================
-   INITIALISATION
-========================================================= */
-
-renderPhotos();
-
-console.log(
-  "Photo → Cours V5 initialisé."
-);
-
-console.log(
-  "Tesseract disponible :",
-  typeof Tesseract !== "undefined"
+}
 );
 
 </script>
