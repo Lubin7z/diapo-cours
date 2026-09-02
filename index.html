@@ -2,23 +2,27 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#111827">
 
-<title>Photo → Cours Ultimate</title>
+<title>Photo → Cours V5</title>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js"></script>
 
 <style>
 :root{
-  --bg:#f5f7fb;
+  --bg:#f3f4f6;
   --card:#ffffff;
-  --text:#172033;
-  --muted:#667085;
-  --primary:#315efb;
-  --primary2:#2448c8;
-  --border:#dfe4ec;
-  --success:#168a55;
-  --warning:#b7791f;
-  --danger:#c53030;
-  --shadow:0 10px 30px rgba(20,30,60,.08);
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#d1d5db;
+  --primary:#2563eb;
+  --primary-dark:#1d4ed8;
+  --green:#059669;
+  --red:#dc2626;
+  --orange:#d97706;
+  --shadow:0 8px 30px rgba(0,0,0,.08);
+  --radius:18px;
 }
 
 *{
@@ -27,297 +31,308 @@
 
 body{
   margin:0;
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
   background:var(--bg);
   color:var(--text);
 }
 
+header{
+  background:#111827;
+  color:white;
+  padding:24px 18px;
+  text-align:center;
+}
+
+header h1{
+  margin:0 0 8px;
+  font-size:28px;
+}
+
+header p{
+  margin:0;
+  color:#d1d5db;
+}
+
+.container{
+  width:min(1100px,94%);
+  margin:20px auto 60px;
+}
+
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:var(--shadow);
+}
+
+h2{
+  margin-top:0;
+}
+
+h3{
+  margin-top:0;
+}
+
 button,
-input,
-select{
+select,
+input[type=file]{
   font:inherit;
 }
 
 button{
+  border:0;
+  border-radius:12px;
+  padding:12px 16px;
   cursor:pointer;
-}
-
-.app{
-  max-width:1450px;
-  margin:auto;
-  padding:24px;
-}
-
-header{
-  margin-bottom:22px;
-}
-
-header h1{
-  margin:0;
-  font-size:32px;
-}
-
-header p{
-  color:var(--muted);
-  margin:8px 0 0;
-}
-
-.toolbar{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  margin:20px 0;
-}
-
-.btn{
-  border:1px solid var(--border);
-  background:white;
-  color:var(--text);
-  padding:11px 16px;
-  border-radius:10px;
+  background:var(--primary);
+  color:white;
   font-weight:700;
   transition:.15s;
 }
 
-.btn:hover{
-  transform:translateY(-1px);
-  box-shadow:var(--shadow);
+button:hover{
+  background:var(--primary-dark);
 }
 
-.btn.primary{
-  background:var(--primary);
-  color:white;
-  border-color:var(--primary);
+button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
 }
 
-.btn.primary:hover{
-  background:var(--primary2);
+button.secondary{
+  background:#374151;
 }
 
-.btn.success{
-  background:var(--success);
-  color:white;
-  border-color:var(--success);
+button.green{
+  background:var(--green);
 }
 
-.btn.warning{
-  background:var(--warning);
-  color:white;
-  border-color:var(--warning);
+button.orange{
+  background:var(--orange);
 }
 
-.btn.danger{
-  background:var(--danger);
-  color:white;
-  border-color:var(--danger);
+button.red{
+  background:var(--red);
 }
 
-input[type=file]{
-  display:none;
+.controls{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  align-items:center;
 }
 
 .file-label{
   display:inline-flex;
   align-items:center;
-  gap:8px;
-  padding:11px 16px;
-  border-radius:10px;
-  background:#fff;
-  border:1px solid var(--border);
+  justify-content:center;
+  padding:12px 16px;
+  border-radius:12px;
+  background:var(--primary);
+  color:white;
   font-weight:700;
   cursor:pointer;
 }
 
-.controls{
-  display:flex;
-  gap:12px;
-  align-items:center;
-  flex-wrap:wrap;
-  background:white;
-  padding:14px;
-  border:1px solid var(--border);
-  border-radius:14px;
-  box-shadow:var(--shadow);
+.file-label:hover{
+  background:var(--primary-dark);
 }
 
-.controls label{
-  font-weight:700;
+.file-label input{
+  display:none;
 }
 
 select{
+  padding:11px 14px;
   border:1px solid var(--border);
-  border-radius:8px;
-  padding:8px 12px;
+  border-radius:12px;
   background:white;
 }
 
 .status{
-  margin:15px 0;
-  padding:14px 16px;
+  margin-top:15px;
+  padding:12px 14px;
   border-radius:12px;
-  background:white;
-  border:1px solid var(--border);
+  background:#eff6ff;
+  color:#1e40af;
+  font-weight:600;
+}
+
+.status.success{
+  background:#ecfdf5;
+  color:#065f46;
+}
+
+.status.error{
+  background:#fef2f2;
+  color:#991b1b;
+}
+
+.status.warning{
+  background:#fffbeb;
+  color:#92400e;
+}
+
+.progress-wrap{
+  margin-top:12px;
+  height:12px;
+  border-radius:999px;
+  overflow:hidden;
+  background:#e5e7eb;
 }
 
 .progress{
-  height:10px;
-  background:#e9edf4;
-  border-radius:999px;
-  overflow:hidden;
-  margin-top:10px;
-}
-
-.progress-bar{
-  width:0%;
   height:100%;
+  width:0%;
   background:var(--primary);
   transition:width .2s;
 }
 
-.grid{
+.photos-grid{
   display:grid;
-  grid-template-columns:360px minmax(0,1fr);
-  gap:20px;
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:14px;
 }
 
-.card{
-  background:var(--card);
+.photo-card{
   border:1px solid var(--border);
-  border-radius:16px;
-  box-shadow:var(--shadow);
+  border-radius:14px;
   overflow:hidden;
+  background:white;
 }
 
-.card-header{
-  padding:16px 18px;
-  border-bottom:1px solid var(--border);
-  font-weight:800;
-}
-
-.card-body{
-  padding:18px;
-}
-
-.photo-list{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.photo-item{
-  border:1px solid var(--border);
-  border-radius:12px;
-  overflow:hidden;
-  background:#fafbfc;
-}
-
-.photo-item img{
-  width:100%;
+.photo-card img{
   display:block;
-  max-height:260px;
+  width:100%;
+  height:180px;
   object-fit:contain;
-  background:#eee;
+  background:#e5e7eb;
 }
 
-.photo-meta{
+.photo-info{
   padding:10px;
   font-size:13px;
+}
+
+.photo-name{
+  font-weight:700;
+  word-break:break-word;
+}
+
+.photo-error{
+  margin-top:7px;
+  color:var(--red);
+  font-weight:700;
+}
+
+.empty{
   color:var(--muted);
+  padding:10px 0;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+  margin-top:14px;
+}
+
+.stat{
+  background:#f9fafb;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+}
+
+.stat strong{
+  display:block;
+  font-size:25px;
+  margin-top:4px;
+}
+
+.ocr-box{
+  background:#111827;
+  color:#e5e7eb;
+  border-radius:14px;
+  padding:15px;
+  overflow:auto;
+  max-height:500px;
+  white-space:pre-wrap;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
+  line-height:1.5;
 }
 
 .course{
-  padding:30px;
-  line-height:1.65;
+  background:white;
+  border-radius:14px;
+  border:1px solid var(--border);
+  padding:24px;
 }
 
 .course h1{
-  font-size:34px;
+  font-size:30px;
   margin-top:0;
 }
 
 .course h2{
-  margin-top:40px;
-  border-bottom:2px solid var(--border);
+  margin-top:30px;
   padding-bottom:8px;
+  border-bottom:2px solid #e5e7eb;
 }
 
 .course h3{
-  margin-top:28px;
+  margin-top:22px;
 }
 
 .course p{
-  max-width:900px;
+  line-height:1.7;
 }
 
-.course ul{
-  padding-left:25px;
+.course ul,
+.course ol{
+  line-height:1.7;
 }
 
-.definition{
+.course .definition{
+  background:#eff6ff;
   border-left:5px solid var(--primary);
-  background:#f2f5ff;
-  padding:15px 18px;
+  padding:12px 15px;
   border-radius:8px;
-  margin:15px 0;
+  margin:12px 0;
 }
 
-.formula{
-  background:#111827;
-  color:white;
-  padding:15px 20px;
+.course .important{
+  background:#ecfdf5;
+  border-left:5px solid var(--green);
+  padding:12px 15px;
+  border-radius:8px;
+  margin:12px 0;
+}
+
+.course .formula{
+  background:#f9fafb;
+  border:1px solid var(--border);
+  padding:12px;
   border-radius:10px;
-  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;
-  overflow:auto;
-  white-space:pre-wrap;
-}
-
-.keybox{
-  background:#f7f9fc;
-  border:1px solid var(--border);
-  padding:18px;
-  border-radius:12px;
-  margin-top:20px;
-}
-
-.diagram{
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-  margin:18px 0;
-  background:white;
+  font-family:ui-monospace,monospace;
   overflow:auto;
 }
 
-.flow{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-}
-
-.flow-box{
-  border:2px solid var(--primary);
-  border-radius:10px;
-  padding:10px 14px;
-  background:#f5f7ff;
-  font-weight:700;
-}
-
-.arrow{
-  font-size:22px;
-}
-
-.original{
-  margin-top:35px;
-  border-top:1px solid var(--border);
-  padding-top:25px;
-}
-
-.original img{
+.original-image{
   max-width:100%;
-  border-radius:10px;
+  display:block;
+  margin:15px auto;
+  border-radius:12px;
   border:1px solid var(--border);
+}
+
+.notice{
+  padding:12px 14px;
+  border-radius:12px;
+  background:#f9fafb;
+  border:1px solid var(--border);
+  margin-bottom:12px;
 }
 
 .small{
@@ -325,162 +340,103 @@ select{
   color:var(--muted);
 }
 
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:800;
-  background:#eef2ff;
-  color:#315efb;
+#courseSection{
+  display:none;
 }
 
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
+#ocrSection{
+  display:none;
 }
 
-.stat{
-  padding:14px;
-  border:1px solid var(--border);
-  border-radius:10px;
-  background:#fafbfc;
+#diagnosticSection{
+  display:none;
 }
 
-.stat strong{
-  display:block;
-  font-size:22px;
-}
-
-#debug{
-  white-space:pre-wrap;
-  font-family:ui-monospace,monospace;
-  font-size:12px;
-  max-height:400px;
-  overflow:auto;
-  background:#101828;
-  color:#e5e7eb;
-  padding:15px;
-  border-radius:10px;
-}
-
-.empty{
-  color:var(--muted);
-  text-align:center;
-  padding:30px;
-}
-
-#slideshow{
+.slide-overlay{
   position:fixed;
   inset:0;
-  background:#0b1020;
-  color:white;
+  background:rgba(0,0,0,.95);
   z-index:9999;
   display:none;
-  overflow:hidden;
-}
-
-.slide{
-  height:100%;
-  width:100%;
-  display:none;
-  padding:5vh 7vw;
-  overflow:auto;
-}
-
-.slide.active{
-  display:flex;
-  flex-direction:column;
+  align-items:center;
   justify-content:center;
+  flex-direction:column;
+  padding:20px;
 }
 
-.slide h1{
-  font-size:clamp(32px,6vw,76px);
-  margin:0 0 20px;
-}
-
-.slide h2{
-  font-size:clamp(26px,4vw,52px);
-}
-
-.slide p,
-.slide li{
-  font-size:clamp(18px,2vw,30px);
-  line-height:1.55;
-}
-
-.slide img{
-  max-width:90%;
-  max-height:75vh;
+.slide-overlay img{
+  max-width:95vw;
+  max-height:80vh;
   object-fit:contain;
-  margin:auto;
-  border-radius:12px;
+}
+
+.slide-title{
+  color:white;
+  margin-bottom:15px;
+  text-align:center;
 }
 
 .slide-controls{
-  position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
+  margin-top:15px;
   display:flex;
-  gap:8px;
+  gap:10px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 
-.slide-controls button{
-  background:rgba(255,255,255,.15);
-  border:1px solid rgba(255,255,255,.25);
-  color:white;
-  border-radius:8px;
-  padding:10px 14px;
-}
-
-.close-slide{
-  position:fixed;
-  top:20px;
-  right:20px;
-}
-
-@media(max-width:900px){
-  .grid{
-    grid-template-columns:1fr;
+@media(max-width:650px){
+  header h1{
+    font-size:23px;
   }
 
-  .stats{
-    grid-template-columns:repeat(2,1fr);
+  .card{
+    padding:15px;
   }
 
-  .course{
-    padding:20px;
+  button,
+  .file-label{
+    width:100%;
+  }
+
+  .controls{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  select{
+    width:100%;
   }
 }
 
 @media print{
+  header,
+  .no-print,
+  #photosSection,
+  #ocrSection,
+  #diagnosticSection{
+    display:none !important;
+  }
+
   body{
     background:white;
   }
 
-  .no-print,
-  header,
-  .toolbar,
-  .controls,
-  .status,
-  .left-panel,
-  #slideshow{
-    display:none!important;
-  }
-
-  .grid{
-    display:block;
+  .container{
+    width:100%;
+    margin:0;
   }
 
   .card{
-    border:0;
     box-shadow:none;
+    border:0;
+  }
+
+  #courseSection{
+    display:block !important;
   }
 
   .course{
-    padding:0;
+    border:0;
   }
 }
 </style>
@@ -488,349 +444,1697 @@ select{
 
 <body>
 
-<div class="app">
-
 <header>
-  <h1>📸 Photo → Cours Ultimate</h1>
-  <p>
-    Transforme tes photos de cours, feuilles et tableaux en un cours propre,
-    structuré et exportable — directement dans le navigateur.
-  </p>
+  <h1>📸 Photo → Cours V5</h1>
+  <p>OCR local • reconstruction du cours • schémas • export</p>
 </header>
 
-<div class="toolbar no-print">
+<div class="container">
 
-  <label class="file-label">
-    📷 Ajouter des photos
-    <input id="fileInput" type="file" accept="image/*" multiple>
-  </label>
+  <!-- IMPORT -->
+  <section class="card no-print">
+    <h2>1. Ajouter les photos</h2>
 
-  <button class="btn primary" id="ocrBtn">
-    🔍 Analyser les photos
-  </button>
+    <div class="controls">
+      <label class="file-label">
+        📷 Ajouter une ou plusieurs photos
+        <input
+          id="fileInput"
+          type="file"
+          accept="image/*"
+          multiple
+        >
+      </label>
 
-  <button class="btn success" id="generateBtn">
-    🧠 Générer le cours
-  </button>
+      <button id="exampleBtn" class="secondary">
+        🧪 Tester avec un exemple
+      </button>
 
-  <button class="btn" id="exampleBtn">
-    🧪 Exemple
-  </button>
-
-  <button class="btn" id="clearBtn">
-    🗑️ Réinitialiser
-  </button>
-
-</div>
-
-<div class="controls no-print">
-
-  <label for="mode">
-    Mode :
-  </label>
-
-  <select id="mode">
-    <option value="fast">⚡ Rapide</option>
-    <option value="precision" selected>🎯 Précision maximale</option>
-  </select>
-
-  <button class="btn" id="exportHtmlBtn">
-    📄 Export HTML
-  </button>
-
-  <button class="btn" id="exportTxtBtn">
-    📝 Export TXT
-  </button>
-
-  <button class="btn" id="printBtn">
-    🖨️ PDF / Imprimer
-  </button>
-
-  <button class="btn warning" id="slideshowBtn">
-    🎞️ Diaporama
-  </button>
-
-</div>
-
-<div class="status no-print">
-
-  <div id="statusText">
-    Prêt. Ajoute une ou plusieurs photos.
-  </div>
-
-  <div class="progress">
-    <div id="progressBar" class="progress-bar"></div>
-  </div>
-
-</div>
-
-<div class="grid">
-
-  <aside class="left-panel">
-
-    <div class="card">
-
-      <div class="card-header">
-        📸 Photos originales
-      </div>
-
-      <div class="card-body">
-
-        <div id="photoList" class="photo-list">
-          <div class="empty">
-            Aucune photo.
-          </div>
-        </div>
-
-      </div>
-
+      <button id="clearBtn" class="red">
+        🗑️ Tout effacer
+      </button>
     </div>
 
-    <br>
+    <div id="importStatus" class="status">
+      Aucune photo importée.
+    </div>
+  </section>
 
-    <div class="card no-print">
+  <!-- PHOTOS -->
+  <section class="card no-print" id="photosSection">
+    <h2>2. Photos originales</h2>
 
-      <div class="card-header">
-        📊 Analyse
-      </div>
+    <div id="photosGrid" class="photos-grid">
+      <div class="empty">Aucune photo pour le moment.</div>
+    </div>
+  </section>
 
-      <div class="card-body">
+  <!-- OCR -->
+  <section class="card no-print">
+    <h2>3. OCR</h2>
 
-        <div id="stats" class="stats">
+    <div class="controls">
+      <select id="mode">
+        <option value="precision">🎯 Précision maximale</option>
+        <option value="fast">⚡ Rapide</option>
+      </select>
 
-          <div class="stat">
-            <strong id="statPhotos">0</strong>
-            photos
-          </div>
+      <button id="ocrBtn">
+        🔎 Lire les photos
+      </button>
 
-          <div class="stat">
-            <strong id="statWords">0</strong>
-            mots
-          </div>
-
-          <div class="stat">
-            <strong id="statLines">0</strong>
-            lignes
-          </div>
-
-          <div class="stat">
-            <strong id="statConfidence">0%</strong>
-            confiance
-          </div>
-
-        </div>
-
-      </div>
-
+      <button id="generateBtn" class="green">
+        ✨ Générer la fiche
+      </button>
     </div>
 
-    <br>
-
-    <div class="card no-print">
-
-      <div class="card-header">
-        🧪 Diagnostic OCR
-      </div>
-
-      <div class="card-body">
-
-        <div id="debug">
-          Aucun diagnostic pour le moment.
-        </div>
-
-      </div>
-
+    <div id="ocrStatus" class="status">
+      L'OCR n'a pas encore été lancé.
     </div>
 
-  </aside>
+    <div class="progress-wrap">
+      <div id="progressBar" class="progress"></div>
+    </div>
+  </section>
 
-  <main>
+  <!-- STATS -->
+  <section class="card no-print" id="diagnosticSection">
+    <h2>🔬 Diagnostic OCR</h2>
 
-    <div class="card">
-
-      <div class="card-header">
-        📚 Cours généré
+    <div class="stats">
+      <div class="stat">
+        Photos
+        <strong id="statPhotos">0</strong>
       </div>
 
-      <div id="course" class="course">
-
-        <div class="empty">
-          Le cours apparaîtra ici après analyse.
-        </div>
-
+      <div class="stat">
+        Mots
+        <strong id="statWords">0</strong>
       </div>
 
+      <div class="stat">
+        Lignes
+        <strong id="statLines">0</strong>
+      </div>
+
+      <div class="stat">
+        Confiance
+        <strong id="statConfidence">0%</strong>
+      </div>
     </div>
 
-  </main>
+    <h3 style="margin-top:25px;">Texte réellement détecté</h3>
+
+    <div class="notice">
+      <strong>Important :</strong>
+      si du texte apparaît ici, l'OCR fonctionne. La génération du cours se fera ensuite à partir de ce texte.
+    </div>
+
+    <div id="ocrText" class="ocr-box">
+      Aucun texte détecté.
+    </div>
+  </section>
+
+  <!-- COURS -->
+  <section class="card" id="courseSection">
+    <div class="no-print controls" style="margin-bottom:15px;">
+      <button id="exportHtmlBtn">
+        💾 Export HTML
+      </button>
+
+      <button id="exportTxtBtn" class="secondary">
+        📄 Export TXT
+      </button>
+
+      <button id="printBtn" class="orange">
+        🖨️ PDF / Imprimer
+      </button>
+
+      <button id="slideshowBtn" class="secondary">
+        🖼️ Diaporama
+      </button>
+    </div>
+
+    <div id="course"></div>
+  </section>
 
 </div>
 
-</div>
+<!-- SLIDESHOW -->
+<div id="slideOverlay" class="slide-overlay">
+  <div id="slideTitle" class="slide-title"></div>
 
-<div id="slideshow">
-
-  <button
-    class="slide-controls close-slide"
-    id="closeSlideshow"
-  >
-    ✕ Fermer
-  </button>
-
-  <div id="slides"></div>
+  <img id="slideImage" alt="Photo du cours">
 
   <div class="slide-controls">
-
-    <button id="prevSlide">
-      ←
-    </button>
-
-    <button id="nextSlide">
-      →
-    </button>
-
-    <button id="fullScreenBtn">
-      ⛶
-    </button>
-
+    <button id="slidePrev">◀</button>
+    <button id="slideNext">▶</button>
+    <button id="slideFull">⛶ Plein écran</button>
+    <button id="slideClose" class="red">✕ Fermer</button>
   </div>
-
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7/dist/tesseract.min.js"></script>
-
 <script>
+"use strict";
 
 /* =========================================================
-   PHOTO → COURS ULTIMATE
-   ========================================================= */
+   ÉTAT
+========================================================= */
 
 const state = {
-
   photos: [],
-
   pages: [],
-
   course: null,
-
   worker: null,
-
   ocrRunning: false,
-
+  workerReady: false,
   slideIndex: 0
-
 };
-
 
 /* =========================================================
    DOM
-   ========================================================= */
+========================================================= */
 
 const $ = id => document.getElementById(id);
 
 const fileInput = $("fileInput");
-const photoList = $("photoList");
-const courseEl = $("course");
-const statusText = $("statusText");
-const progressBar = $("progressBar");
-const debugEl = $("debug");
+const photosGrid = $("photosGrid");
+const importStatus = $("importStatus");
 
+const ocrBtn = $("ocrBtn");
+const generateBtn = $("generateBtn");
+const exampleBtn = $("exampleBtn");
+const clearBtn = $("clearBtn");
+
+const ocrStatus = $("ocrStatus");
+const progressBar = $("progressBar");
+
+const diagnosticSection = $("diagnosticSection");
+const ocrText = $("ocrText");
+
+const statPhotos = $("statPhotos");
+const statWords = $("statWords");
+const statLines = $("statLines");
+const statConfidence = $("statConfidence");
+
+const courseSection = $("courseSection");
+const courseElement = $("course");
+
+const slideOverlay = $("slideOverlay");
+const slideImage = $("slideImage");
+const slideTitle = $("slideTitle");
 
 
 /* =========================================================
    UTILITAIRES
-   ========================================================= */
+========================================================= */
 
 function escapeHTML(value){
-
   return String(value ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
+function clamp(value,min,max){
+  return Math.min(max,Math.max(min,value));
+}
 
-function normalizeText(text){
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve,ms));
+}
 
+function cleanText(text){
   return String(text || "")
-    .replace(/\u00ad/g,"")
-    .replace(/[ \t]+/g," ")
-    .replace(/\s+\n/g,"\n")
+    .replace(/\r/g,"")
+    .replace(/[ \t]+\n/g,"\n")
     .replace(/\n{3,}/g,"\n\n")
     .trim();
+}
 
+function countWords(text){
+  const words = cleanText(text).match(/\S+/g);
+  return words ? words.length : 0;
+}
+
+function countLines(text){
+  return cleanText(text)
+    .split("\n")
+    .map(x => x.trim())
+    .filter(Boolean)
+    .length;
+}
+
+function averageConfidence(words){
+  const values = words
+    .map(w => Number(w.confidence))
+    .filter(v => Number.isFinite(v) && v >= 0);
+
+  if(!values.length) return 0;
+
+  return values.reduce((a,b)=>a+b,0) / values.length;
 }
 
 
-function cleanOCR(text){
+/* =========================================================
+   IMAGE
+========================================================= */
 
-  let t = normalizeText(text);
+function loadImage(src){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
 
-  t = t
-    .replace(/([a-zA-ZÀ-ÿ])-\s*\n\s*([a-zA-ZÀ-ÿ])/g,"$1$2")
-    .replace(/\n[ \t]+/g,"\n")
-    .replace(/[|]{2,}/g," ")
-    .replace(/_{3,}/g," ")
-    .replace(/[ \t]{2,}/g," ");
+    img.onload = () => resolve(img);
 
-  return t.trim();
+    img.onerror = () => reject(
+      new Error("Impossible de décoder cette image dans le navigateur.")
+    );
 
+    img.src = src;
+  });
+}
+
+function fileToDataURL(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+
+    reader.onerror = () => reject(
+      reader.error || new Error("Lecture du fichier impossible.")
+    );
+
+    reader.readAsDataURL(file);
+  });
+}
+
+function isProbablyHEIC(file){
+  return (
+    /heic|heif/i.test(file.type || "") ||
+    /\.(heic|heif)$/i.test(file.name || "")
+  );
 }
 
 
-function similarity(a,b){
+/* =========================================================
+   IMPORT ROBUSTE
+========================================================= */
 
-  a = normalizeText(a).toLowerCase();
-  b = normalizeText(b).toLowerCase();
+async function addFiles(files){
 
-  if(!a || !b) return 0;
+  if(!files || !files.length){
+    return;
+  }
 
-  if(a === b) return 1;
+  let added = 0;
 
-  const aa = new Set(a.split(/\s+/));
-  const bb = new Set(b.split(/\s+/));
+  for(const file of files){
 
-  const inter = [...aa].filter(x => bb.has(x)).length;
+    if(!file.type.startsWith("image/") && !isProbablyHEIC(file)){
+      continue;
+    }
 
-  return inter / Math.max(aa.size,bb.size);
+    const id =
+      (crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now() + "-" + Math.random());
 
+    /*
+      On crée immédiatement une URL locale.
+      Cela permet d'afficher la photo sans attendre le FileReader.
+    */
+    const previewURL = URL.createObjectURL(file);
+
+    const photo = {
+      id,
+      file,
+      name:file.name,
+      type:file.type,
+      previewURL,
+      dataURL:null,
+      width:0,
+      height:0,
+      error:null
+    };
+
+    state.photos.push(photo);
+
+    /*
+      AFFICHAGE IMMÉDIAT
+    */
+    renderPhotos();
+
+    try{
+
+      /*
+        Cas HEIC/HEIF :
+        certains navigateurs ne savent pas le décoder.
+      */
+      if(isProbablyHEIC(file)){
+
+        try{
+          const img = await loadImage(previewURL);
+
+          photo.width = img.naturalWidth;
+          photo.height = img.naturalHeight;
+
+          photo.dataURL = await fileToDataURL(file);
+
+        }catch(error){
+
+          photo.error =
+            "Cette photo semble être en HEIC/HEIF et ce navigateur ne sait pas la décoder. " +
+            "Utilise JPG ou PNG.";
+
+          renderPhotos();
+          continue;
+        }
+
+      }else{
+
+        const img = await loadImage(previewURL);
+
+        photo.width = img.naturalWidth;
+        photo.height = img.naturalHeight;
+
+        /*
+          On garde une DataURL pour les exports et l'OCR.
+        */
+        photo.dataURL = await fileToDataURL(file);
+      }
+
+      added++;
+
+      renderPhotos();
+
+    }catch(error){
+
+      console.error(error);
+
+      photo.error = error.message || "Erreur lors du chargement.";
+
+      renderPhotos();
+    }
+  }
+
+  if(added > 0){
+
+    importStatus.className = "status success";
+
+    importStatus.textContent =
+      added === 1
+      ? "✅ 1 photo chargée. Tu peux lancer l'OCR."
+      : `✅ ${added} photos chargées. Tu peux lancer l'OCR.`;
+
+  }else{
+
+    importStatus.className = "status error";
+
+    importStatus.textContent =
+      "❌ Aucune photo exploitable n'a pu être chargée.";
+  }
 }
 
 
-function clamp(v,min,max){
+/* =========================================================
+   AFFICHAGE PHOTOS
+========================================================= */
 
-  return Math.max(min,Math.min(max,v));
+function renderPhotos(){
 
+  if(!state.photos.length){
+
+    photosGrid.innerHTML =
+      '<div class="empty">Aucune photo pour le moment.</div>';
+
+    return;
+  }
+
+  photosGrid.innerHTML = "";
+
+  for(const photo of state.photos){
+
+    const card = document.createElement("div");
+    card.className = "photo-card";
+
+    const img = document.createElement("img");
+
+    img.src = photo.previewURL || photo.dataURL;
+    img.alt = photo.name;
+
+    card.appendChild(img);
+
+    const info = document.createElement("div");
+    info.className = "photo-info";
+
+    info.innerHTML = `
+      <div class="photo-name">${escapeHTML(photo.name)}</div>
+      <div class="small">
+        ${photo.width && photo.height
+          ? `${photo.width} × ${photo.height}px`
+          : "Chargement…"}
+      </div>
+      ${
+        photo.error
+        ? `<div class="photo-error">⚠️ ${escapeHTML(photo.error)}</div>`
+        : ""
+      }
+    `;
+
+    card.appendChild(info);
+
+    photosGrid.appendChild(card);
+  }
 }
 
 
-function setStatus(text,progress=null){
+/* =========================================================
+   PRETRAITEMENT IMAGE
+========================================================= */
 
-  statusText.textContent = text;
+async function prepareImage(dataURL, mode="precision", variant="normal"){
 
-  if(progress !== null){
+  const img = await loadImage(dataURL);
 
-    progressBar.style.width =
-      clamp(progress,0,100) + "%";
+  const maxSize =
+    mode === "precision"
+      ? 3000
+      : 2200;
+
+  let width = img.naturalWidth;
+  let height = img.naturalHeight;
+
+  /*
+    IMPORTANT :
+    on ne réduit pas une petite photo.
+  */
+
+  const ratio = Math.min(
+    1,
+    maxSize / Math.max(width,height)
+  );
+
+  width = Math.max(1,Math.round(width * ratio));
+  height = Math.max(1,Math.round(height * ratio));
+
+  const canvas = document.createElement("canvas");
+
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d",{
+    willReadFrequently:true
+  });
+
+  /*
+    Meilleur rendu pour texte imprimé et manuscrit.
+  */
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = "high";
+
+  ctx.drawImage(img,0,0,width,height);
+
+  if(variant === "normal"){
+    return canvas.toDataURL("image/jpeg",0.94);
+  }
+
+  const imageData = ctx.getImageData(
+    0,
+    0,
+    width,
+    height
+  );
+
+  const data = imageData.data;
+
+  if(variant === "gray"){
+
+    for(let i=0;i<data.length;i+=4){
+
+      const r = data[i];
+      const g = data[i+1];
+      const b = data[i+2];
+
+      const gray =
+        0.299*r +
+        0.587*g +
+        0.114*b;
+
+      data[i] = gray;
+      data[i+1] = gray;
+      data[i+2] = gray;
+    }
 
   }
 
+  if(variant === "contrast"){
+
+    for(let i=0;i<data.length;i+=4){
+
+      const r = data[i];
+      const g = data[i+1];
+      const b = data[i+2];
+
+      let gray =
+        0.299*r +
+        0.587*g +
+        0.114*b;
+
+      /*
+        contraste modéré :
+        on évite de détruire l'écriture manuscrite.
+      */
+      gray = ((gray - 128) * 1.45) + 128;
+
+      gray = clamp(gray,0,255);
+
+      data[i] = gray;
+      data[i+1] = gray;
+      data[i+2] = gray;
+    }
+  }
+
+  if(variant === "threshold"){
+
+    for(let i=0;i<data.length;i+=4){
+
+      const r = data[i];
+      const g = data[i+1];
+      const b = data[i+2];
+
+      const gray =
+        0.299*r +
+        0.587*g +
+        0.114*b;
+
+      const value =
+        gray < 175 ? 0 : 255;
+
+      data[i] = value;
+      data[i+1] = value;
+      data[i+2] = value;
+    }
+  }
+
+  ctx.putImageData(imageData,0,0);
+
+  return canvas.toDataURL("image/jpeg",0.94);
 }
 
 
-function downloadFile(name,content,type){
+/* =========================================================
+   TESSERACT
+========================================================= */
 
-  const blob = new Blob([content],{type});
+async function createOCRWorker(){
 
-  const url = URL.createObjectURL(blob);
+  if(state.worker && state.workerReady){
+    return state.worker;
+  }
 
-  const a = document.createElement("a");
+  ocrStatus.className = "status";
+  ocrStatus.textContent =
+    "⏳ Chargement du moteur OCR français… première utilisation potentiellement longue.";
+
+  progressBar.style.width = "3%";
+
+  /*
+    IMPORTANT :
+    on utilise uniquement le moteur français.
+  */
+
+  state.worker = await Tesseract.createWorker(
+    "fra",
+    1,
+    {
+      logger: message => {
+
+        if(!message) return;
+
+        if(
+          message.status &&
+          typeof message.progress === "number"
+        ){
+
+          const percent =
+            clamp(message.progress * 100,0,100);
+
+          progressBar.style.width =
+            `${percent}%`;
+
+          ocrStatus.textContent =
+            `🔎 ${message.status} — ${Math.round(percent)}%`;
+        }
+      }
+    }
+  );
+
+  /*
+    Ces paramètres sont volontairement simples.
+    Le but est de laisser Tesseract faire une vraie
+    segmentation automatique.
+  */
+
+  await state.worker.setParameters({
+    language_model_ngram_on: "1",
+    preserve_interword_spaces: "1",
+    user_defined_dpi: "300"
+  });
+
+  state.workerReady = true;
+
+  return state.worker;
+}
+
+
+/* =========================================================
+   OCR D'UNE IMAGE
+========================================================= */
+
+async function recognizeImage(image, psm){
+
+  const worker = await createOCRWorker();
+
+  /*
+    Le texte brut est prioritaire.
+    TSV est seulement complémentaire.
+  */
+
+  await worker.setParameters({
+    tessedit_pageseg_mode: String(psm),
+    preserve_interword_spaces:"1",
+    user_defined_dpi:"300"
+  });
+
+  const result = await worker.recognize(image);
+
+  const data = result && result.data
+    ? result.data
+    : {};
+
+  const text = cleanText(data.text || "");
+
+  let words = [];
+
+  /*
+    Selon la version de Tesseract.js,
+    data.words peut être disponible.
+  */
+
+  if(Array.isArray(data.words)){
+    words = data.words;
+  }
+
+  return {
+    text,
+    words,
+    confidence:
+      Number.isFinite(data.confidence)
+        ? data.confidence
+        : averageConfidence(words)
+  };
+}
+
+
+/* =========================================================
+   SCORE OCR
+========================================================= */
+
+function scoreOCR(result){
+
+  if(!result || !result.text){
+    return 0;
+  }
+
+  const text = result.text;
+
+  const words = countWords(text);
+
+  const lines = countLines(text);
+
+  const confidence =
+    Number.isFinite(result.confidence)
+      ? result.confidence
+      : 0;
+
+  /*
+    On récompense :
+    - beaucoup de mots
+    - plusieurs lignes
+    - confiance correcte
+  */
+
+  let score = 0;
+
+  score += Math.min(words,250) * 2;
+  score += Math.min(lines,80) * 3;
+  score += confidence * 2;
+
+  /*
+    Pénalités simples pour les résultats
+    totalement absurdes.
+  */
+
+  const letters =
+    (text.match(/[A-Za-zÀ-ÿ]/g) || []).length;
+
+  if(letters < 3){
+    score -= 100;
+  }
+
+  return score;
+}
+
+
+/* =========================================================
+   MULTI-PASSES OCR
+========================================================= */
+
+async function ocrPhoto(photo,index,total){
+
+  if(!photo.dataURL){
+    throw new Error(
+      `La photo "${photo.name}" n'est pas encore disponible pour l'OCR.`
+    );
+  }
+
+  const mode = $("mode").value;
+
+  const variants =
+    mode === "fast"
+      ? ["normal","gray"]
+      : ["normal","gray","contrast"];
+
+  /*
+    PSM :
+    6 = bloc de texte uniforme
+    11 = texte dispersé
+    3 = segmentation automatique
+  */
+
+  const psmModes =
+    mode === "fast"
+      ? [3,6]
+      : [3,6,11];
+
+  const results = [];
+
+  let pass = 0;
+
+  const totalPasses =
+    variants.length * psmModes.length;
+
+  for(const variant of variants){
+
+    const processed =
+      await prepareImage(
+        photo.dataURL,
+        mode,
+        variant
+      );
+
+    for(const psm of psmModes){
+
+      pass++;
+
+      ocrStatus.textContent =
+        `🔎 Photo ${index+1}/${total} — analyse ${pass}/${totalPasses}…`;
+
+      const result =
+        await recognizeImage(
+          processed,
+          psm
+        );
+
+      results.push({
+        ...result,
+        variant,
+        psm,
+        score:scoreOCR(result)
+      });
+    }
+  }
+
+  /*
+    On choisit le résultat qui contient le plus
+    d'informations cohérentes.
+  */
+
+  results.sort((a,b)=>b.score-a.score);
+
+  const best = results[0];
+
+  /*
+    Si le meilleur résultat est vide,
+    on tente UNE dernière lecture brute.
+  */
+
+  if(!best || !best.text){
+
+    ocrStatus.textContent =
+      `⚠️ OCR faible sur ${photo.name} — dernière tentative…`;
+
+    const fallback =
+      await recognizeImage(
+        photo.dataURL,
+        3
+      );
+
+    return {
+      ...fallback,
+      photo,
+      attempts:results,
+      selected:"fallback"
+    };
+  }
+
+  return {
+    ...best,
+    photo,
+    attempts:results,
+    selected:`${best.variant} / PSM ${best.psm}`
+  };
+}
+
+
+/* =========================================================
+   NETTOYAGE OCR
+========================================================= */
+
+function normalizeOCRText(text){
+
+  let lines =
+    cleanText(text)
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean);
+
+  const output = [];
+
+  for(let line of lines){
+
+    /*
+      Remplace quelques artefacts fréquents.
+    */
+
+    line = line
+      .replace(/[|]{2,}/g," ")
+      .replace(/[ \t]{2,}/g," ")
+      .trim();
+
+    if(!line) continue;
+
+    /*
+      Corrige les puces cassées.
+    */
+
+    line = line
+      .replace(/^[•·▪◦●○]\s*/,"- ")
+      .replace(/^[–—]\s*/,"- ");
+
+    output.push(line);
+  }
+
+  return output.join("\n");
+}
+
+
+/* =========================================================
+   LANCER OCR GLOBAL
+========================================================= */
+
+async function runOCR(){
+
+  if(state.ocrRunning){
+    return;
+  }
+
+  if(!state.photos.length){
+
+    ocrStatus.className = "status error";
+    ocrStatus.textContent =
+      "❌ Ajoute au moins une photo.";
+
+    return;
+  }
+
+  const invalid =
+    state.photos.filter(p => p.error || !p.dataURL);
+
+  if(invalid.length){
+
+    ocrStatus.className = "status error";
+
+    ocrStatus.textContent =
+      "❌ Une ou plusieurs photos ne sont pas lisibles. " +
+      "Vérifie les erreurs affichées dans les photos.";
+
+    return;
+  }
+
+  state.ocrRunning = true;
+
+  ocrBtn.disabled = true;
+  generateBtn.disabled = true;
+
+  diagnosticSection.style.display = "block";
+
+  state.pages = [];
+
+  let totalWords = 0;
+  let totalLines = 0;
+  let confidenceValues = [];
+
+  try{
+
+    for(let i=0;i<state.photos.length;i++){
+
+      const photo = state.photos[i];
+
+      const page =
+        await ocrPhoto(
+          photo,
+          i,
+          state.photos.length
+        );
+
+      page.text =
+        normalizeOCRText(page.text);
+
+      state.pages.push(page);
+
+      totalWords += countWords(page.text);
+
+      totalLines += countLines(page.text);
+
+      if(Number.isFinite(page.confidence)){
+        confidenceValues.push(page.confidence);
+      }
+
+      /*
+        Affichage immédiat du résultat.
+      */
+
+      renderOCRDiagnostic();
+
+      const progress =
+        ((i+1) / state.photos.length) * 100;
+
+      progressBar.style.width =
+        `${progress}%`;
+    }
+
+    const average =
+      confidenceValues.length
+        ? confidenceValues.reduce((a,b)=>a+b,0) /
+          confidenceValues.length
+        : 0;
+
+    statPhotos.textContent =
+      state.photos.length;
+
+    statWords.textContent =
+      totalWords;
+
+    statLines.textContent =
+      totalLines;
+
+    statConfidence.textContent =
+      `${Math.round(average)}%`;
+
+    if(totalWords === 0){
+
+      ocrStatus.className = "status error";
+
+      ocrStatus.textContent =
+        "❌ L'OCR n'a détecté aucun mot. " +
+        "La fiche ne sera pas générée comme si tout allait bien.";
+
+    }else if(totalWords < 10){
+
+      ocrStatus.className = "status warning";
+
+      ocrStatus.textContent =
+        `⚠️ OCR très faible : ${totalWords} mots détectés. ` +
+        "Vérifie le texte ci-dessous.";
+
+    }else{
+
+      ocrStatus.className = "status success";
+
+      ocrStatus.textContent =
+        `✅ OCR terminé : ${totalWords} mots détectés.`;
+    }
+
+  }catch(error){
+
+    console.error(error);
+
+    ocrStatus.className = "status error";
+
+    ocrStatus.textContent =
+      "❌ Erreur OCR : " +
+      (error.message || error);
+
+  }finally{
+
+    state.ocrRunning = false;
+
+    ocrBtn.disabled = false;
+    generateBtn.disabled = false;
+  }
+}
+
+
+/* =========================================================
+   DIAGNOSTIC OCR
+========================================================= */
+
+function renderOCRDiagnostic(){
+
+  diagnosticSection.style.display = "block";
+
+  const combined =
+    state.pages
+      .map((page,index)=>{
+
+        return (
+          `===== PHOTO ${index+1} : ${page.photo.name} =====\n` +
+          `Méthode sélectionnée : ${page.selected || "—"}\n` +
+          `Confiance : ${Math.round(page.confidence || 0)}%\n\n` +
+          `${page.text || "[AUCUN TEXTE]"}\n`
+        );
+
+      })
+      .join("\n\n");
+
+  ocrText.textContent =
+    combined || "Aucun texte détecté.";
+
+  let words = 0;
+  let lines = 0;
+  let conf = [];
+
+  for(const page of state.pages){
+
+    words += countWords(page.text);
+
+    lines += countLines(page.text);
+
+    if(Number.isFinite(page.confidence)){
+      conf.push(page.confidence);
+    }
+  }
+
+  statPhotos.textContent =
+    state.photos.length;
+
+  statWords.textContent =
+    words;
+
+  statLines.textContent =
+    lines;
+
+  statConfidence.textContent =
+    conf.length
+      ? `${Math.round(conf.reduce((a,b)=>a+b,0)/conf.length)}%`
+      : "0%";
+}
+
+
+/* =========================================================
+   DÉCOUPAGE DU TEXTE
+========================================================= */
+
+function splitIntoLines(text){
+
+  return cleanText(text)
+    .split("\n")
+    .map(x => x.trim())
+    .filter(Boolean);
+}
+
+function isBullet(line){
+
+  return /^[-•*▪◦●○]\s+/.test(line) ||
+         /^\d+[.)]\s+/.test(line) ||
+         /^[a-zA-Z][.)]\s+/.test(line);
+}
+
+function isFormula(line){
+
+  if(line.length > 160) return false;
+
+  const math =
+    /[=+\-×÷√∑∫<>²³^%]/.test(line);
+
+  const variables =
+    /[a-zA-Z]\s*=\s*[\d(]/.test(line);
+
+  return math && (variables || line.length < 100);
+}
+
+function isDefinition(line){
+
+  return (
+    /^(définition|definition|déf\.?)\b/i.test(line) ||
+    /\b(est|désigne|correspond à|signifie|on appelle)\b/i.test(line)
+  );
+}
+
+function isHeading(line){
+
+  if(line.length < 2 || line.length > 90){
+    return false;
+  }
+
+  /*
+    Titres entièrement en majuscules.
+  */
+
+  const letters =
+    line.match(/[A-Za-zÀ-ÿ]/g) || [];
+
+  const upper =
+    line.match(/[A-ZÀ-Ý]/g) || [];
+
+  if(
+    letters.length >= 4 &&
+    upper.length / letters.length > .72
+  ){
+    return true;
+  }
+
+  /*
+    Titre numéroté.
+  */
+
+  if(
+    /^(I|II|III|IV|V|VI|VII|VIII|IX|X)[.)]\s+/i.test(line)
+  ){
+    return true;
+  }
+
+  if(
+    /^\d+(\.\d+)*[.)]?\s+[A-ZÀ-ÝÀ-ÿ]/.test(line)
+  ){
+    return true;
+  }
+
+  return false;
+}
+
+
+/* =========================================================
+   RECONSTRUCTION DU COURS
+========================================================= */
+
+function buildCourse(){
+
+  const rawText =
+    state.pages
+      .map(page => page.text)
+      .filter(Boolean)
+      .join("\n\n");
+
+  const text =
+    normalizeOCRText(rawText);
+
+  /*
+    GARDE-FOU PRINCIPAL :
+    on ne crée jamais une fiche "vide".
+  */
+
+  const words = countWords(text);
+
+  if(words < 3){
+
+    state.course = {
+      empty:true,
+      text
+    };
+
+    renderCourse();
+
+    return;
+  }
+
+  const lines =
+    splitIntoLines(text);
+
+  /*
+    Détection du titre.
+  */
+
+  let title =
+    lines.find(line =>
+      isHeading(line) &&
+      line.length <= 80
+    );
+
+  if(!title){
+    title = lines[0] || "Cours";
+  }
+
+  /*
+    Sections.
+  */
+
+  const sections = [];
+
+  let current = {
+    title:"Contenu du cours",
+    items:[]
+  };
+
+  for(const line of lines){
+
+    if(line === title){
+      continue;
+    }
+
+    if(isHeading(line)){
+
+      if(current.items.length){
+        sections.push(current);
+      }
+
+      current = {
+        title:line,
+        items:[]
+      };
+
+      continue;
+    }
+
+    current.items.push(line);
+  }
+
+  if(current.items.length){
+    sections.push(current);
+  }
+
+  /*
+    Si la détection de titres est mauvaise,
+    on garde quand même tout le texte.
+  */
+
+  if(!sections.length){
+
+    sections.push({
+      title:"Cours",
+      items:lines
+    });
+  }
+
+  /*
+    Extraction des notions importantes.
+  */
+
+  const important = [];
+
+  for(const line of lines){
+
+    if(
+      isDefinition(line) ||
+      /\b(important|à retenir|essentiel|attention)\b/i.test(line)
+    ){
+      important.push(line);
+    }
+  }
+
+  /*
+    Vocabulaire rudimentaire mais utile.
+  */
+
+  const frequency = {};
+
+  const stopwords = new Set([
+    "dans","avec","pour","mais","plus","moins","être","avoir",
+    "cette","cela","comme","entre","sont","une","des","les",
+    "sur","par","qui","que","dans","aux","ces","leurs","leur",
+    "elle","elles","ils","nous","vous","elle","est","son","ses",
+    "pas","tout","tous","très","donc","ainsi","aussi","peut",
+    "peu","une","un","de","du","la","le","et","en","au","ce",
+    "se","sa","dans","ou","où","à","a"
+  ]);
+
+  for(const word of text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g,"")
+    .match(/[a-zA-ZÀ-ÿ]{5,}/g) || []){
+
+    if(stopwords.has(word)) continue;
+
+    frequency[word] =
+      (frequency[word] || 0) + 1;
+  }
+
+  const vocabulary =
+    Object.entries(frequency)
+      .sort((a,b)=>b[1]-a[1])
+      .slice(0,12)
+      .map(x=>x[0]);
+
+  state.course = {
+    empty:false,
+    title,
+    sections,
+    important:important.slice(0,12),
+    vocabulary,
+    rawText:text
+  };
+
+  renderCourse();
+}
+
+
+/* =========================================================
+   RENDU COURS
+========================================================= */
+
+function renderCourse(){
+
+  courseSection.style.display = "block";
+
+  if(!state.course){
+
+    courseElement.innerHTML =
+      "<p>Aucun cours généré.</p>";
+
+    return;
+  }
+
+  if(state.course.empty){
+
+    courseElement.innerHTML = `
+      <h1>⚠️ Texte insuffisant</h1>
+
+      <div class="notice">
+        <strong>L'OCR n'a pas réussi à lire suffisamment de texte.</strong>
+        <p>
+          La photo originale est conservée, mais la fiche ne sera pas
+          remplie artificiellement.
+        </p>
+      </div>
+
+      <h2>Texte OCR détecté</h2>
+
+      <pre class="ocr-box">${escapeHTML(
+        state.course.text || "[aucun texte]"
+      )}</pre>
+    `;
+
+    return;
+  }
+
+  let html = "";
+
+  html += `
+    <h1>${escapeHTML(state.course.title)}</h1>
+  `;
+
+  /*
+    Résumé.
+  */
+
+  html += `
+    <h2>🧠 À retenir</h2>
+  `;
+
+  if(state.course.important.length){
+
+    html += "<ul>";
+
+    for(const item of state.course.important){
+
+      html += `
+        <li>${escapeHTML(item)}</li>
+      `;
+    }
+
+    html += "</ul>";
+
+  }else{
+
+    /*
+      On prend quelques premières lignes utiles.
+    */
+
+    const summary =
+      state.course.sections
+        .flatMap(section => section.items)
+        .filter(x => x.length > 25)
+        .slice(0,5);
+
+    html += "<ul>";
+
+    for(const item of summary){
+
+      html += `
+        <li>${escapeHTML(item)}</li>
+      `;
+    }
+
+    html += "</ul>";
+  }
+
+  /*
+    Sections.
+  */
+
+  for(const section of state.course.sections){
+
+    html += `
+      <h2>${escapeHTML(section.title)}</h2>
+    `;
+
+    let paragraphBuffer = [];
+
+    function flushParagraph(){
+
+      if(!paragraphBuffer.length) return;
+
+      const paragraph =
+        paragraphBuffer.join(" ");
+
+      html += `
+        <p>${escapeHTML(paragraph)}</p>
+      `;
+
+      paragraphBuffer = [];
+    }
+
+    for(const line of section.items){
+
+      if(isBullet(line)){
+
+        flushParagraph();
+
+        const cleaned =
+          line
+            .replace(/^[-•*▪◦●○]\s*/,"")
+            .replace(/^\d+[.)]\s*/,"")
+            .trim();
+
+        html += `
+          <ul>
+            <li>${escapeHTML(cleaned)}</li>
+          </ul>
+        `;
+
+        continue;
+      }
+
+      if(isFormula(line)){
+
+        flushParagraph();
+
+        html += `
+          <div class="formula">
+            ${escapeHTML(line)}
+          </div>
+        `;
+
+        continue;
+      }
+
+      if(isDefinition(line)){
+
+        flushParagraph();
+
+        html += `
+          <div class="definition">
+            <strong>Définition :</strong>
+            ${escapeHTML(line)}
+          </div>
+        `;
+
+        continue;
+      }
+
+      if(
+        /\b(important|essentiel|à retenir|attention)\b/i.test(line)
+      ){
+
+        flushParagraph();
+
+        html += `
+          <div class="important">
+            ${escapeHTML(line)}
+          </div>
+        `;
+
+        continue;
+      }
+
+      paragraphBuffer.push(line);
+
+      /*
+        Évite les paragraphes énormes.
+      */
+
+      if(paragraphBuffer.length >= 4){
+        flushParagraph();
+      }
+    }
+
+    flushParagraph();
+  }
+
+  /*
+    Vocabulaire.
+  */
+
+  if(state.course.vocabulary.length){
+
+    html += `
+      <h2>📚 Notions importantes</h2>
+      <ul>
+    `;
+
+    for(const word of state.course.vocabulary){
+
+      html += `
+        <li>${escapeHTML(word)}</li>
+      `;
+    }
+
+    html += "</ul>";
+  }
+
+  /*
+    Photos originales.
+  */
+
+  html += `
+    <h2>📷 Documents originaux</h2>
+  `;
+
+  for(const photo of state.photos){
+
+    html += `
+      <h3>${escapeHTML(photo.name)}</h3>
+      <img
+        class="original-image"
+        src="${photo.dataURL || photo.previewURL}"
+        alt="${escapeHTML(photo.name)}"
+      >
+    `;
+  }
+
+  courseElement.innerHTML = html;
+}
+
+
+/* =========================================================
+   EXPORT HTML
+========================================================= */
+
+function buildStandaloneHTML(){
+
+  const title =
+    state.course?.title || "Cours";
+
+  const body =
+    courseElement.innerHTML;
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${escapeHTML(title)}</title>
+<style>
+body{
+  margin:0;
+  padding:30px;
+  font-family:Arial,Helvetica,sans-serif;
+  color:#111827;
+  background:#fff;
+}
+main{
+  max-width:900px;
+  margin:auto;
+}
+h1{font-size:32px}
+h2{
+  margin-top:30px;
+  border-bottom:2px solid #ddd;
+  padding-bottom:8px;
+}
+p,li{
+  line-height:1.7;
+}
+.definition{
+  background:#eff6ff;
+  border-left:5px solid #2563eb;
+  padding:12px 15px;
+  border-radius:8px;
+}
+.important{
+  background:#ecfdf5;
+  border-left:5px solid #059669;
+  padding:12px 15px;
+  border-radius:8px;
+}
+.formula{
+  background:#f9fafb;
+  border:1px solid #ddd;
+  padding:12px;
+  border-radius:8px;
+  font-family:monospace;
+}
+.original-image{
+  display:block;
+  max-width:100%;
+  margin:15px auto;
+}
+</style>
+</head>
+<body>
+<main>
+${body}
+</main>
+</body>
+</html>`;
+}
+
+function downloadBlob(content,name,type){
+
+  const blob =
+    new Blob([content],{type});
+
+  const url =
+    URL.createObjectURL(blob);
+
+  const a =
+    document.createElement("a");
 
   a.href = url;
-
   a.download = name;
 
   document.body.appendChild(a);
@@ -839,2686 +2143,110 @@ function downloadFile(name,content,type){
 
   a.remove();
 
-  setTimeout(
-    ()=>URL.revokeObjectURL(url),
-    1000
-  );
-
+  setTimeout(()=>{
+    URL.revokeObjectURL(url);
+  },1000);
 }
-
-
-
-/* =========================================================
-   IMAGE
-   ========================================================= */
-
-function fileToDataURL(file){
-
-  return new Promise((resolve,reject)=>{
-
-    const reader = new FileReader();
-
-    reader.onload = () => resolve(reader.result);
-
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-
-  });
-
-}
-
-
-function loadImage(src){
-
-  return new Promise((resolve,reject)=>{
-
-    const img = new Image();
-
-    img.onload = () => resolve(img);
-
-    img.onerror = reject;
-
-    img.src = src;
-
-  });
-
-}
-
-
-/*
-  On travaille avec une image suffisamment grande.
-  Le redimensionnement est volontairement limité pour
-  éviter de faire exploser la mémoire sur téléphone.
-*/
-
-async function prepareImage(src,mode){
-
-  const img = await loadImage(src);
-
-  const maxSize =
-    mode === "precision"
-      ? 2600
-      : 1900;
-
-  const ratio =
-    Math.min(
-      1,
-      maxSize /
-      Math.max(img.naturalWidth,img.naturalHeight)
-    );
-
-  const w =
-    Math.max(1,
-      Math.round(img.naturalWidth * ratio)
-    );
-
-  const h =
-    Math.max(1,
-      Math.round(img.naturalHeight * ratio)
-    );
-
-  const canvas =
-    document.createElement("canvas");
-
-  canvas.width = w;
-  canvas.height = h;
-
-  const ctx = canvas.getContext("2d",{
-    willReadFrequently:true
-  });
-
-  ctx.drawImage(img,0,0,w,h);
-
-  const image =
-    ctx.getImageData(0,0,w,h);
-
-  const data = image.data;
-
-  for(let i=0;i<data.length;i+=4){
-
-    const r=data[i];
-    const g=data[i+1];
-    const b=data[i+2];
-
-    const gray =
-      0.299*r +
-      0.587*g +
-      0.114*b;
-
-    let value = gray;
-
-    if(mode === "contrast"){
-
-      value =
-        (gray - 128) * 1.55 + 128;
-
-    }
-
-    if(mode === "threshold"){
-
-      value =
-        gray < 170 ? 0 : 255;
-
-    }
-
-    value =
-      clamp(value,0,255);
-
-    data[i]=value;
-    data[i+1]=value;
-    data[i+2]=value;
-
-  }
-
-  ctx.putImageData(image,0,0);
-
-  return canvas.toDataURL(
-    "image/png",
-    .95
-  );
-
-}
-
-
-/* =========================================================
-   PHOTO UI
-   ========================================================= */
-
-function renderPhotos(){
-
-  if(!state.photos.length){
-
-    photoList.innerHTML =
-      `<div class="empty">Aucune photo.</div>`;
-
-    return;
-
-  }
-
-  photoList.innerHTML =
-    state.photos.map((photo,index)=>`
-
-      <div class="photo-item">
-
-        <img
-          src="${photo.dataURL}"
-          alt="Photo ${index+1}"
-        >
-
-        <div class="photo-meta">
-
-          <strong>
-            Photo ${index+1}
-          </strong>
-
-          <br>
-
-          ${escapeHTML(photo.name)}
-
-          <br>
-
-          ${photo.width} × ${photo.height}
-
-        </div>
-
-      </div>
-
-    `).join("");
-
-  $("statPhotos").textContent =
-    state.photos.length;
-
-}
-
-
-async function addFiles(files){
-
-  for(const file of files){
-
-    if(!file.type.startsWith("image/"))
-      continue;
-
-    const dataURL =
-      await fileToDataURL(file);
-
-    const img =
-      await loadImage(dataURL);
-
-    state.photos.push({
-
-      id:
-        crypto.randomUUID
-        ? crypto.randomUUID()
-        : String(Date.now()+Math.random()),
-
-      name:file.name,
-
-      dataURL,
-
-      width:img.naturalWidth,
-
-      height:img.naturalHeight
-
-    });
-
-  }
-
-  renderPhotos();
-
-}
-
-
-
-/* =========================================================
-   OCR WORKER
-   ========================================================= */
-
-async function getWorker(){
-
-  if(state.worker)
-    return state.worker;
-
-  setStatus(
-    "Chargement du moteur OCR…",
-    2
-  );
-
-  state.worker =
-    await Tesseract.createWorker(
-      "fra",
-      1,
-      {
-        logger:m => {
-
-          if(
-            typeof m.progress === "number"
-          ){
-
-            const p =
-              Math.round(
-                m.progress * 100
-              );
-
-            setStatus(
-              "Initialisation OCR : "
-              + (m.status || ""),
-              p
-            );
-
-          }
-
-        }
-      }
-    );
-
-  await state.worker.setParameters({
-
-    preserve_interword_spaces:"1",
-
-    user_defined_dpi:"300"
-
-  });
-
-  return state.worker;
-
-}
-
-
-
-/* =========================================================
-   OCR TSV
-   ========================================================= */
-
-function parseTSV(tsv){
-
-  if(!tsv)
-    return [];
-
-  const lines =
-    tsv.split("\n");
-
-  if(lines.length < 2)
-    return [];
-
-  const header =
-    lines[0].split("\t");
-
-  const index = {};
-
-  header.forEach(
-    (x,i)=>index[x]=i
-  );
-
-  const result=[];
-
-  for(let i=1;i<lines.length;i++){
-
-    const row =
-      lines[i].split("\t");
-
-    const text =
-      (row[index.text] || "").trim();
-
-    const conf =
-      Number(row[index.conf]);
-
-    const left =
-      Number(row[index.left]);
-
-    const top =
-      Number(row[index.top]);
-
-    const width =
-      Number(row[index.width]);
-
-    const height =
-      Number(row[index.height]);
-
-    if(
-      !text ||
-      !Number.isFinite(left) ||
-      !Number.isFinite(top) ||
-      !Number.isFinite(width) ||
-      !Number.isFinite(height)
-    )
-      continue;
-
-    result.push({
-
-      text,
-
-      conf:
-        Number.isFinite(conf)
-          ? conf
-          : 0,
-
-      left,
-      top,
-      width,
-      height,
-
-      right:left+width,
-      bottom:top+height,
-
-      block:
-        Number(row[index.block_num] || 0),
-
-      paragraph:
-        Number(row[index.par_num] || 0),
-
-      line:
-        Number(row[index.line_num] || 0)
-
-    });
-
-  }
-
-  return result;
-
-}
-
-
-
-/* =========================================================
-   OCR PASS
-   ========================================================= */
-
-async function recognizePass(image,psm){
-
-  const worker =
-    await getWorker();
-
-  await worker.setParameters({
-
-    tessedit_pageseg_mode:psm,
-
-    preserve_interword_spaces:"1",
-
-    user_defined_dpi:"300"
-
-  });
-
-  const result =
-    await worker.recognize(
-      image,
-      {},
-      {
-        text:true,
-        tsv:true,
-        blocks:true
-      }
-    );
-
-  const words =
-    parseTSV(result.data.tsv);
-
-  const text =
-    cleanOCR(result.data.text || "");
-
-  return {
-
-    text,
-
-    words,
-
-    blocks:
-      result.data.blocks || [],
-
-    confidence:
-      words.length
-        ? words.reduce(
-            (s,w)=>s+w.conf,
-            0
-          ) / words.length
-        : 0,
-
-    psm
-
-  };
-
-}
-
-
-
-/* =========================================================
-   OCR MERGE SPATIAL
-   ========================================================= */
-
-function boxOverlap(a,b){
-
-  const x1 =
-    Math.max(a.left,b.left);
-
-  const y1 =
-    Math.max(a.top,b.top);
-
-  const x2 =
-    Math.min(a.right,b.right);
-
-  const y2 =
-    Math.min(a.bottom,b.bottom);
-
-  if(x2<=x1 || y2<=y1)
-    return 0;
-
-  const inter =
-    (x2-x1)*(y2-y1);
-
-  const areaA =
-    a.width*a.height;
-
-  const areaB =
-    b.width*b.height;
-
-  return inter /
-    Math.max(
-      1,
-      areaA+areaB-inter
-    );
-
-}
-
-
-function normalizedWord(w){
-
-  return w.text
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g,"")
-    .replace(/[^\p{L}\p{N}]+/gu,"");
-
-}
-
-
-function mergeWords(passes){
-
-  const merged=[];
-
-  /*
-    On privilégie les mots à forte confiance.
-    Les autres passes servent de filet de sécurité.
-  */
-
-  const all =
-    passes
-      .flatMap(p =>
-        p.words.map(w => ({
-          ...w,
-          sourceConfidence:
-            p.confidence
-        }))
-      )
-      .sort(
-        (a,b)=>b.conf-a.conf
-      );
-
-  for(const word of all){
-
-    const n =
-      normalizedWord(word);
-
-    if(!n)
-      continue;
-
-    let duplicate = false;
-
-    for(const existing of merged){
-
-      const en =
-        normalizedWord(existing);
-
-      const overlap =
-        boxOverlap(
-          word,
-          existing
-        );
-
-      if(
-        overlap > .25 &&
-        (
-          n === en ||
-          similarity(
-            word.text,
-            existing.text
-          ) > .7
-        )
-      ){
-
-        duplicate=true;
-
-        break;
-
-      }
-
-    }
-
-    if(!duplicate){
-
-      merged.push({
-        ...word
-      });
-
-    }
-
-  }
-
-  return merged;
-
-}
-
-
-
-/* =========================================================
-   RECONSTRUCTION DES LIGNES
-   ========================================================= */
-
-function buildLines(words){
-
-  if(!words.length)
-    return [];
-
-  const sorted =
-    [...words].sort(
-      (a,b)=>{
-        if(
-          Math.abs(a.top-b.top) < 15
-        )
-          return a.left-b.left;
-
-        return a.top-b.top;
-      }
-    );
-
-  const lines=[];
-
-  for(const word of sorted){
-
-    const center =
-      word.top + word.height/2;
-
-    let best=null;
-
-    for(const line of lines){
-
-      const tolerance =
-        Math.max(
-          10,
-          line.avgHeight*.65
-        );
-
-      if(
-        Math.abs(
-          center-line.center
-        ) <= tolerance
-      ){
-
-        best=line;
-
-        break;
-
-      }
-
-    }
-
-    if(!best){
-
-      best={
-        words:[],
-        center,
-        avgHeight:word.height
-      };
-
-      lines.push(best);
-
-    }
-
-    best.words.push(word);
-
-    best.center =
-      best.words.reduce(
-        (s,w)=>
-          s+w.top+w.height/2,
-        0
-      ) / best.words.length;
-
-    best.avgHeight =
-      best.words.reduce(
-        (s,w)=>s+w.height,
-        0
-      ) / best.words.length;
-
-  }
-
-  return lines
-    .map(line=>{
-
-      const ws =
-        line.words.sort(
-          (a,b)=>a.left-b.left
-        );
-
-      const text =
-        ws
-          .map(w=>w.text)
-          .join(" ")
-          .replace(/\s+([,.;:!?])/g,"$1");
-
-      return {
-
-        text:cleanOCR(text),
-
-        words:ws,
-
-        left:
-          Math.min(...ws.map(w=>w.left)),
-
-        top:
-          Math.min(...ws.map(w=>w.top)),
-
-        right:
-          Math.max(...ws.map(w=>w.right)),
-
-        bottom:
-          Math.max(...ws.map(w=>w.bottom)),
-
-        height:
-          Math.max(...ws.map(w=>w.height)),
-
-        confidence:
-          ws.reduce(
-            (s,w)=>s+w.conf,
-            0
-          ) / ws.length
-
-      };
-
-    })
-    .filter(
-      x => x.text.length > 0
-    )
-    .sort(
-      (a,b)=>a.top-b.top
-    );
-
-}
-
-
-
-/* =========================================================
-   ZONES
-   ========================================================= */
-
-function isBullet(text){
-
-  return /^[•●▪◦\-–—*]\s+/.test(text);
-
-}
-
-
-function isFormula(text){
-
-  if(text.length < 2)
-    return false;
-
-  const mathematical =
-    /[=+\-×÷*/^√∑∫<>≤≥%²³]/;
-
-  const digits =
-    (text.match(/\d/g)||[]).length;
-
-  return (
-    mathematical.test(text) &&
-    digits >= 1
-  );
-
-}
-
-
-function isDefinition(text){
-
-  return (
-    /^(définition|definition|notion|terme|concept)\b/i.test(text) ||
-    /\b(est|désigne|correspond à|signifie)\b/i.test(text)
-    && text.length < 180
-  );
-
-}
-
-
-function classifyLine(line,index,all){
-
-  const text=line.text.trim();
-
-  if(!text)
-    return "empty";
-
-  if(isBullet(text))
-    return "bullet";
-
-  if(isFormula(text))
-    return "formula";
-
-  if(isDefinition(text))
-    return "definition";
-
-  const words =
-    text.split(/\s+/).length;
-
-  const averageHeight =
-    all.reduce(
-      (s,x)=>s+x.height,
-      0
-    ) / Math.max(1,all.length);
-
-  /*
-    Une ligne beaucoup plus grande
-    que la moyenne est probablement un titre.
-  */
-
-  if(
-    line.height >
-      averageHeight * 1.45 &&
-    words <= 12
-  )
-    return "heading";
-
-  if(
-    index < 5 &&
-    words <= 10
-  )
-    return "heading";
-
-  return "paragraph";
-
-}
-
-
-function buildZones(lines){
-
-  return lines.map(
-    (line,index)=>
-      ({
-        ...line,
-        type:
-          classifyLine(
-            line,
-            index,
-            lines
-          )
-      })
-  );
-
-}
-
-
-
-/* =========================================================
-   ANALYSE VISUELLE
-   ========================================================= */
-
-async function visualAnalysis(dataURL){
-
-  const img =
-    await loadImage(dataURL);
-
-  const canvas =
-    document.createElement("canvas");
-
-  const max=1000;
-
-  const ratio =
-    Math.min(
-      1,
-      max /
-      Math.max(
-        img.naturalWidth,
-        img.naturalHeight
-      )
-    );
-
-  canvas.width =
-    Math.round(
-      img.naturalWidth*ratio
-    );
-
-  canvas.height =
-    Math.round(
-      img.naturalHeight*ratio
-    );
-
-  const ctx =
-    canvas.getContext(
-      "2d",
-      {
-        willReadFrequently:true
-      }
-    );
-
-  ctx.drawImage(
-    img,
-    0,
-    0,
-    canvas.width,
-    canvas.height
-  );
-
-  const pixels =
-    ctx.getImageData(
-      0,
-      0,
-      canvas.width,
-      canvas.height
-    ).data;
-
-  let dark=0;
-  let bright=0;
-  let saturated=0;
-
-  const step=16;
-
-  for(
-    let i=0;
-    i<pixels.length;
-    i+=4*step
-  ){
-
-    const r=pixels[i];
-    const g=pixels[i+1];
-    const b=pixels[i+2];
-
-    const maxC=Math.max(r,g,b);
-    const minC=Math.min(r,g,b);
-
-    const lum =
-      .299*r+
-      .587*g+
-      .114*b;
-
-    if(lum < 90)
-      dark++;
-
-    if(lum > 220)
-      bright++;
-
-    if(maxC-minC > 50)
-      saturated++;
-
-  }
-
-  return {
-
-    width:canvas.width,
-
-    height:canvas.height,
-
-    darkRatio:
-      dark /
-      Math.max(
-        1,
-        pixels.length/(4*step)
-      ),
-
-    brightRatio:
-      bright /
-      Math.max(
-        1,
-        pixels.length/(4*step)
-      ),
-
-    colorRatio:
-      saturated /
-      Math.max(
-        1,
-        pixels.length/(4*step)
-      )
-
-  };
-
-}
-
-
-
-/* =========================================================
-   TABLE / SCHEMA DETECTION HEURISTICS
-   ========================================================= */
-
-function detectTable(lines,visual){
-
-  if(lines.length < 4)
-    return null;
-
-  const shortLines =
-    lines.filter(
-      l =>
-        l.text.length < 80
-    );
-
-  if(shortLines.length < 4)
-    return null;
-
-  /*
-    Ce n'est volontairement pas présenté
-    comme une détection parfaite.
-    On détecte seulement les cas qui ressemblent
-    à une organisation tabulaire.
-  */
-
-  const groups=[];
-
-  for(const line of shortLines){
-
-    const tokens =
-      line.text
-        .split(/\s{2,}|\t|\|/)
-        .map(x=>x.trim())
-        .filter(Boolean);
-
-    if(tokens.length >= 2)
-      groups.push(tokens);
-
-  }
-
-  if(groups.length < 3)
-    return null;
-
-  const maxCols =
-    Math.max(
-      ...groups.map(x=>x.length)
-    );
-
-  if(maxCols < 2)
-    return null;
-
-  return {
-
-    rows:groups,
-
-    columns:maxCols
-
-  };
-
-}
-
-
-function detectFlow(lines){
-
-  const candidates =
-    lines.filter(
-      l =>
-        /→|->|⇒|➜|⇢|↦/.test(l.text)
-    );
-
-  if(!candidates.length)
-    return null;
-
-  const nodes=[];
-
-  for(const line of candidates){
-
-    const parts =
-      line.text
-        .split(/→|->|⇒|➜|⇢|↦/)
-        .map(x=>x.trim())
-        .filter(Boolean);
-
-    if(parts.length>=2){
-
-      nodes.push(
-        ...parts
-      );
-
-    }
-
-  }
-
-  if(nodes.length < 2)
-    return null;
-
-  return nodes.slice(0,12);
-
-}
-
-
-
-/* =========================================================
-   OCR PAGE
-   ========================================================= */
-
-async function analyzePage(photo,index,total){
-
-  const mode =
-    $("mode").value;
-
-  const passes =
-    mode === "fast"
-      ? [
-          {
-            name:"normal",
-            psm:Tesseract.PSM.AUTO
-          },
-          {
-            name:"block",
-            psm:Tesseract.PSM.SINGLE_BLOCK
-          }
-        ]
-      : [
-          {
-            name:"normal",
-            psm:Tesseract.PSM.AUTO
-          },
-          {
-            name:"block",
-            psm:Tesseract.PSM.SINGLE_BLOCK
-          },
-          {
-            name:"sparse",
-            psm:Tesseract.PSM.SPARSE_TEXT
-          }
-        ];
-
-  const results=[];
-
-  for(let i=0;i<passes.length;i++){
-
-    const pass =
-      passes[i];
-
-    const progressBase =
-      index/total*100;
-
-    const progressPart =
-      (i/passes.length)*
-      (100/total);
-
-    setStatus(
-      `Photo ${index+1}/${total} — OCR ${pass.name}`,
-      progressBase+progressPart
-    );
-
-    const variants =
-      mode === "fast"
-        ? [
-            "normal"
-          ]
-        : [
-            "normal",
-            "contrast",
-            "threshold"
-          ];
-
-    for(const variant of variants){
-
-      const processed =
-        await prepareImage(
-          photo.dataURL,
-          variant === "normal"
-            ? mode
-            : variant
-        );
-
-      const result =
-        await recognizePass(
-          processed,
-          pass.psm
-        );
-
-      result.variant=variant;
-
-      results.push(result);
-
-    }
-
-  }
-
-  const mergedWords =
-    mergeWords(results);
-
-  const lines =
-    buildLines(
-      mergedWords
-    );
-
-  const zones =
-    buildZones(lines);
-
-  const visual =
-    await visualAnalysis(
-      photo.dataURL
-    );
-
-  const table =
-    detectTable(
-      lines,
-      visual
-    );
-
-  const flow =
-    detectFlow(lines);
-
-  const allText =
-    zones
-      .map(z=>z.text)
-      .join("\n");
-
-  const confidence =
-    mergedWords.length
-      ? mergedWords.reduce(
-          (s,w)=>s+w.conf,
-          0
-        ) /
-        mergedWords.length
-      : 0;
-
-  return {
-
-    id:photo.id,
-
-    name:photo.name,
-
-    image:photo.dataURL,
-
-    width:photo.width,
-
-    height:photo.height,
-
-    text:cleanOCR(allText),
-
-    words:mergedWords,
-
-    lines,
-
-    zones,
-
-    visual,
-
-    table,
-
-    flow,
-
-    confidence,
-
-    passes:results
-
-  };
-
-}
-
-
-
-/* =========================================================
-   OCR GLOBAL
-   ========================================================= */
-
-async function runOCR(){
-
-  if(state.ocrRunning)
-    return;
-
-  if(!state.photos.length){
-
-    alert(
-      "Ajoute d'abord au moins une photo."
-    );
-
-    return;
-
-  }
-
-  state.ocrRunning=true;
-
-  try{
-
-    state.pages=[];
-
-    const total =
-      state.photos.length;
-
-    for(
-      let i=0;
-      i<total;
-      i++
-    ){
-
-      const page =
-        await analyzePage(
-          state.photos[i],
-          i,
-          total
-        );
-
-      state.pages.push(page);
-
-    }
-
-    const allWords =
-      state.pages.reduce(
-        (s,p)=>s+p.words.length,
-        0
-      );
-
-    const allLines =
-      state.pages.reduce(
-        (s,p)=>s+p.lines.length,
-        0
-      );
-
-    const confidence =
-      state.pages.length
-        ? state.pages.reduce(
-            (s,p)=>s+p.confidence,
-            0
-          ) / state.pages.length
-        : 0;
-
-    $("statWords").textContent =
-      allWords;
-
-    $("statLines").textContent =
-      allLines;
-
-    $("statConfidence").textContent =
-      Math.round(confidence)
-      + "%";
-
-    debugEl.textContent =
-      state.pages.map(
-        (p,i)=>
-          `PHOTO ${i+1}
-------------------------
-Mots : ${p.words.length}
-Lignes : ${p.lines.length}
-Confiance moyenne : ${Math.round(p.confidence)}%
-Tableau potentiel : ${p.table ? "oui" : "non"}
-Schéma potentiel : ${p.flow ? "oui" : "non"}
-
-TEXTE :
-${p.text}
-`
-      ).join("\n\n");
-
-    setStatus(
-      "Analyse terminée. Génération du cours…",
-      100
-    );
-
-    generateCourse();
-
-  }catch(error){
-
-    console.error(error);
-
-    setStatus(
-      "Erreur OCR : " +
-      error.message,
-      0
-    );
-
-    alert(
-      "Une erreur est survenue pendant l'analyse.\n\n"+
-      error.message
-    );
-
-  }finally{
-
-    state.ocrRunning=false;
-
-  }
-
-}
-
-
-
-/* =========================================================
-   EXTRACTION SEMANTIQUE
-   ========================================================= */
-
-function collectLines(type){
-
-  return state.pages.flatMap(
-    page =>
-      page.zones
-        .filter(
-          z=>z.type===type
-        )
-        .map(
-          z=>z.text
-        )
-  );
-
-}
-
-
-function removeDuplicates(items){
-
-  const result=[];
-
-  for(const item of items){
-
-    const value =
-      normalizeText(item);
-
-    if(!value)
-      continue;
-
-    const duplicate =
-      result.some(
-        existing =>
-          similarity(
-            existing,
-            value
-          ) > .82
-      );
-
-    if(!duplicate)
-      result.push(value);
-
-  }
-
-  return result;
-
-}
-
-
-function findTitle(){
-
-  const candidates=[];
-
-  for(const page of state.pages){
-
-    for(const zone of page.zones){
-
-      if(
-        zone.type === "heading" &&
-        zone.text.length >= 3 &&
-        zone.text.length <= 120
-      ){
-
-        candidates.push({
-
-          text:zone.text,
-
-          score:
-            (page===state.pages[0] ? 20 : 0) +
-            Math.max(
-              0,
-              20-zone.text.length/10
-            ) +
-            zone.confidence/10
-
-        });
-
-      }
-
-    }
-
-  }
-
-  candidates.sort(
-    (a,b)=>b.score-a.score
-  );
-
-  return candidates.length
-    ? candidates[0].text
-    : "Cours généré automatiquement";
-
-}
-
-
-function extractKeywords(text){
-
-  const stopwords = new Set([
-
-    "avec","dans","pour","plus","moins",
-    "mais","donc","ainsi","cette","cela",
-    "comme","entre","être","avoir","faire",
-    "une","des","les","est","sont","sur",
-    "par","qui","que","aux","du","de",
-    "un","et","en","la","le","à","au",
-    "ce","ces","ses","son","sa","leur",
-    "leurs","nous","vous","ils","elles",
-    "elle","il","on","se","ou","où",
-    "ne","pas","très","aussi","peut",
-    "doit","tout","tous","toute","toutes"
-
-  ]);
-
-  const words =
-    text
-      .toLowerCase()
-      .normalize("NFD")
-      .replace(
-        /[\u0300-\u036f]/g,
-        ""
-      )
-      .match(
-        /[a-zA-ZÀ-ÿ]{4,}/g
-      ) || [];
-
-  const freq={};
-
-  for(const word of words){
-
-    if(stopwords.has(word))
-      continue;
-
-    freq[word] =
-      (freq[word]||0)+1;
-
-  }
-
-  return Object.entries(freq)
-    .sort(
-      (a,b)=>b[1]-a[1]
-    )
-    .slice(0,15)
-    .map(x=>x[0]);
-
-}
-
-
-
-/* =========================================================
-   SECTIONS
-   ========================================================= */
-
-function buildSections(){
-
-  const sections=[];
-
-  let current=null;
-
-  for(const page of state.pages){
-
-    for(const zone of page.zones){
-
-      if(
-        zone.type === "heading"
-      ){
-
-        current={
-
-          title:zone.text,
-
-          paragraphs:[],
-
-          bullets:[],
-
-          definitions:[],
-
-          formulas:[]
-
-        };
-
-        sections.push(current);
-
-        continue;
-
-      }
-
-      if(!current){
-
-        current={
-
-          title:"Introduction",
-
-          paragraphs:[],
-
-          bullets:[],
-
-          definitions:[],
-
-          formulas:[]
-
-        };
-
-        sections.push(current);
-
-      }
-
-      if(zone.type==="bullet"){
-
-        current.bullets.push(
-          zone.text
-            .replace(
-              /^[•●▪◦\-–—*]\s*/,
-              ""
-            )
-        );
-
-      }else if(
-        zone.type==="definition"
-      ){
-
-        current.definitions.push(
-          zone.text
-        );
-
-      }else if(
-        zone.type==="formula"
-      ){
-
-        current.formulas.push(
-          zone.text
-        );
-
-      }else{
-
-        current.paragraphs.push(
-          zone.text
-        );
-
-      }
-
-    }
-
-  }
-
-  return sections;
-
-}
-
-
-
-/* =========================================================
-   KEY POINTS
-   ========================================================= */
-
-function buildKeyPoints(){
-
-  const candidates=[];
-
-  for(const page of state.pages){
-
-    for(const zone of page.zones){
-
-      const text =
-        zone.text.trim();
-
-      if(
-        zone.type==="heading" ||
-        zone.type==="definition" ||
-        zone.type==="bullet"
-      ){
-
-        candidates.push(text);
-
-      }
-
-    }
-
-  }
-
-  if(candidates.length < 5){
-
-    for(const page of state.pages){
-
-      for(const zone of page.zones){
-
-        if(
-          zone.type==="paragraph" &&
-          zone.text.length > 30
-        ){
-
-          candidates.push(
-            zone.text
-          );
-
-        }
-
-      }
-
-    }
-
-  }
-
-  return removeDuplicates(
-    candidates
-  ).slice(0,10);
-
-}
-
-
-
-/* =========================================================
-   COURSE OBJECT
-   ========================================================= */
-
-function buildCourse(){
-
-  const allText =
-    state.pages
-      .map(p=>p.text)
-      .join("\n");
-
-  const definitions =
-    removeDuplicates(
-      collectLines("definition")
-    );
-
-  const formulas =
-    removeDuplicates(
-      collectLines("formula")
-    );
-
-  const keywords =
-    extractKeywords(
-      allText
-    );
-
-  const sections =
-    buildSections();
-
-  const keyPoints =
-    buildKeyPoints();
-
-  const tables =
-    state.pages
-      .filter(p=>p.table)
-      .map(
-        p=>p.table
-      );
-
-  const diagrams =
-    state.pages
-      .filter(p=>p.flow)
-      .map(
-        p=>p.flow
-      );
-
-  return {
-
-    title:
-      findTitle(),
-
-    intro:
-      sections
-        .flatMap(
-          s=>s.paragraphs
-        )
-        .slice(0,2)
-        .join(" "),
-
-    sections,
-
-    definitions,
-
-    formulas,
-
-    tables,
-
-    diagrams,
-
-    keyPoints,
-
-    keywords,
-
-    pages:state.pages
-
-  };
-
-}
-
-
-
-/* =========================================================
-   COURSE RENDER
-   ========================================================= */
-
-function renderTable(table){
-
-  if(!table || !table.rows.length)
-    return "";
-
-  return `
-
-    <div class="diagram">
-
-      <h3>📊 Tableau détecté</h3>
-
-      <table
-        style="
-          border-collapse:collapse;
-          width:100%;
-        "
-      >
-
-        <tbody>
-
-          ${table.rows.map(
-            (row,rowIndex)=>`
-
-              <tr>
-
-                ${row.map(
-                  cell=>`
-
-                    <td
-                      style="
-                        border:1px solid #dfe4ec;
-                        padding:10px;
-                        vertical-align:top;
-                      "
-                    >
-                      ${escapeHTML(cell)}
-                    </td>
-
-                  `
-                ).join("")}
-
-              </tr>
-
-            `
-          ).join("")}
-
-        </tbody>
-
-      </table>
-
-      <p class="small">
-        Reconstruction automatique :
-        vérifie toujours avec la photo originale.
-      </p>
-
-    </div>
-
-  `;
-
-}
-
-
-function renderFlow(nodes){
-
-  if(!nodes || nodes.length<2)
-    return "";
-
-  return `
-
-    <div class="diagram">
-
-      <h3>🔀 Schéma détecté</h3>
-
-      <div class="flow">
-
-        ${nodes.map(
-          (node,i)=>`
-
-            <div class="flow-box">
-              ${escapeHTML(node)}
-            </div>
-
-            ${
-              i<nodes.length-1
-              ? `<div class="arrow">→</div>`
-              : ""
-            }
-
-          `
-        ).join("")}
-
-      </div>
-
-      <p class="small">
-        Reconstruction automatique du schéma.
-        Consulte la photo originale pour confirmer
-        les connexions exactes.
-      </p>
-
-    </div>
-
-  `;
-
-}
-
-
-function renderCourse(){
-
-  const c =
-    state.course;
-
-  if(!c){
-
-    courseEl.innerHTML =
-      `<div class="empty">
-        Aucun cours.
-      </div>`;
-
-    return;
-
-  }
-
-  let html="";
-
-  html +=
-    `<h1>${escapeHTML(c.title)}</h1>`;
-
-  html +=
-    `<span class="badge">
-      Généré localement
-    </span>`;
-
-  if(c.intro){
-
-    html += `
-      <p>
-        <strong>Introduction.</strong>
-        ${escapeHTML(c.intro)}
-      </p>
-    `;
-
-  }
-
-  for(
-    const section of c.sections
-  ){
-
-    html += `
-      <h2>
-        ${escapeHTML(section.title)}
-      </h2>
-    `;
-
-    for(
-      const paragraph
-      of section.paragraphs
-    ){
-
-      html += `
-        <p>
-          ${escapeHTML(paragraph)}
-        </p>
-      `;
-
-    }
-
-    if(
-      section.bullets.length
-    ){
-
-      html += `<ul>`;
-
-      for(
-        const bullet
-        of section.bullets
-      ){
-
-        html += `
-          <li>
-            ${escapeHTML(bullet)}
-          </li>
-        `;
-
-      }
-
-      html += `</ul>`;
-
-    }
-
-    for(
-      const definition
-      of section.definitions
-    ){
-
-      html += `
-        <div class="definition">
-          <strong>💡 Définition</strong>
-          <br>
-          ${escapeHTML(definition)}
-        </div>
-      `;
-
-    }
-
-    for(
-      const formula
-      of section.formulas
-    ){
-
-      html += `
-        <div class="formula">
-          ${escapeHTML(formula)}
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  if(c.definitions.length){
-
-    html += `
-      <h2>💡 Définitions importantes</h2>
-    `;
-
-    for(
-      const definition
-      of c.definitions
-    ){
-
-      html += `
-        <div class="definition">
-          ${escapeHTML(definition)}
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  if(c.formulas.length){
-
-    html += `
-      <h2>🧮 Formules</h2>
-    `;
-
-    for(
-      const formula
-      of c.formulas
-    ){
-
-      html += `
-        <div class="formula">
-          ${escapeHTML(formula)}
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  for(
-    const table
-    of c.tables
-  ){
-
-    html +=
-      renderTable(table);
-
-  }
-
-
-  for(
-    const diagram
-    of c.diagrams
-  ){
-
-    html +=
-      renderFlow(diagram);
-
-  }
-
-
-  if(c.keyPoints.length){
-
-    html += `
-      <div class="keybox">
-
-        <h2>
-          🧠 À retenir
-        </h2>
-
-        <ul>
-
-          ${c.keyPoints.map(
-            point=>`
-              <li>
-                ${escapeHTML(point)}
-              </li>
-            `
-          ).join("")}
-
-        </ul>
-
-      </div>
-    `;
-
-  }
-
-
-  if(c.keywords.length){
-
-    html += `
-      <div class="keybox">
-
-        <h2>
-          🗂️ Mots-clés
-        </h2>
-
-        <p>
-          ${c.keywords.map(
-            word=>
-              `<span class="badge">
-                ${escapeHTML(word)}
-              </span>`
-          ).join(" ")}
-        </p>
-
-      </div>
-    `;
-
-  }
-
-
-  html += `
-    <div class="original">
-
-      <h2>
-        📸 Photos originales
-      </h2>
-
-      <p class="small">
-        Les photos sont conservées pour
-        vérifier les passages difficiles à lire
-        ou les schémas complexes.
-      </p>
-  `;
-
-  for(
-    const page
-    of c.pages
-  ){
-
-    html += `
-
-      <h3>
-        ${escapeHTML(page.name)}
-      </h3>
-
-      <img
-        src="${page.image}"
-        alt="Photo originale"
-      >
-
-    `;
-
-  }
-
-  html += `</div>`;
-
-  courseEl.innerHTML=html;
-
-}
-
-
-
-/* =========================================================
-   GENERATION
-   ========================================================= */
-
-function generateCourse(){
-
-  if(!state.pages.length){
-
-    alert(
-      "Analyse d'abord les photos."
-    );
-
-    return;
-
-  }
-
-  setStatus(
-    "Construction du cours…",
-    100
-  );
-
-  state.course =
-    buildCourse();
-
-  renderCourse();
-
-  setStatus(
-    "Cours généré. Vérifie les passages importants avec les photos originales.",
-    100
-  );
-
-}
-
-
-
-/* =========================================================
-   EXPORT HTML
-   ========================================================= */
-
-function getStandaloneHTML(){
-
-  if(!state.course)
-    return "";
-
-  const title =
-    escapeHTML(
-      state.course.title
-    );
-
-  return `<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${title}</title>
-
-<style>
-
-body{
-  font-family:Arial,system-ui,sans-serif;
-  max-width:1000px;
-  margin:auto;
-  padding:30px;
-  color:#172033;
-  line-height:1.65;
-}
-
-h1{
-  font-size:38px;
-}
-
-h2{
-  margin-top:40px;
-  border-bottom:2px solid #ddd;
-  padding-bottom:8px;
-}
-
-.definition{
-  border-left:5px solid #315efb;
-  background:#f2f5ff;
-  padding:15px;
-  margin:15px 0;
-}
-
-.formula{
-  background:#111827;
-  color:white;
-  padding:15px;
-  border-radius:8px;
-  font-family:monospace;
-}
-
-.keybox{
-  background:#f7f9fc;
-  border:1px solid #ddd;
-  padding:18px;
-  border-radius:10px;
-}
-
-img{
-  max-width:100%;
-  border-radius:8px;
-}
-
-.badge{
-  display:inline-block;
-  padding:4px 8px;
-  border-radius:20px;
-  background:#eef2ff;
-  color:#315efb;
-  margin:3px;
-}
-
-table{
-  border-collapse:collapse;
-  width:100%;
-}
-
-td{
-  border:1px solid #ddd;
-  padding:10px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-${courseEl.innerHTML}
-
-</body>
-</html>`;
-
-}
-
 
 function exportHTML(){
 
   if(!state.course){
 
-    alert(
-      "Génère d'abord le cours."
-    );
+    alert("Génère d'abord la fiche.");
 
     return;
-
   }
 
-  downloadFile(
+  const html =
+    buildStandaloneHTML();
 
-    "cours.html",
-
-    getStandaloneHTML(),
-
+  downloadBlob(
+    html,
+    "cours-photo.html",
     "text/html;charset=utf-8"
-
   );
-
 }
-
 
 
 /* =========================================================
    EXPORT TXT
-   ========================================================= */
+========================================================= */
 
 function exportTXT(){
 
   if(!state.course){
 
-    alert(
-      "Génère d'abord le cours."
-    );
+    alert("Génère d'abord la fiche.");
 
     return;
-
   }
 
-  const c =
-    state.course;
+  let text = "";
 
-  let txt =
-    c.title +
-    "\n\n";
+  text +=
+    `${state.course.title || "Cours"}\n`;
 
-  if(c.intro){
+  text +=
+    `${"=".repeat(60)}\n\n`;
 
-    txt +=
-      "INTRODUCTION\n" +
-      c.intro +
-      "\n\n";
+  text +=
+    "À RETENIR\n\n";
 
+  for(const item of state.course.important || []){
+
+    text +=
+      `• ${item}\n`;
   }
 
-  for(
-    const section
-    of c.sections
-  ){
+  text += "\n";
 
-    txt +=
-      "\n" +
-      section.title.toUpperCase() +
-      "\n\n";
+  for(const section of state.course.sections || []){
 
-    for(
-      const p
-      of section.paragraphs
-    ){
+    text +=
+      `\n${section.title}\n`;
 
-      txt +=
-        p + "\n\n";
+    text +=
+      `${"-".repeat(Math.min(section.title.length,60))}\n\n`;
 
+    for(const item of section.items){
+
+      text +=
+        `${item}\n`;
     }
 
-    for(
-      const b
-      of section.bullets
-    ){
-
-      txt +=
-        "• " + b + "\n";
-
-    }
-
-    if(section.bullets.length)
-      txt += "\n";
-
-    for(
-      const d
-      of section.definitions
-    ){
-
-      txt +=
-        "DÉFINITION : " +
-        d +
-        "\n\n";
-
-    }
-
-    for(
-      const f
-      of section.formulas
-    ){
-
-      txt +=
-        "FORMULE : " +
-        f +
-        "\n\n";
-
-    }
-
+    text += "\n";
   }
 
-
-  txt +=
-    "\nÀ RETENIR\n\n";
-
-  c.keyPoints.forEach(
-    x=>{
-      txt +=
-        "• " + x + "\n";
-    }
-  );
-
-
-  txt +=
-    "\n\nMOTS-CLÉS\n" +
-    c.keywords.join(", ") +
-    "\n";
-
-  downloadFile(
-    "cours.txt",
-    txt,
+  downloadBlob(
+    text,
+    "cours-photo.txt",
     "text/plain;charset=utf-8"
   );
-
 }
-
-
-
-/* =========================================================
-   SLIDESHOW
-   ========================================================= */
-
-function buildSlides(){
-
-  const slides=[];
-
-  const c =
-    state.course;
-
-  slides.push({
-
-    title:c.title,
-
-    html:`
-      <h1>
-        ${escapeHTML(c.title)}
-      </h1>
-
-      <p>
-        Cours généré à partir
-        des photos originales
-      </p>
-    `
-
-  });
-
-
-  for(
-    const section
-    of c.sections
-  ){
-
-    const content=[];
-
-    if(
-      section.paragraphs.length
-    ){
-
-      content.push(
-        `<p>${
-          escapeHTML(
-            section.paragraphs
-              .slice(0,2)
-              .join(" ")
-          )
-        }</p>`
-      );
-
-    }
-
-    if(
-      section.bullets.length
-    ){
-
-      content.push(`
-        <ul>
-          ${section.bullets
-            .slice(0,6)
-            .map(
-              x=>
-                `<li>
-                  ${escapeHTML(x)}
-                </li>`
-            )
-            .join("")}
-        </ul>
-      `);
-
-    }
-
-    slides.push({
-
-      title:section.title,
-
-      html:
-        `<h2>
-          ${escapeHTML(section.title)}
-        </h2>` +
-        content.join("")
-
-    });
-
-  }
-
-
-  if(c.keyPoints.length){
-
-    slides.push({
-
-      title:"À retenir",
-
-      html:`
-        <h2>🧠 À retenir</h2>
-
-        <ul>
-
-          ${c.keyPoints
-            .slice(0,8)
-            .map(
-              x=>
-                `<li>
-                  ${escapeHTML(x)}
-                </li>`
-            )
-            .join("")}
-
-        </ul>
-      `
-
-    });
-
-  }
-
-
-  for(
-    const page
-    of c.pages
-  ){
-
-    slides.push({
-
-      title:"Photo originale",
-
-      html:`
-        <img
-          src="${page.image}"
-          alt=""
-        >
-      `
-
-    });
-
-  }
-
-
-  if(c.keywords.length){
-
-    slides.push({
-
-      title:"Mots-clés",
-
-      html:`
-        <h2>🗂️ Mots-clés</h2>
-
-        <p>
-          ${c.keywords
-            .map(
-              x=>
-                `<span
-                  style="
-                    display:inline-block;
-                    padding:8px 12px;
-                    border:1px solid rgba(255,255,255,.3);
-                    border-radius:20px;
-                    margin:5px;
-                  "
-                >
-                  ${escapeHTML(x)}
-                </span>`
-            )
-            .join("")}
-        </p>
-      `
-
-    });
-
-  }
-
-  return slides;
-
-}
-
-
-function renderSlideshow(){
-
-  if(!state.course){
-
-    alert(
-      "Génère d'abord le cours."
-    );
-
-    return;
-
-  }
-
-  const slides =
-    buildSlides();
-
-  $("slides").innerHTML =
-    slides.map(
-      (slide,index)=>`
-
-        <section
-          class="slide ${
-            index===0
-              ? "active"
-              : ""
-          }"
-          data-slide="${index}"
-        >
-
-          ${slide.html}
-
-        </section>
-
-      `
-    ).join("");
-
-  state.slideIndex=0;
-
-  $("slideshow").style.display =
-    "block";
-
-  updateSlide();
-
-}
-
-
-function updateSlide(){
-
-  const slides =
-    [...document.querySelectorAll(
-      ".slide"
-    )];
-
-  slides.forEach(
-    (slide,index)=>{
-      slide.classList.toggle(
-        "active",
-        index===state.slideIndex
-      );
-    }
-  );
-
-}
-
-
-function nextSlide(){
-
-  const count =
-    document.querySelectorAll(
-      ".slide"
-    ).length;
-
-  if(!count)
-    return;
-
-  state.slideIndex =
-    (state.slideIndex+1)
-    % count;
-
-  updateSlide();
-
-}
-
-
-function previousSlide(){
-
-  const count =
-    document.querySelectorAll(
-      ".slide"
-    ).length;
-
-  if(!count)
-    return;
-
-  state.slideIndex =
-    (state.slideIndex-1+count)
-    % count;
-
-  updateSlide();
-
-}
-
 
 
 /* =========================================================
    EXEMPLE
-   ========================================================= */
+========================================================= */
 
 async function createExample(){
+
+  /*
+    Exemple directement dessiné sur canvas.
+    Cela permet de vérifier l'OCR indépendamment
+    de la caméra / galerie.
+  */
 
   const canvas =
     document.createElement("canvas");
 
-  canvas.width=1400;
-  canvas.height=900;
+  canvas.width = 1800;
+  canvas.height = 1200;
 
   const ctx =
     canvas.getContext("2d");
 
-  ctx.fillStyle="#fff";
+  ctx.fillStyle = "white";
   ctx.fillRect(
     0,
     0,
@@ -3526,100 +2254,264 @@ async function createExample(){
     canvas.height
   );
 
-  ctx.fillStyle="#111";
+  ctx.fillStyle = "#111827";
 
-  ctx.font=
-    "bold 54px Arial";
+  ctx.font =
+    "bold 72px Arial";
 
   ctx.fillText(
-    "LA PHOTOSYNTHÈSE",
+    "LA PHOTOSYNTHESE",
     100,
-    100
+    120
   );
 
-  ctx.font=
-    "30px Arial";
+  ctx.font =
+    "42px Arial";
 
-  const lines=[
+  ctx.fillText(
+    "La photosynthèse permet aux plantes",
+    100,
+    230
+  );
 
-    "La photosynthèse est le processus",
-    "par lequel les végétaux produisent",
-    "de la matière organique grâce à la lumière.",
+  ctx.fillText(
+    "de fabriquer leur matière organique.",
+    100,
+    290
+  );
 
-    "Elle utilise principalement le CO2,",
-    "l'eau et l'énergie lumineuse.",
+  ctx.font =
+    "bold 48px Arial";
 
-    "→ Lumière → chlorophylle → glucose",
+  ctx.fillText(
+    "Équation :",
+    100,
+    410
+  );
 
-    "Définition : la chlorophylle est",
-    "le pigment vert présent dans les feuilles.",
+  ctx.font =
+    "46px Arial";
 
-    "À retenir : la lumière fournit l'énergie."
+  ctx.fillText(
+    "CO2 + H2O + lumière → glucose + O2",
+    100,
+    485
+  );
 
-  ];
+  ctx.font =
+    "bold 48px Arial";
 
-  let y=180;
+  ctx.fillText(
+    "À retenir",
+    100,
+    620
+  );
 
-  for(const line of lines){
+  ctx.font =
+    "42px Arial";
 
-    ctx.fillText(
-      line,
-      100,
-      y
-    );
+  ctx.fillText(
+    "• Elle se déroule principalement dans les feuilles.",
+    100,
+    700
+  );
 
-    y+=65;
+  ctx.fillText(
+    "• La lumière fournit l'énergie nécessaire.",
+    100,
+    770
+  );
 
-  }
+  ctx.fillText(
+    "• Le dioxyde de carbone et l'eau sont utilisés.",
+    100,
+    840
+  );
 
   const dataURL =
-    canvas.toDataURL(
-      "image/png"
+    canvas.toDataURL("image/jpeg",0.95);
+
+  const blob =
+    await (await fetch(dataURL)).blob();
+
+  const file =
+    new File(
+      [blob],
+      "exemple-photosynthese.jpg",
+      {type:"image/jpeg"}
     );
 
-  state.photos=[{
-
-    id:"example",
-
-    name:"exemple-cours.png",
-
-    dataURL,
-
-    width:1400,
-
-    height:900
-
-  }];
-
-  renderPhotos();
-
+  await addFiles([file]);
 }
 
 
-
 /* =========================================================
-   EVENTS
-   ========================================================= */
+   GENERATION
+========================================================= */
 
-fileInput.addEventListener(
-  "change",
-  async e=>{
-    await addFiles(
-      [...e.target.files]
+function generateCourse(){
+
+  if(!state.pages.length){
+
+    alert(
+      "Lance d'abord « Lire les photos »."
     );
 
-    fileInput.value="";
+    return;
+  }
+
+  const totalWords =
+    state.pages.reduce(
+      (sum,page)=>sum + countWords(page.text),
+      0
+    );
+
+  /*
+    GROS GARDE-FOU :
+    aucune génération fictive.
+  */
+
+  if(totalWords < 3){
+
+    state.course = {
+      empty:true,
+      text:state.pages
+        .map(p=>p.text)
+        .filter(Boolean)
+        .join("\n\n")
+    };
+
+    renderCourse();
+
+    return;
+  }
+
+  buildCourse();
+
+  courseSection.scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+
+/* =========================================================
+   SLIDESHOW
+========================================================= */
+
+function updateSlide(){
+
+  if(!state.photos.length){
+    return;
+  }
+
+  state.slideIndex =
+    (state.slideIndex + state.photos.length) %
+    state.photos.length;
+
+  const photo =
+    state.photos[state.slideIndex];
+
+  slideImage.src =
+    photo.dataURL || photo.previewURL;
+
+  slideTitle.textContent =
+    `${state.slideIndex + 1} / ${state.photos.length} — ${photo.name}`;
+}
+
+function openSlideshow(){
+
+  if(!state.photos.length){
+
+    alert("Ajoute d'abord une photo.");
+
+    return;
+  }
+
+  state.slideIndex = 0;
+
+  updateSlide();
+
+  slideOverlay.style.display = "flex";
+}
+
+function closeSlideshow(){
+
+  slideOverlay.style.display = "none";
+}
+
+
+/* =========================================================
+   ÉVÉNEMENTS
+========================================================= */
+
+fileInput.addEventListener("change",async event => {
+
+  const files =
+    Array.from(event.target.files || []);
+
+  /*
+    Permet de sélectionner à nouveau
+    le même fichier plus tard.
+  */
+
+  event.target.value = "";
+
+  await addFiles(files);
+});
+
+
+exampleBtn.addEventListener(
+  "click",
+  createExample
+);
+
+
+clearBtn.addEventListener(
+  "click",
+  async () => {
+
+    if(!confirm("Supprimer toutes les photos ?")){
+      return;
+    }
+
+    for(const photo of state.photos){
+
+      if(photo.previewURL){
+        URL.revokeObjectURL(photo.previewURL);
+      }
+    }
+
+    state.photos = [];
+    state.pages = [];
+    state.course = null;
+
+    photosGrid.innerHTML =
+      '<div class="empty">Aucune photo pour le moment.</div>';
+
+    diagnosticSection.style.display = "none";
+    courseSection.style.display = "none";
+
+    importStatus.className = "status";
+    importStatus.textContent =
+      "Aucune photo importée.";
+
+    ocrStatus.className = "status";
+    ocrStatus.textContent =
+      "L'OCR n'a pas encore été lancé.";
+
+    progressBar.style.width = "0%";
   }
 );
 
 
-$("ocrBtn").addEventListener(
+ocrBtn.addEventListener(
   "click",
   runOCR
 );
 
 
-$("generateBtn").addEventListener(
+generateBtn.addEventListener(
   "click",
   generateCourse
 );
@@ -3639,142 +2531,104 @@ $("exportTxtBtn").addEventListener(
 
 $("printBtn").addEventListener(
   "click",
-  ()=>{
-
-    if(!state.course){
-
-      alert(
-        "Génère d'abord le cours."
-      );
-
-      return;
-
-    }
-
-    window.print();
-
-  }
+  () => window.print()
 );
 
 
 $("slideshowBtn").addEventListener(
   "click",
-  renderSlideshow
+  openSlideshow
 );
 
 
-$("closeSlideshow").addEventListener(
+$("slideClose").addEventListener(
   "click",
-  ()=>{
-    $("slideshow").style.display =
-      "none";
+  closeSlideshow
+);
+
+
+$("slidePrev").addEventListener(
+  "click",
+  () => {
+
+    state.slideIndex--;
+
+    updateSlide();
   }
 );
 
 
-$("nextSlide").addEventListener(
+$("slideNext").addEventListener(
   "click",
-  nextSlide
+  () => {
+
+    state.slideIndex++;
+
+    updateSlide();
+  }
 );
 
 
-$("prevSlide").addEventListener(
+$("slideFull").addEventListener(
   "click",
-  previousSlide
-);
-
-
-$("fullScreenBtn").addEventListener(
-  "click",
-  async ()=>{
+  async () => {
 
     try{
 
-      await $("slideshow")
-        .requestFullscreen();
+      if(!document.fullscreenElement){
+        await slideOverlay.requestFullscreen();
+      }else{
+        await document.exitFullscreen();
+      }
 
-    }catch(e){}
-
+    }catch(error){
+      console.warn(error);
+    }
   }
 );
 
 
 document.addEventListener(
   "keydown",
-  e=>{
+  event => {
 
     if(
-      $("slideshow").style.display !==
-      "block"
-    )
+      slideOverlay.style.display !== "flex"
+    ){
       return;
+    }
 
-    if(e.key==="ArrowRight")
-      nextSlide();
+    if(event.key === "Escape"){
+      closeSlideshow();
+    }
 
-    if(e.key==="ArrowLeft")
-      previousSlide();
+    if(event.key === "ArrowLeft"){
+      state.slideIndex--;
+      updateSlide();
+    }
 
-    if(e.key==="Escape")
-      $("slideshow").style.display =
-        "none";
-
-  }
-);
-
-
-$("clearBtn").addEventListener(
-  "click",
-  async ()=>{
-
-    state.photos=[];
-    state.pages=[];
-    state.course=null;
-
-    renderPhotos();
-
-    courseEl.innerHTML =
-      `<div class="empty">
-        Le cours apparaîtra ici après analyse.
-      </div>`;
-
-    debugEl.textContent =
-      "Aucun diagnostic pour le moment.";
-
-    $("statPhotos").textContent="0";
-    $("statWords").textContent="0";
-    $("statLines").textContent="0";
-    $("statConfidence").textContent="0%";
-
-    setStatus(
-      "Réinitialisé.",
-      0
-    );
-
-  }
-);
-
-
-$("exampleBtn").addEventListener(
-  "click",
-  async ()=>{
-
-    await createExample();
-
-    setStatus(
-      "Exemple chargé. Clique sur « Analyser les photos ».",
-      0
-    );
-
+    if(event.key === "ArrowRight"){
+      state.slideIndex++;
+      updateSlide();
+    }
   }
 );
 
 
 /* =========================================================
-   INIT
-   ========================================================= */
+   INITIALISATION
+========================================================= */
 
 renderPhotos();
+
+console.log(
+  "Photo → Cours V5 initialisé."
+);
+
+console.log(
+  "Tesseract disponible :",
+  typeof Tesseract !== "undefined"
+);
 
 </script>
 
